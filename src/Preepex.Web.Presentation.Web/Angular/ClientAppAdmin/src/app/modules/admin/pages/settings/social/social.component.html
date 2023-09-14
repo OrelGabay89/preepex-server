@@ -1,0 +1,160 @@
+<!-- Divider -->
+<div class="my-5 border-t"></div>
+
+<form [formGroup]="socialForm">
+  <div class="w-full max-w-3xl">
+
+    <!-- Google -->
+    <div class="w-full mt-8">
+      <div class="text-xl flex items-center">
+        <mat-icon class="mr-2" svgIcon="iconsmind:google"></mat-icon>Google Integration
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-4 gap-4 w-full mt-4">
+      <div class="sm:col-span-4 flex items-center justify-between">
+        <div class="flex-auto cursor-pointer" (click)="googleAuthToggle.toggle()">
+          <div class="leading-6 font-medium">Enable Google authentication</div>
+          <div class="text-md text-secondary">
+            For google authentication support please provide valid Google Client ID
+          </div>
+        </div>
+        <mat-slide-toggle class="ml-4" [color]="'primary'" [formControlName]="'googleAuth'" #googleAuthToggle>
+        </mat-slide-toggle>
+      </div>
+
+      <div class="sm:col-span-4">
+        <mat-form-field class="fuse-mat-no-subscript w-full">
+          <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:key'" matPrefix></mat-icon>
+          <fieldset class="w-full" [disabled]="!socialForm.value.googleAuth">
+            <input [formControlName]="'googleClientId'" type="text" matInput>
+          </fieldset>
+        </mat-form-field>
+      </div>
+
+      <div class="sm:col-span-4 flex items-center justify-between mt-2">
+        <div class="flex-auto cursor-pointer" (click)="googleCaptchaToggle.toggle()">
+          <div class="leading-6 font-medium">Enable Google captcha</div>
+          <div class="text-md text-secondary">
+            For google authentication support please provide valid Google Captcha Key
+          </div>
+        </div>
+        <mat-slide-toggle class="ml-4" [color]="'primary'" [formControlName]="'googleCaptcha'" #googleCaptchaToggle>
+        </mat-slide-toggle>
+      </div>
+
+      <div class="sm:col-span-4">
+        <mat-form-field class="fuse-mat-no-subscript w-full">
+          <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:key'" matPrefix></mat-icon>
+          <fieldset class="w-full" [disabled]="!socialForm.value.googleCaptcha">
+            <input [formControlName]="'googleCaptchaKey'" type="text" matInput>
+          </fieldset>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="my-10 border-t"></div>
+
+    <!-- Facebook -->
+    <div class="w-full">
+      <div class="text-xl flex items-center">
+        <mat-icon class="mr-2" svgIcon="mat_solid:facebook"></mat-icon>Facebook Integration
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-4 gap-4 w-full mt-4">
+      <div class="sm:col-span-4 flex items-center justify-between">
+        <div class="flex-auto cursor-pointer" (click)="facebookAuthToggle.toggle()">
+          <div class="leading-6 font-medium">Enable Facebook authentication</div>
+          <div class="text-md text-secondary">
+            For facebook authentication support please provide valid Facebook Client ID
+          </div>
+        </div>
+        <mat-slide-toggle class="ml-4" [color]="'primary'" [formControlName]="'facebookAuth'" #facebookAuthToggle>
+        </mat-slide-toggle>
+      </div>
+
+      <div class="sm:col-span-4">
+        <mat-form-field class="fuse-mat-no-subscript w-full">
+          <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:key'" matPrefix></mat-icon>
+          <fieldset class="w-full" [disabled]="!socialForm.value.facebookAuth">
+            <input [formControlName]="'facebookClientId'" type="text" matInput>
+          </fieldset>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="my-10 border-t"></div>
+
+    <!-- Instagram -->
+    <div class="w-full">
+      <div class="text-xl flex items-center">
+        <mat-icon class="mr-2" svgIcon="feather:instagram"></mat-icon>Instagram Integration
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-4 gap-4 w-full my-4">
+      <div class="sm:col-span-4 flex items-center justify-between">
+        <div class="flex-auto cursor-pointer" (click)="instagramConnectToggle.toggle()">
+          <div class="leading-6 font-medium">Enable Instagram integration</div>
+          <div class="text-md text-secondary">
+            Connect Instagram account to your store
+          </div>
+        </div>
+        <mat-slide-toggle class="ml-4" [color]="'primary'" [formControlName]="'instagramConnect'"
+          #instagramConnectToggle>
+        </mat-slide-toggle>
+      </div>
+    </div>
+
+    <div class="w-full text-xl">Account Activity</div>
+    <div class="grid grid-cols-1 gap-4 w-full mt-4">
+
+      <div class="flex items-center justify-between">
+        <div class="flex-auto leading-6 cursor-pointer" (click)="images.toggle()">
+          Pull images On/Off
+        </div>
+        <mat-slide-toggle class="ml-2" [color]="'primary'" [formControlName]="'pullImages'" #images>
+        </mat-slide-toggle>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <div class="flex-auto leading-6 cursor-pointer" (click)="videos.toggle()">
+          Pull Videos On/Off
+        </div>
+        <mat-slide-toggle class="ml-2" [color]="'primary'" [formControlName]="'pullVideos'" #videos>
+        </mat-slide-toggle>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 items-center w-full">
+      <div class="sm:col-span-4 flex items-center justify-between my-4">
+        <div class="flex-auto leading-6">
+          Pull Interval
+        </div>
+        <mat-form-field class="fuse-mat-no-subscript w-40">
+          <span matSuffix class="ml-2">hours</span>
+          <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:clock'" matPrefix></mat-icon>
+          <mat-select [formControlName]="'pullInterval'">
+            <ng-container *ngFor="let interval of intervalsArray; let i = index">
+              <mat-option [value]="i+1">
+                {{i+1}}
+              </mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+  </div>
+</form>
+
+<div class="my-10 border-t"></div>
+
+<div class="flex items-center justify-end">
+  <button mat-stroked-button type="button">
+    Cancel
+  </button>
+  <button class="ml-4" mat-flat-button type="button" [color]="'primary'">Save
+  </button>
+</div>

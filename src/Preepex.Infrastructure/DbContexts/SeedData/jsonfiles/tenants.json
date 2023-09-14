@@ -1,0 +1,10 @@
+[
+  {
+    "HostName": "Company 1",
+    "Name": "subdomain1"
+  },
+  {
+    "HostName": "Company 2",
+    "Name": "subdomain2"
+  }
+]

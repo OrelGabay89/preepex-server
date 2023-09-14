@@ -1,0 +1,291 @@
+<div class="flex flex-col flex-auto min-w-0 overflow-auto bg-card dark:bg-transparent">
+
+  <!-- Header -->
+  <div class="relative flex flex-col lg:flex-row flex-0 lg:items-center lg:justify-between py-8 px-6 md:px-8">
+    <!-- Loader -->
+    <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+      <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+    </div>
+    <!-- Title -->
+    <div class="text-4xl font-extrabold tracking-tight">Orders</div>
+    <!-- Actions -->
+    <div class="flex flex-wrap justify-center shrink-0 items-start sm:items-center mt-6 lg:mt-0 lg:ml-4">
+      <!-- Action buttons -->
+
+      <button class="ml-2 sm:ml-4 mb-3 lg:mb-0 min-w-50 sm:min-w-0 bg-green-500 mat-flat-button mat-accent"
+        mat-flat-button>
+        <mat-icon [svgIcon]="'heroicons_outline:cloud-download'"></mat-icon>
+        <span class="ml-2 mr-2">Export</span>
+        <button mat-icon-button [matMenuTriggerFor]="exportMenu">
+          <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:dots-vertical'"></mat-icon>
+        </button>
+        <mat-menu #exportMenu="matMenu" xPosition="before">
+          <button mat-menu-item>
+            <mat-icon [svgIcon]="'heroicons_outline:code'"></mat-icon>Export to XML (all found)
+          </button>
+          <button mat-menu-item>
+            <mat-icon [svgIcon]="'heroicons_outline:code'"></mat-icon>Export to XML (selected)
+          </button>
+          <button mat-menu-item>
+            <mat-icon [svgIcon]="'heroicons_outline:clipboard-list'"></mat-icon>Export to Excel (all found)
+          </button>
+          <button mat-menu-item>
+            <mat-icon [svgIcon]="'heroicons_outline:clipboard-list'"></mat-icon>Export to Excel (selected)
+          </button>
+        </mat-menu>
+      </button>
+
+      <button class="ml-2 sm:ml-4 mb-3 lg:mb-0 min-w-50 sm:min-w-0 mat-flat-button mat-primary" mat-flat-button>
+        <!-- todo: change icon -->
+        <mat-icon [svgIcon]="'heroicons_outline:cloud-download'"></mat-icon>
+        <span class="ml-2 mr-2">Print PDF invoices</span>
+        <button mat-icon-button [matMenuTriggerFor]="printMenu">
+          <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:dots-vertical'"></mat-icon>
+        </button>
+        <mat-menu #printMenu="matMenu">
+          <button mat-menu-item>Print PDF invoices (all found)</button>
+          <button mat-menu-item>Print PDF invoices (selected)</button>
+        </mat-menu>
+      </button>
+
+
+    </div>
+  </div>
+
+  <!-- Main -->
+  <!-- Categories Table -->
+  <div class="flex flex-col flex-auto bg-card shadow rounded-2xl px-2 md:px-8 pb-2 md:pb-8">
+
+    <!-- filter section -->
+    <mat-accordion>
+      <mat-expansion-panel class="border">
+        <mat-expansion-panel-header [collapsedHeight]="'50px'" [expandedHeight]="'50px'">
+          <mat-panel-title class="text-xl flex items-center">
+            <mat-icon class="icon-size-5 mr-2" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>Search
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="pt-3">
+          <div class="flex flex-col sm:flex-row">
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Start date </mat-label>
+              <input [(ngModel)]="filterValue.startDate" (ngModelChange)="filterData()" matInput
+                [matDatepicker]="startDatePicker" name="startDate">
+              <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #startDatePicker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Vendor</mat-label>
+              <mat-select [(ngModel)]="filterValue.vendor" (selectionChange)="filterData()">
+                <mat-option value="all">All</mat-option>
+                <mat-option value="v1">Vendor 1</mat-option>
+                <mat-option value="v2">Vendor 2</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="flex flex-col sm:flex-row">
+            <mat-form-field class="w-full mx-2">
+              <mat-label>End date </mat-label>
+              <input [(ngModel)]="filterValue.endDate" (ngModelChange)="filterData()" matInput
+                [matDatepicker]="endDatePicker" name="endDate">
+              <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #endDatePicker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Billing phone number</mat-label>
+              <input matInput name="billingPhoneNumber" [(ngModel)]="filterValue.billingPhoneNumber"
+                (ngModelChange)="filterData()">
+            </mat-form-field>
+          </div>
+
+          <div class="flex flex-col sm:flex-row">
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Warehouse</mat-label>
+              <mat-select [(ngModel)]="filterValue.warehouse" (selectionChange)="filterData()">
+                <mat-option value="all">All</mat-option>
+                <mat-option value="v1">Warehouse 1</mat-option>
+                <mat-option value="v2">Warehouse 2</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Billing email address</mat-label>
+              <input matInput name="billingEmailAddress" [(ngModel)]="filterValue.billingEmailAddress"
+                (ngModelChange)="filterData()">
+            </mat-form-field>
+          </div>
+
+          <div class="flex flex-col sm:flex-row">
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Product</mat-label>
+              <input matInput name="product" [(ngModel)]="filterValue.product" (ngModelChange)="filterData()">
+            </mat-form-field>
+
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Billing last name</mat-label>
+              <input matInput name="billingLastName" [(ngModel)]="filterValue.billingLastName"
+                (ngModelChange)="filterData()">
+            </mat-form-field>
+          </div>
+
+          <div class="flex flex-col sm:flex-row">
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Order statuses</mat-label>
+              <mat-select [(ngModel)]="filterValue.orderStatuses" (selectionChange)="filterData()" multiple>
+                <mat-option value="all">All</mat-option>
+                <mat-option value="pending">Pending</mat-option>
+                <mat-option value="processing">Processing</mat-option>
+                <mat-option value="complete">Complete</mat-option>
+                <mat-option value="cancelled">Cancelled</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Billing country</mat-label>
+              <mat-select [(ngModel)]="filterValue.billingCountry" (selectionChange)="filterData()">
+                <mat-option value="all">All</mat-option>
+                <mat-option value="country1">Country 1</mat-option>
+                <mat-option value="country2">Country 2</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="flex flex-col sm:flex-row">
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Payment statuses</mat-label>
+              <mat-select [(ngModel)]="filterValue.paymentStatuses" (selectionChange)="filterData()" multiple>
+                <mat-option value="all">All</mat-option>
+                <mat-option value="pending">Pending</mat-option>
+                <mat-option value="paid">Paid</mat-option>
+                <mat-option value="authorized">Authorized</mat-option>
+                <mat-option value="partiallyRefunded">Partially Refunded</mat-option>
+                <mat-option value="refunded">Refunded</mat-option>
+                <mat-option value="voided">Voided</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Order notes</mat-label>
+              <input matInput name="orderNotes" [(ngModel)]="filterValue.orderNotes" (ngModelChange)="filterData()">
+            </mat-form-field>
+          </div>
+
+          <div class="flex flex-col sm:flex-row">
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Shipping statuses</mat-label>
+              <mat-select [(ngModel)]="filterValue.shippingStatuses" (selectionChange)="filterData()" multiple>
+                <mat-option value="all">All</mat-option>
+                <mat-option value="shippingNotRequired">Shipping not required</mat-option>
+                <mat-option value="notYetShipped">Not yet shipped</mat-option>
+                <mat-option value="partiallyShipped">Partially shipped</mat-option>
+                <mat-option value="shipped">Shipped</mat-option>
+                <mat-option value="delivered">Delivered</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Go directly to order #</mat-label>
+              <input matInput name="orderNumber" [(ngModel)]="filterValue.orderNumber" (ngModelChange)="filterData()">
+            </mat-form-field>
+
+          </div>
+
+          <div class="flex items-center justify-end m-2">
+            <button class="ml-4" mat-flat-button type="button" [color]="'primary'" (click)="clearSearchFilter()">Clear
+            </button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <div class="overflow-x-auto mt-8 sm:mt-10">
+      <div [class.hidden]="!ordersDataSource.filteredData.length">
+        <table mat-table [dataSource]="ordersDataSource" matSort class="w-full">
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox (change)="masterToggle($event)" [checked]="isAllSelected">
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <mat-checkbox (change)="toggleSelect($event,element)" [checked]="element.isSelected">
+              </mat-checkbox>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="orderNumber">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Order # </th>
+            <td mat-cell *matCellDef="let element"> {{element.orderNumber}} </td>
+          </ng-container>
+          <ng-container matColumnDef="orderStatus">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Order Status </th>
+            <td mat-cell *matCellDef="let element">
+              <mat-chip-list aria-label="Fish selection">
+                <ng-container [ngSwitch]="element.orderStatus">
+                  <p *ngSwitchCase="'completed'">
+                    <mat-chip class="bg-green-500" selected>Completed</mat-chip>
+                  </p>
+                  <p *ngSwitchCase="'processing'">
+                    <mat-chip class="bg-amber-500" selected>Processing</mat-chip>
+                  </p>
+                  <p *ngSwitchCase="'pending'">
+                    <mat-chip [color]="'primary'" selected>Pending</mat-chip>
+                  </p>
+                </ng-container>
+              </mat-chip-list>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="paymentStatus">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Payment Status </th>
+            <td mat-cell *matCellDef="let element"> {{element.paymentStatus | titlecase}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="shippingStatus">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Shipping Status </th>
+            <td mat-cell *matCellDef="let element"> {{element.shippingStatus | titlecase}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="billingEmailAddress">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Customer </th>
+            <td mat-cell *matCellDef="let element"><a class="text-blue-500"
+                [routerLink]="['/users/edit',element.orderNumber ]">
+                {{element.billingEmailAddress}} </a>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="createdOn">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Created On </th>
+            <td mat-cell *matCellDef="let element"> {{element.createdOn}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="orderTotal">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Order Total </th>
+            <td mat-cell *matCellDef="let element"> {{element.orderTotal | currency:'USD':'symbol':'1.2-2'}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef> View </th>
+            <td mat-cell *matCellDef="let element">
+              <mat-icon class="icon-size-5 mr-1 cursor-pointer" [svgIcon]="'heroicons_solid:eye'"
+                (click)="editOrder(element.orderNumber)">
+              </mat-icon>
+            </td>
+          </ng-container>
+          <tr class="h-14" mat-header-row *matHeaderRowDef="ordersDisplayedColumns"></tr>
+          <tr class="h-15" mat-row *matRowDef="let row; columns: ordersDisplayedColumns;">
+          </tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+        </mat-paginator>
+      </div>
+
+      <div [class.hidden]="ordersDataSource.filteredData.length">
+        <div class="p-2 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">There are no orders!
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

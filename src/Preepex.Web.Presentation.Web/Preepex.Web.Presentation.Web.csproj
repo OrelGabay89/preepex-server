@@ -1,0 +1,109 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <AssemblyName>Preepex.Web.Presentation.Web</AssemblyName>
+    <RootNamespace>Preepex.Web.Presentation.Web</RootNamespace>
+    <DockerComposeProjectPath>..\..\..\docker-compose.dcproj</DockerComposeProjectPath>
+    <UserSecretsId>de4a1a1a-f577-459a-9c8b-b59b414e4674</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <GenerateRuntimeConfigurationFiles>True</GenerateRuntimeConfigurationFiles>
+
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="10.3.6" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.3.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.22" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.2.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.2.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\**" CopyToPublishDirectory="PreserveNewest" />
+    <Compile Remove="Angular\**" />
+    <Compile Remove="ClientApp\**" />
+    <Compile Remove="wwwroot\admin\**" />
+    <Compile Remove="wwwroot\app\**" />
+    <Content Remove="Angular\**" />
+    <Content Remove="wwwroot\admin\**" />
+    <Content Remove="wwwroot\app\**" />
+    <EmbeddedResource Remove="Angular\**" />
+    <EmbeddedResource Remove="ClientApp\**" />
+    <EmbeddedResource Remove="wwwroot\admin\**" />
+    <EmbeddedResource Remove="wwwroot\app\**" />
+    <None Remove="Angular\**" />
+    <None Remove="ClientApp\**" />
+    <None Remove="wwwroot\admin\**" />
+    <None Remove="wwwroot\app\**" />
+    <Content Update="appsettings.json">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Content\images\products\placeholder.png">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Compile Remove="wwwroot\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
+    <Content Remove="wwwroot\**" />
+    <None Remove="wwwroot\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Preepex.Core.Application\Preepex.Core.Application.csproj" />
+    <ProjectReference Include="..\Preepex.Core.Domain\Preepex.Core.Domain.csproj" />
+    <ProjectReference Include="..\Preepex.Infrastructure\Preepex.Infrastructure.csproj" />
+    <ProjectReference Include="..\Preepex.Presentation.Framework\Preepex.Presentation.Framework.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+   <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0" />
+ </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\265.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\348.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\351.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\3rdpartylicenses.txt" />
+    <_ContentIncludedByDefault Remove="wwwroot\427.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\733.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\776.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\917.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\default-src_app_components_account_components_settings_account-info_account-info_component_ts.js.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\fontawesome-webfont.eot" />
+    <_ContentIncludedByDefault Remove="wwwroot\fontawesome-webfont.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\fontawesome-webfont.ttf" />
+    <_ContentIncludedByDefault Remove="wwwroot\fontawesome-webfont.woff" />
+    <_ContentIncludedByDefault Remove="wwwroot\fontawesome-webfont.woff2" />
+    <_ContentIncludedByDefault Remove="wwwroot\index.html" />
+    <_ContentIncludedByDefault Remove="wwwroot\main.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\main.js.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\polyfills.js.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\runtime.js.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\src_app_components_account_account_module_ts.js.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\src_app_components_account_components_my-account_myaccount_module_ts.js.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\src_app_components_account_components_settings_settings_module_ts.js.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\src_app_components_basket_basket_module_ts.js.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\src_app_components_checkout_checkout_module_ts.js.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\src_app_components_orders_orders_module_ts.js.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\styles.css.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\vendor.js.map" />
+  </ItemGroup>
+  
+  <Target Name="Build Angular" Condition="'$(Configuration)'=='Release'" BeforeTargets="Build">
+    <Message Text="* * * * * * Building Angular App * * * * * *" Importance="high" />
+    <!--<Exec Command="npm run build" />-->
+  </Target>
+
+</Project>

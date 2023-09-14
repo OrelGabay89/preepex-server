@@ -1,0 +1,693 @@
+<div class="flex flex-col flex-auto min-w-0 overflow-auto bg-card dark:bg-transparent">
+
+  <!-- Header -->
+  <div class="relative flex flex-col lg:flex-row flex-0 lg:items-center lg:justify-between py-8 px-6 md:px-8 border-b">
+    <!-- Loader -->
+    <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+      <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+    </div>
+    <!-- Title -->
+    <div class="text-4xl font-extrabold tracking-tight flex items-baseline mr-1">
+      <mat-icon class="cursor-pointer mr-2" svgIcon="heroicons_outline:chevron-left" (click)="back()"></mat-icon>
+      <ng-container *ngIf="isEdit else createTitle">
+        <div class="flex flex-col">
+          Edit order details - {{orderId}}
+        </div>
+      </ng-container>
+      <ng-template #createTitle>Add a new order</ng-template>
+    </div>
+    <!-- Actions -->
+    <div class="flex flex-wrap justify-center shrink-0 items-start sm:items-center mt-6 lg:mt-0 lg:ml-4">
+      <!-- Action buttons -->
+
+      <button class="ml-2 sm:ml-4 mb-3 lg:mb-0 min-w-50 sm:min-w-0" mat-flat-button [color]="'primary'"
+        (click)="printInvoice()">
+        <mat-icon svgIcon="heroicons_outline:document"></mat-icon>
+        <span class="ml-2 mr-1">Invoice (PDF)</span>
+      </button>
+
+      <ng-container *ngIf="isEdit">
+        <button class="ml-2 sm:ml-4 mb-3 lg:mb-0 min-w-50 sm:min-w-0" mat-flat-button [color]="'warn'"
+          (click)="deleteOrder()">
+          <mat-icon svgIcon="heroicons_outline:trash"></mat-icon>
+          <span class="ml-2 mr-1">Delete</span>
+        </button>
+      </ng-container>
+
+    </div>
+  </div>
+
+  <div class="flex flex-col overflow-auto">
+
+    <div class="flex flex-col py-8 px-6 md:px-8">
+      <mat-accordion multi>
+        <!-- order Info -->
+        <mat-expansion-panel expanded>
+          <mat-expansion-panel-header class="border-t-2 border-t-primary border-b" [collapsedHeight]="'60px'"
+            [expandedHeight]="'60px'">
+            <mat-panel-title class="text-2xl font-bold flex items-center">
+              <mat-icon svgIcon="heroicons_outline:information-circle"></mat-icon>
+              &nbsp; Order info
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <!-- order form -->
+          <div class="py-4 border-b">
+            <div class="grid grid-cols-4 gap-4 py-2">
+              <div class="text-right font-semibold ">Order #</div>
+              <div class="col-span-3">{{ order.orderNumber }}</div>
+            </div>
+
+            <div class="grid grid-cols-4 gap-4 py-2">
+              <div class="text-right font-semibold ">Created on:</div>
+              <div class="col-span-3">{{ order.createdOn }}</div>
+            </div>
+
+            <div class="grid grid-cols-4 gap-4 py-2">
+              <div class="text-right font-semibold ">Customer:</div>
+              <div class="col-span-3">{{ order.billingEmailAddress }}</div>
+            </div>
+
+            <div class="grid grid-cols-4 gap-4 py-2">
+              <div class="text-right font-semibold ">Order status:</div>
+              <div class="col-span-3 pb-2">
+                <div class="flex font-semibold">
+                  <span>{{ order.orderStatus }}</span>
+                  <button class="ml-2 sm:ml-4" mat-flat-button [color]="'warn'" (click)="deleteOrder()">Cancel order
+                  </button>
+                  <button *ngIf="!isEditOrderStatus" class="ml-2" mat-flat-button [color]="'primary'"
+                    (click)="changeOrderStatus()">Change status
+                  </button>
+                </div>
+                <div class="flex flex-col w-3/6" *ngIf="isEditOrderStatus">
+                  <mat-form-field class="mt-3">
+                    <mat-select [(ngModel)]="order.orderStatus">
+                      <mat-option value="pending">Pending</mat-option>
+                      <mat-option value="processing">Processing</mat-option>
+                      <mat-option value="complete">Complete</mat-option>
+                      <mat-option value="cancelled">Cancelled</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <div>
+                    <button mat-flat-button [color]="'primary'" (click)="isEditOrderStatus = !isEditOrderStatus">Save
+                    </button>
+                    <button class="ml-2 bg-gray-500 text-white" mat-flat-button
+                      (click)="isEditOrderStatus = !isEditOrderStatus">Cancel
+                    </button>
+                  </div>
+                  <mat-hint class="pt-1 text-sm text-slate-400">This option is only for advanced users (not recommended
+                    to change manually). All appropriate
+                    actions (such as inventory adjustment, sending notification emails, reward points, gift card
+                    activation/deactivation, etc) should be done manually in this case.</mat-hint>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- order total form -->
+          <div class="py-4 border-b">
+            <div class="grid grid-cols-4 gap-4 py-2">
+              <div class="text-right font-semibold ">Order subtotal:</div>
+              <div class="col-span-3">{{ order.orderTotal | currency:'USD':'symbol':'1.2-2'}} <span
+                  class="font-semibold">excl tax</span></div>
+            </div>
+            <div class="grid grid-cols-4 gap-4 py-2">
+              <div class="text-right font-semibold ">Order shipping:</div>
+              <div class="col-span-3">{{'0' | currency:'USD':'symbol':'1.2-2'}} <span class="font-semibold">excl
+                  tax</span></div>
+            </div>
+            <div class="grid grid-cols-4 gap-4 py-2">
+              <div class="text-right font-semibold ">Order tax:</div>
+              <div class="col-span-3">{{'0' | currency:'USD':'symbol':'1.2-2'}}</div>
+            </div>
+            <div class="grid grid-cols-4 gap-4 py-2">
+              <div class="text-right font-semibold ">Order total:</div>
+              <div class="col-span-3">{{ order.orderTotal | currency:'USD':'symbol':'1.2-2'}}</div>
+            </div>
+            <div class="grid grid-cols-4 gap-4 py-2">
+              <div class="text-right font-semibold ">Profit:</div>
+              <div class="col-span-3">{{ order.orderTotal | currency:'USD':'symbol':'1.2-2'}}</div>
+            </div>
+            <div class="grid grid-cols-4 gap-4 py-2">
+              <div class="text-right font-semibold "></div>
+              <div class="col-span-3">
+                <button mat-flat-button [color]="'primary'" *ngIf="!isEditOrderTotals"
+                  (click)="isEditOrderTotals = !isEditOrderTotals">Edit order totals
+                </button>
+              </div>
+            </div>
+            <ng-container *ngIf="isEditOrderTotals">
+              <div class="grid grid-cols-4 gap-4">
+                <div class="text-right font-semibold  py-2">Order subtotal:</div>
+                <div class="col-span-3">
+                  <div class="flex flex-wrap">
+                    <div class="flex items-baseline mr-1">
+                      <mat-label class="mr-1 w-14">incl tax:</mat-label>
+                      <mat-form-field class="w-72">
+                        <input type="number" matInput [value]="order.orderTotal">
+                      </mat-form-field>
+                    </div>
+                    <div class="flex items-baseline mr-1">
+                      <mat-label class="mr-1 w-14">excl tax:</mat-label>
+                      <mat-form-field class="w-72">
+                        <input type="number" matInput [value]="order.orderTotal">
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-4 gap-4">
+                <div class="text-right font-semibold  py-2">Order subtotal discount:</div>
+                <div class="col-span-3">
+                  <div class="flex flex-wrap">
+                    <div class="flex items-baseline mr-1">
+                      <mat-label class="mr-1 w-14">incl tax:</mat-label>
+                      <mat-form-field class="w-72">
+                        <input type="number" matInput [value]="order.taxValue">
+                      </mat-form-field>
+                    </div>
+                    <div class="flex items-baseline mr-1">
+                      <mat-label class="mr-1 w-14">excl tax:</mat-label>
+                      <mat-form-field class="w-72">
+                        <input type="number" matInput [value]="order.taxValue">
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-4 gap-4">
+                <div class="text-right font-semibold  py-2">Order shipping:</div>
+                <div class="col-span-3">
+                  <div class="flex flex-wrap">
+                    <div class="flex items-baseline mr-1">
+                      <mat-label class="mr-1 w-14">incl tax:</mat-label>
+                      <mat-form-field class="w-72">
+                        <input type="number" matInput [value]="order.taxValue">
+                      </mat-form-field>
+                    </div>
+                    <div class="flex items-baseline mr-1">
+                      <mat-label class="mr-1 w-14">excl tax:</mat-label>
+                      <mat-form-field class="w-72">
+                        <input type="number" matInput [value]="order.taxValue">
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-4 gap-4">
+                <div class="text-right font-semibold  py-2">Payment method additional fee:</div>
+                <div class="col-span-3">
+                  <div class="flex flex-wrap">
+                    <div class="flex items-baseline mr-1">
+                      <mat-label class="mr-1 w-14">incl tax:</mat-label>
+                      <mat-form-field class="w-72">
+                        <input type="number" matInput [value]="order.taxValue">
+                      </mat-form-field>
+                    </div>
+                    <div class="flex items-baseline mr-1">
+                      <mat-label class="mr-1 w-14">excl tax:</mat-label>
+                      <mat-form-field class="w-72">
+                        <input type="number" matInput [value]="order.taxValue">
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-4 gap-4">
+                <div class="text-right font-semibold  py-2">Order tax rates:</div>
+                <div class="col-span-3">
+                  <mat-form-field class="w-72">
+                    <input type="number" matInput [value]="order.taxValue">
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-4 gap-4">
+                <div class="text-right font-semibold  py-2">Order tax:</div>
+                <div class="col-span-3">
+                  <mat-form-field class="w-72">
+                    <input type="number" matInput [value]="order.taxValue">
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-4 gap-4">
+                <div class="text-right font-semibold  py-2">Order discount:</div>
+                <div class="col-span-3">
+                  <mat-form-field class="w-72">
+                    <input type="number" matInput [value]="order.taxValue">
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-4 gap-4">
+                <div class="text-right font-semibold  py-2">Order total:</div>
+                <div class="col-span-3">
+                  <mat-form-field class="w-72">
+                    <input type="number" matInput [value]="order.orderTotal">
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-4 gap-4 py-2">
+                <div class="text-right font-semibold "></div>
+                <div class="col-span-3">
+                  <button mat-flat-button [color]="'primary'" (click)="isEditOrderTotals = !isEditOrderTotals">Save
+                    order totals
+                  </button>
+                  <button class="ml-2 bg-gray-500 text-white" mat-flat-button
+                    (click)="isEditOrderTotals = !isEditOrderTotals">Cancel
+                  </button>
+                </div>
+              </div>
+
+            </ng-container>
+
+            <div class="grid grid-cols-4 gap-4 py-2">
+              <div class="text-right font-semibold ">Payment method:</div>
+              <div class="col-span-3">Payments.CheckMoneyOrder</div>
+            </div>
+            <div class="grid grid-cols-4 gap-4 py-2">
+              <div class="text-right font-semibold ">Payment status:</div>
+              <div class="col-span-3">{{ order.paymentStatus | titlecase }}</div>
+            </div>
+            <div class="grid grid-cols-4 gap-4 py-2">
+              <div class="text-right font-semibold "></div>
+              <div class="col-span-3">
+                <button mat-flat-button (click)="fullRefund()" [color]="'primary'">Refund (Offline)
+                </button>
+                <button mat-flat-button (click)="openPartialRefundModal(partialRefund)" class="ml-2" [color]="'primary'">Partial refund (Offline)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- store form -->
+          <div class="py-4">
+            <div class="grid grid-cols-4 gap-4 py-2">
+              <div class="text-right font-semibold ">Store:</div>
+              <div class="col-span-3">Your store name</div>
+            </div>
+            <div class="grid grid-cols-4 gap-4 py-2">
+              <div class="text-right font-semibold ">Order GUID:</div>
+              <div class="col-span-3">fdc6bff1-d797-4981-ae26-7fd4183a10a8</div>
+            </div>
+            <div class="grid grid-cols-4 gap-4 py-2">
+              <div class="text-right font-semibold ">Customer IP address:</div>
+              <div class="col-span-3">127.0.0.1</div>
+            </div>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Billing & Shipping -->
+        <mat-expansion-panel expanded>
+          <mat-expansion-panel-header class="border-t-2 border-t-primary border-b" [collapsedHeight]="'60px'"
+            [expandedHeight]="'60px'">
+            <mat-panel-title class="text-2xl font-bold flex items-center">
+              <mat-icon svgIcon="heroicons_solid:truck"></mat-icon>
+              &nbsp; Billing & Shipping
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <!-- details -->
+          <div class="py-3">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 py-6">
+              <!-- billing details -->
+              <div class="bg-card shadow rounded-2xl p-6">
+
+                <!-- Columns -->
+                <div class="col-span-8 text-lg font-bold">Billing address</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Full Name</div>
+                <div class="self-center"> Victoria Terces</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Email</div>
+                <div class="self-center">victoria_victoria@nopCommerce.com</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Phone</div>
+                <div class="self-center">45612378</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Fax</div>
+                <div class="self-center"></div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Company</div>
+                <div class="self-center">Terces Company</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Address 1</div>
+                <div class="self-center">201 1st Avenue South</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Address 2</div>
+                <div class="self-center"></div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">City</div>
+                <div class="self-center">Saskatoon</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">County / region</div>
+                <div class="self-center"></div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">State / province</div>
+                <div class="self-center">Saskatchewan</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Zip / postal code</div>
+                <div class="self-center">S7K 1J9</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Country</div>
+                <div class="self-center">Canada</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <div class="col-span-12 font-medium opacity-0">
+                  <mat-icon svgIcon="heroicons_outline:location-marker"></mat-icon>
+                  View address on Google Maps
+                </div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b opacity-0"></div>
+
+                <div class="col-span-12 pt-6">
+                  <button mat-flat-button color="primary" (click)="editAddress()">Edit</button>
+                </div>
+              </div>
+
+              <!-- shipping details -->
+              <div class="bg-card shadow rounded-2xl p-6">
+
+                <!-- Columns -->
+                <div class="col-span-8 text-lg font-bold">Shipping address</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Full Name</div>
+                <div class="self-center"> Victoria Terces</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Email</div>
+                <div class="self-center">victoria_victoria@nopCommerce.com</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Phone</div>
+                <div class="self-center">45612378</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Fax</div>
+                <div class="self-center"></div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Company</div>
+                <div class="self-center">Terces Company</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Address 1</div>
+                <div class="self-center">201 1st Avenue South</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Address 2</div>
+                <div class="self-center"></div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">City</div>
+                <div class="self-center">Saskatoon</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">County / region</div>
+                <div class="self-center"></div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">State / province</div>
+                <div class="self-center">Saskatchewan</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Zip / postal code</div>
+                <div class="self-center">S7K 1J9</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <!-- Item -->
+                <div class="col-span-2 font-medium">Country</div>
+                <div class="self-center">Canada</div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <div class="col-span-12 font-medium flex items-center">
+                  <mat-icon class="mr-1" svgIcon="heroicons_outline:location-marker"></mat-icon>
+                  View address on Google Maps
+                </div>
+
+                <!-- Divider -->
+                <div class="col-span-12 my-4 border-b"></div>
+
+                <div class="col-span-12 pt-6">
+                  <button mat-flat-button color="primary" (click)="editAddress()">Edit</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="py-6 my-2 bg-card shadow rounded-2xl">
+              <div class="grid grid-cols-4 gap-4">
+                <div class="text-right font-semibold py-2">Shipping method:</div>
+                <div class="col-span-3">
+                  <div class="flex items-center">
+                    <ng-container *ngIf="!isShippingMethod">
+                      Ground
+                      <button class="ml-2 sm:ml-4" mat-flat-button [color]="'primary'"
+                        (click)="isShippingMethod = true">Edit
+                      </button>
+                    </ng-container>
+
+                    <ng-container *ngIf="isShippingMethod">
+                      <div class="flex flex-col w-3/6">
+                        <mat-form-field>
+                          <input matInput>
+                        </mat-form-field>
+                        <div>
+                          <button mat-flat-button [color]="'primary'"
+                            (click)="isShippingMethod = !isShippingMethod">Save
+                          </button>
+                          <button class="ml-2 bg-gray-500 text-white" mat-flat-button
+                            (click)="isShippingMethod = !isShippingMethod">Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-4 gap-4 py-2">
+                <div class="text-right font-semibold ">Shipping status:</div>
+                <div class="col-span-3">Delivered</div>
+              </div>
+            </div>
+
+            <div class="py-6 my-8 bg-card shadow rounded-2xl">
+              <div class="px-4">
+                <div class="border-b pb-2 font-bold">
+                  Shipments
+                </div>
+                <div class="w-full pt-6">
+                  <div class="my-3 overflow-x-auto">
+                    <order-shipment-list-tabular></order-shipment-list-tabular>
+                  </div>
+                  <button mat-flat-button [color]="'primary'" (click)="addShipment()">Add shipment
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Products -->
+        <mat-expansion-panel expanded>
+          <mat-expansion-panel-header class="border-t-2 border-t-primary border-b" [collapsedHeight]="'60px'"
+            [expandedHeight]="'60px'">
+            <mat-panel-title class="text-2xl font-bold flex items-center">
+              <mat-icon svgIcon="heroicons_solid:collection"></mat-icon>
+              &nbsp; Products
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <!-- details -->
+          <div class="py-3">
+            <div class="my-3 overflow-x-auto">
+              <order-product-list-tabular></order-product-list-tabular>
+            </div>
+            <button mat-flat-button [color]="'primary'" (click)="addProduct()">Add product
+            </button>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Order Notes -->
+        <mat-expansion-panel expanded>
+          <mat-expansion-panel-header class="border-t-2 border-t-primary border-b" [collapsedHeight]="'60px'"
+            [expandedHeight]="'60px'">
+            <mat-panel-title class="text-2xl font-bold flex items-center">
+              <mat-icon svgIcon="mat_solid:sticky_note_2"></mat-icon>
+              &nbsp; Order Notes
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <!-- details -->
+          <div class="py-3">
+            <div class="my-3 overflow-x-auto">
+              <order-order-note-list-tabular></order-order-note-list-tabular>
+            </div>
+
+            <!-- Add Order Note -->
+            <div class="px-4 mt-6">
+              <div class="border-b pb-2 font-bold text-lg">
+                Add Order Note
+              </div>
+              <div class="pt-5">
+                <mat-form-field class="w-full">
+                  <mat-label>Note</mat-label>
+                  <textarea rows="4" matInput></textarea>
+                </mat-form-field>
+
+                <mat-checkbox class="flex items-center h-10 min-h-10" [color]="'primary'"
+                  [(ngModel)]="newOrderNote.attachFile">
+                  Attached file (check to upload file)
+                </mat-checkbox>
+
+                <ng-container *ngIf="newOrderNote.attachFile">
+                  <mat-checkbox class="mb-4 flex items-center h-10 min-h-10 pl-6" [color]="'primary'"
+                    [(ngModel)]="newOrderNote.useDownloadUrl">
+                    Use download URL
+                  </mat-checkbox>
+
+                  <ng-container *ngIf="newOrderNote.useDownloadUrl">
+                    <mat-form-field class="w-full pl-6">
+                      <mat-label>Download URL</mat-label>
+                      <input rows="4" matInput>
+                    </mat-form-field>
+
+                  </ng-container>
+
+                  <ng-container *ngIf="!newOrderNote.useDownloadUrl">
+                    <button mat-flat-button class="bg-green-500 mat-flat-button mat-accent mat-button-base mb-2 ml-6"> Upload a file </button>
+                  </ng-container>
+                </ng-container>
+
+                <mat-checkbox class="mb-4 flex items-center h-10 min-h-10" [color]="'primary'"
+                  [(ngModel)]="newOrderNote.displayToCustome">
+                  Display to customer
+                </mat-checkbox>
+
+                <button mat-flat-button color="primary">Add order note</button>
+              </div>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+
+    </div>
+  </div>
+
+</div>
+
+
+<ng-template #partialRefund>
+
+  <div class="font-bold text-4xl tracking-tight">
+    Partial refund 
+  </div>
+
+  <div class="py-4 my-4 bg-card shadow rounded-2xl">
+    <div class="px-4 sm:px-6">
+      <div class="border-b pb-2 font-bold">
+        Partial refund for order #{{orderId}}
+      </div>
+      <mat-form-field class="w-full mt-8">
+        <mat-label>Amount to refund</mat-label>
+        <input type="number" matInput>
+        <mat-hint>Max amount is 43.5 USD</mat-hint>
+      </mat-form-field>
+      <button mat-flat-button [color]="'primary'">
+       Refund
+      </button>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,227 @@
+<div class="flex flex-col flex-auto min-w-0 overflow-auto bg-card dark:bg-transparentt">
+  <!-- Header -->
+  <div class="relative flex flex-col lg:flex-row flex-0 lg:items-center lg:justify-between py-8 px-6 md:px-8 border-b">
+    <!-- Loader -->
+    <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+      <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+    </div>
+    <!-- Title -->
+    <div class="text-4xl font-extrabold tracking-tight flex items-baseline">
+      <mat-icon class="cursor-pointer mr-2" svgIcon="heroicons_outline:chevron-left" (click)="back()"></mat-icon>
+      <ng-container *ngIf="isEdit else createTitle">
+        <div class="flex flex-col">
+          Edit user role details
+          <small><small>{{userRole.info.name}}</small></small>
+        </div>
+      </ng-container>
+      <ng-template #createTitle>Add a new user role</ng-template>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-wrap justify-center shrink-0 items-start sm:items-center mt-6 lg:mt-0 lg:ml-4">
+      <!-- Action buttons -->
+      <button class="ml-2 sm:ml-4 mb-3 lg:mb-0 min-w-50 sm:min-w-0" mat-flat-button [color]="'primary'"
+        (click)="saveAndRedirect()">
+        <mat-icon svgIcon="heroicons_outline:document"></mat-icon>
+        <span class="ml-2 mr-1">Save</span>
+      </button>
+
+      <button class="ml-2 sm:ml-4 mb-3 lg:mb-0 min-w-50 sm:min-w-0" mat-flat-button [color]="'primary'"
+        (click)="save()">
+        <mat-icon svgIcon="heroicons_outline:document"></mat-icon>
+        <span class="ml-2 mr-1">Save and Continue Edit</span>
+      </button>
+
+      <ng-container *ngIf="isEdit">
+        <button class="ml-2 sm:ml-4 mb-3 lg:mb-0 min-w-50 sm:min-w-0" mat-flat-button [color]="'warn'"
+          (click)="deleteUserRole()">
+          <mat-icon svgIcon="heroicons_outline:trash"></mat-icon>
+          <span class="ml-2 mr-1">Delete</span>
+        </button>
+      </ng-container>
+
+    </div>
+  </div>
+
+  <div class="flex flex-col overflow-auto">
+    <div class="flex flex-col py-8 px-6 md:px-8">
+      <mat-accordion multi>
+        <!-- UserRole Info -->
+        <mat-expansion-panel expanded>
+          <mat-expansion-panel-header class="border-t-2 border-t-primary border-b" [collapsedHeight]="'60px'"
+            [expandedHeight]="'60px'">
+            <mat-panel-title class="text-2xl font-bold flex items-center">
+              <mat-icon svgIcon="heroicons_outline:information-circle"></mat-icon>
+              &nbsp; User role info
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <!-- category form -->
+          <div class="py-3">
+
+            <!-- Name -->
+            <mat-form-field class="w-full">
+              <mat-label>Name</mat-label>
+              <input matInput [(ngModel)]="userRole.info.name">
+            </mat-form-field>
+
+            <!-- Active -->
+            <mat-checkbox class="flex items-center h-6 min-h-6 mb-5 font-medium" [color]="'primary'"
+              [(ngModel)]="userRole.info.active">
+              Active
+            </mat-checkbox>
+
+            <!-- Free shipping -->
+            <mat-checkbox class="flex items-center h-6 min-h-6 mb-5 font-medium" [color]="'primary'"
+              [(ngModel)]="userRole.info.freeShipping">
+              Free shipping
+            </mat-checkbox>
+
+            <!-- Tax exempt -->
+            <mat-checkbox class="flex items-center h-6 min-h-6 mb-5 font-medium" [color]="'primary'"
+              [(ngModel)]="userRole.info.taxExempt">
+              Tax exempt
+            </mat-checkbox>
+
+            <!-- Override default tax -->
+            <mat-checkbox class="flex items-center h-6 min-h-6 mb-5 font-medium" [color]="'primary'"
+              [(ngModel)]="userRole.info.defaultTax">
+              Override default tax display type
+            </mat-checkbox>
+
+            <!-- Enable password lifetime -->
+            <mat-checkbox class="flex items-center h-6 min-h-6 mb-5 font-medium" [color]="'primary'"
+              [(ngModel)]="userRole.info.lifetimePassword">
+              Enable password lifetime
+            </mat-checkbox>
+
+            <!-- Purchased with product -->
+            <div class="w-full flex items-start sm:items-center flex-col sm:flex-row mb-5">
+              <div class="font-medium mr-5">Purchased with product</div>
+              <div class="flex items-start sm:items-center flex-col-reverse sm:flex-row">
+                <button class="mr-5 mt-3 sm:mt-0" mat-flat-button [color]="'primary'" (click)="openUserRoleTable(addProduct)">
+                  <span>Choose a product</span>
+                </button>
+                <div class="flex items-center mt-3 sm:mt-0" *ngIf="selectedProduct">
+                  <span>{{selectedProduct.name}}</span>
+                  <mat-icon (click)="removeUserRoleTable()" class="icon-size-5 ml-2 cursor-pointer mat-warn"
+                    [svgIcon]="'heroicons_solid:x'">
+                  </mat-icon>
+                </div>
+              </div>
+            </div>
+
+            <!-- Is system role -->
+            <mat-form-field class="w-full">
+              <mat-label>Is system role</mat-label>
+              <input disabled matInput [(ngModel)]="userRole.info.isSystemRole">
+            </mat-form-field>
+
+            <!-- System name -->
+            <mat-form-field class="w-full">
+              <mat-label>System name</mat-label>
+              <input matInput [(ngModel)]="userRole.info.systemName">
+            </mat-form-field>
+
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Add User Role Modal -->
+<ng-template #addProduct>
+
+  <div class="font-bold text-4xl tracking-tight pb-4">
+    Choose a product
+  </div>
+
+  <!-- filter section -->
+  <mat-accordion>
+    <mat-expansion-panel class="border-2">
+      <mat-expansion-panel-header [collapsedHeight]="'50px'" [expandedHeight]="'50px'">
+        <mat-panel-title class="text-2xl font-bold flex items-center">
+          Search
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="pt-3">
+        <div class="flex flex-col sm:flex-row">
+          <mat-form-field class="w-full mx-2">
+            <mat-label>Product name</mat-label>
+            <input matInput>
+          </mat-form-field>
+          <mat-form-field class="w-full mx-2">
+            <mat-label>Product type</mat-label>
+            <mat-select>
+              <mat-option [value]="'value1'">Value 1</mat-option>
+              <mat-option [value]="'value2'">Value 2</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="flex flex-col sm:flex-row">
+          <mat-form-field class="w-full mx-2">
+            <mat-label>Category</mat-label>
+            <mat-select>
+              <mat-option [value]="'value1'">Value 1</mat-option>
+              <mat-option [value]="'value2'">Value 2</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="w-full mx-2">
+            <mat-label>Manufacturer</mat-label>
+            <mat-select>
+              <mat-option [value]="'value1'">Value 1</mat-option>
+              <mat-option [value]="'value2'">Value 2</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="flex flex-col sm:flex-row">
+          <mat-form-field class="w-full mx-2">
+            <mat-label>Vendor</mat-label>
+            <mat-select>
+              <mat-option [value]="'value1'">Value 1</mat-option>
+              <mat-option [value]="'value2'">Value 2</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="flex items-center justify-end m-2">
+          <button class="ml-4" mat-flat-button type="button" [color]="'primary'" (click)="clearSearchFilter()">Clear
+          </button>
+        </div>
+      </div>
+
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <!-- Product select table -->
+  <table mat-table [dataSource]="productDataSource" #productTableSort="matSort" matSort class="w-full">
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Select </th>
+      <td mat-cell *matCellDef="let element" class="text-primary cursor-pointer" (click)="saveProduct(element.id)">
+        Select </td>
+    </ng-container>
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Product name </th>
+      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+    </ng-container>
+    <ng-container matColumnDef="publish">
+      <th mat-header-cell *matHeaderCellDef> Published </th>
+      <td mat-cell *matCellDef="let element">
+        <mat-icon class="icon-size-5 mr-1 mat-primary" [svgIcon]="'heroicons_solid:check'">
+        </mat-icon>
+      </td>
+    </ng-container>
+    <tr class="h-14" mat-header-row *matHeaderRowDef="productDisplayedColumns"></tr>
+    <tr class="h-15" mat-row *matRowDef="let row; columns: productDisplayedColumns;">
+    </tr>
+  </table>
+  <mat-paginator #productPaginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+  </mat-paginator>
+
+</ng-template>

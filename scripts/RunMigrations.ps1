@@ -1,0 +1,1 @@
+﻿dotnet ef --startup-project "./src/Preepex.Web.Presentation.Web/Preepex.Web.Presentation.Web.csproj" --project "./src/Preepex.Infrastructure/Preepex.Infrastructure.csproj" database update --context PreepexContext

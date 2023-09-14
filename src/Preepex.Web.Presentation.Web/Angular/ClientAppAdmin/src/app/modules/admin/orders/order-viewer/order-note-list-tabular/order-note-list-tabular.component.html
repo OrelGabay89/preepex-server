@@ -1,0 +1,43 @@
+<table mat-table [dataSource]="orderNoteDataSource" matSort class="w-full">
+  <ng-container matColumnDef="createdOn">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Created on </th>
+    <td mat-cell *matCellDef="let element"> {{element.createdOn}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="note">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Note </th>
+    <td mat-cell *matCellDef="let element">
+      {{element.note}}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="attachedFiles">
+    <th mat-header-cell *matHeaderCellDef> Attached files </th>
+    <td mat-cell *matCellDef="let element">
+      No file attached
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="displayToCustomer">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Display to customer </th>
+    <td mat-cell *matCellDef="let element">
+      <mat-icon class="icon-size-5 mr-1 cursor-pointer mat-warn" [svgIcon]="'heroicons_solid:x'">
+      </mat-icon>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef> Delete </th>
+    <td mat-cell *matCellDef="let element">
+      <mat-icon class="icon-size-5 mr-1 cursor-pointer" svgIcon="heroicons_solid:trash" (click)="deleteNote()">
+      </mat-icon>
+    </td>
+  </ng-container>
+
+  <tr class="h-14" mat-header-row *matHeaderRowDef="orderNoteDisplayedColumns"></tr>
+  <tr class="h-15" mat-row *matRowDef="let row; columns: orderNoteDisplayedColumns;">
+  </tr>
+</table>
+
+<mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+</mat-paginator>

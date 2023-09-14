@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Filters\**" />
+    <EmbeddedResource Remove="Filters\**" />
+    <None Remove="Filters\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Preepex.Common\Preepex.Common.csproj" />
+    <ProjectReference Include="..\Preepex.Core.Application\Preepex.Core.Application.csproj" />
+    <ProjectReference Include="..\Preepex.Core.Domain\Preepex.Core.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

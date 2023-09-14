@@ -1,0 +1,9 @@
+﻿{
+  "name": "Preeplex.Store",
+  "entrypoint":"powershell",
+  "commands": {
+    "create-migration": ["./scripts/CreateMigration.ps1"],
+    "run-migrations": ['./scripts/RunMigrations.ps1'],
+    "delete-migration": ['./scripts/DeleteMigration.ps1']
+  }
+}

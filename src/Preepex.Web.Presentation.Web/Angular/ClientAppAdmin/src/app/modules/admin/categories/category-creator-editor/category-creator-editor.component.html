@@ -1,0 +1,475 @@
+<div class="flex flex-col flex-auto min-w-0 overflow-auto bg-card dark:bg-transparent">
+
+  <!-- <div>Back</div> -->
+
+  <!-- Header -->
+  <div class="relative flex flex-col lg:flex-row flex-0 lg:items-center lg:justify-between py-8 px-6 md:px-8 border-b">
+    <!-- Loader -->
+    <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+      <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+    </div>
+    <!-- Title -->
+    <div class="text-4xl font-extrabold tracking-tight flex items-baseline">
+      <mat-icon class="cursor-pointer mr-2" svgIcon="heroicons_outline:chevron-left" (click)="back()"></mat-icon>
+      <ng-container *ngIf="isEdit else createTitle">
+        <div class="flex flex-col">
+          Edit category details 
+          <small><small>{{category.info.name}}</small></small>
+        </div>
+      </ng-container>
+      <ng-template #createTitle>Add a new category</ng-template>
+    </div>
+    <!-- Actions -->
+    <div class="flex flex-wrap justify-center shrink-0 items-start sm:items-center mt-6 lg:mt-0 lg:ml-4">
+      <!-- Action buttons -->
+
+      <ng-container *ngIf="isEdit">
+        <button class="ml-2 sm:ml-4 mb-3 lg:mb-0 min-w-50 sm:min-w-0" mat-flat-button [color]="'accent'">
+          <mat-icon svgIcon="heroicons_outline:eye"></mat-icon>
+          <span class="ml-2 mr-1">Preview</span>
+        </button>
+      </ng-container>
+
+
+      <button class="ml-2 sm:ml-4 mb-3 lg:mb-0 min-w-50 sm:min-w-0" mat-flat-button [color]="'primary'"
+        (click)="saveAndRedirect()">
+        <mat-icon svgIcon="heroicons_outline:document"></mat-icon>
+        <span class="ml-2 mr-1">Save</span>
+      </button>
+
+      <button class="ml-2 sm:ml-4 mb-3 lg:mb-0 min-w-50 sm:min-w-0" mat-flat-button [color]="'primary'"
+        (click)="save()">
+        <mat-icon svgIcon="heroicons_outline:document"></mat-icon>
+        <span class="ml-2 mr-1">Save and Continue Edit</span>
+      </button>
+
+      <ng-container *ngIf="isEdit">
+        <button class="ml-2 sm:ml-4 mb-3 lg:mb-0 min-w-50 sm:min-w-0" mat-flat-button [color]="'warn'"
+          (click)="deleteCategory()">
+          <mat-icon svgIcon="heroicons_outline:trash"></mat-icon>
+          <span class="ml-2 mr-1">Delete</span>
+        </button>
+      </ng-container>
+
+    </div>
+  </div>
+
+  <div class="flex flex-col overflow-auto">
+    <!-- Basic/Advanced toggle -->
+    <div class="flex pt-6 px-6 md:px-8">
+      <mat-slide-toggle class="ml-4" [color]="'primary'" [(ngModel)]="category.isAdvanced">
+        Advanced
+      </mat-slide-toggle>
+    </div>
+
+    <div class="flex flex-col py-8 px-6 md:px-8">
+      <mat-accordion multi>
+        <!-- Category Info -->
+        <mat-expansion-panel expanded>
+          <mat-expansion-panel-header class="border-t-2 border-t-primary border-b" [collapsedHeight]="'60px'"
+            [expandedHeight]="'60px'">
+            <mat-panel-title class="text-2xl font-bold flex items-center">
+              <mat-icon svgIcon="heroicons_outline:information-circle"></mat-icon>
+              &nbsp; Category info
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <!-- category form -->
+          <div class="py-3">
+
+            <!-- Name -->
+            <mat-form-field class="w-full">
+              <mat-label>Name</mat-label>
+              <input matInput [(ngModel)]="category.info.name">
+            </mat-form-field>
+
+            <!-- Description -->
+            <div class="w-full">
+              <span class="mb-px font-medium leading-tight mb-1.5">Description</span>
+              <angular-editor class="mt-1.5 mb-5" id="editor1" [config]="editorConfig"
+                [(ngModel)]="category.info.description"></angular-editor>
+            </div>
+
+            <!-- Parent Category -->
+            <mat-form-field class="w-full">
+              <mat-label>Parent Category</mat-label>
+              <mat-select [(ngModel)]="category.info.parentCategory">
+                <mat-option [value]="'value1'">Value 1</mat-option>
+                <mat-option [value]="'value2'">Value 2</mat-option>
+                <mat-option [value]="'value3'">Value 3</mat-option>
+                <mat-option [value]="'value4'">Value 4</mat-option>
+                <mat-option [value]="'value5'">Value 5</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <ng-container *ngIf="category.isAdvanced">
+              <!--Upload Image -->
+              <div class="w-full flex flex-col">
+                <div class="font-medium">Picture</div>
+                <div
+                  class="upload-picture-box relative flex flex-col items-center justify-center w-full h-16 rounded-lg cursor-pointer border-2 border-gray-300 border-dashed hover:bg-hover transition-colors duration-150 ease-in-out"
+                  appDnd (fileDropped)="onFileDropped($event)">
+                  <input type="file" class="hidden" #fileDropRef id="fileDropRef" accept="image/*" multiple
+                    (change)="fileBrowseHandler($event.target.files)" />
+                  <div class="file-text absolute bottom-5 left-4 right-4 text-center">
+                    <label for="fileDropRef"><a class="font-bold cursor-pointer">Upload a file</a></label>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Display -->
+        <mat-expansion-panel expanded>
+          <mat-expansion-panel-header class="border-t-2 border-t-primary border-b" [collapsedHeight]="'60px'"
+            [expandedHeight]="'60px'">
+            <mat-panel-title class="text-2xl font-bold flex items-center">
+              <mat-icon svgIcon="heroicons_outline:desktop-computer"></mat-icon>
+              &nbsp; Display
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <!-- display form -->
+          <div class="py-3">
+
+            <ng-container *ngIf="category.isAdvanced">
+              <!-- Published -->
+              <mat-checkbox class="flex items-center h-10 min-h-10" [color]="'primary'"
+                [(ngModel)]="category.display.isPublished">
+                Published
+              </mat-checkbox>
+
+              <!-- Show on home page -->
+              <mat-checkbox class="flex items-center h-10 min-h-10" [color]="'primary'"
+                [(ngModel)]="category.display.showOnHomePage">
+                Show on home page
+              </mat-checkbox>
+
+              <!-- Include in top menu -->
+              <mat-checkbox class="flex items-center h-10 min-h-10" [color]="'primary'"
+                [(ngModel)]="category.display.includeInTopMenu">
+                Include in top menu
+              </mat-checkbox>
+
+              <!-- Allow customers to select page size -->
+              <mat-checkbox class="flex items-center h-10 min-h-10 mb-4" [color]="'primary'"
+                [(ngModel)]="category.display.allowSelectPageSize">
+                Allow customers to select page size
+              </mat-checkbox>
+
+              <!-- Page Size: show if 'Allow customers to select page size' is false -->
+              <ng-container *ngIf="!category.display.allowSelectPageSize">
+                <mat-form-field class="w-full">
+                  <mat-label>Page size</mat-label>
+                  <input type="number" matInput [(ngModel)]="category.display.pageSize">
+                </mat-form-field>
+              </ng-container>
+
+              <!-- Page size options: show if 'Allow customers to select page size' is true -->
+              <ng-container *ngIf="category.display.allowSelectPageSize">
+                <mat-form-field class="w-full pl-6">
+                  <mat-label>Page size options</mat-label>
+                  <input type="text" matInput [(ngModel)]="category.display.pageSizeOption">
+                </mat-form-field>
+              </ng-container>
+
+              <!-- Price range filtering -->
+              <mat-checkbox class="flex items-center h-10 min-h-10" [color]="'primary'"
+                [(ngModel)]="category.display.allowPriceRangeFilter">
+                Price range filtering
+              </mat-checkbox>
+
+              <ng-container *ngIf="category.display.allowPriceRangeFilter">
+                <!-- Enter price range manually -->
+                <mat-checkbox class="flex items-center h-10 min-h-10 pl-6 mb-4" [color]="'primary'"
+                  [(ngModel)]="category.display.allowManualPrice">
+                  Enter price range manually
+                </mat-checkbox>
+
+                <ng-container *ngIf="category.display.allowManualPrice">
+                  <!-- Price 'from' -->
+                  <mat-form-field class="w-full pl-12">
+                    <mat-label>Price 'from' </mat-label>
+                    <span matSuffix>USD</span>
+                    <input type="number" matInput [(ngModel)]="category.display.priceFrom">
+                  </mat-form-field>
+
+                  <!-- Price 'to' -->
+                  <mat-form-field class="w-full pl-12">
+                    <mat-label>Price 'to' </mat-label>
+                    <span matSuffix>USD</span>
+                    <input type="number" matInput [(ngModel)]="category.display.priceTo">
+                  </mat-form-field>
+                </ng-container>
+
+              </ng-container>
+            </ng-container>
+
+            <!-- Display Order -->
+            <mat-form-field class="w-full">
+              <mat-label>Display Order</mat-label>
+              <input type="number" matInput [(ngModel)]="category.display.order">
+            </mat-form-field>
+
+            <!-- Category Template -->
+            <mat-form-field class="w-full">
+              <mat-label>Category Template</mat-label>
+              <mat-select [(ngModel)]="category.display.categoryTemplate">
+                <mat-option [value]="'value1'">Value 1</mat-option>
+                <mat-option [value]="'value2'">Value 2</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </mat-expansion-panel>
+
+        <ng-container *ngIf="category.isAdvanced">
+          <!-- Mappings -->
+          <mat-expansion-panel>
+            <mat-expansion-panel-header class="border-t-2 border-t-primary border-b" [collapsedHeight]="'60px'"
+              [expandedHeight]="'60px'">
+              <mat-panel-title class="text-2xl font-bold flex items-center">
+                <mat-icon svgIcon="heroicons_outline:bookmark"></mat-icon>
+                &nbsp; Mappings
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <!-- form -->
+            <div class="py-3">
+              <!-- Discounts -->
+              <mat-form-field class="w-full">
+                <mat-label>Discounts</mat-label>
+                <input matInput>
+              </mat-form-field>
+
+              <!-- Limited to customer roles -->
+              <mat-form-field class="w-full">
+                <mat-label>Limited to customer roles</mat-label>
+                <input matInput>
+                <mat-hint>In order to use this functionality, you have to disable the following setting: Catalog
+                  settings > Ignore ACL rules.</mat-hint>
+              </mat-form-field>
+
+              <!-- Limited to stores -->
+              <mat-form-field class="w-full">
+                <mat-label>Limited to stores</mat-label>
+                <input matInput>
+                <mat-hint>In order to use this functionality, you have to disable the following setting: Catalog
+                  settings > Ignore "limit per store" rules.</mat-hint>
+              </mat-form-field>
+
+            </div>
+          </mat-expansion-panel>
+
+          <!-- SEO -->
+          <mat-expansion-panel>
+            <mat-expansion-panel-header class="border-t-2 border-t-primary border-b" [collapsedHeight]="'60px'"
+              [expandedHeight]="'60px'">
+              <mat-panel-title class="text-2xl font-bold flex items-center">
+                <mat-icon svgIcon="heroicons_outline:zoom-in"></mat-icon>
+                &nbsp; SEO
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <!-- form -->
+            <div class="py-3">
+              <!-- Search engine friendly page name -->
+              <mat-form-field class="w-full">
+                <mat-label>Search engine friendly page name</mat-label>
+                <input matInput>
+              </mat-form-field>
+
+              <!-- Meta title -->
+              <mat-form-field class="w-full">
+                <mat-label>Meta title</mat-label>
+                <input matInput>
+              </mat-form-field>
+
+              <!-- Meta keywords -->
+              <mat-form-field class="w-full">
+                <mat-label>Meta keywords</mat-label>
+                <input matInput>
+              </mat-form-field>
+
+              <!-- Meta description -->
+              <mat-form-field class="w-full">
+                <mat-label>Meta description</mat-label>
+                <textarea matInput></textarea>
+              </mat-form-field>
+
+            </div>
+          </mat-expansion-panel>
+
+          <!-- Products -->
+          <mat-expansion-panel>
+            <mat-expansion-panel-header class="border-t-2 border-t-primary border-b" [collapsedHeight]="'60px'"
+              [expandedHeight]="'60px'">
+              <mat-panel-title class="text-2xl font-bold flex items-center">
+                <mat-icon svgIcon="heroicons_outline:collection"></mat-icon>
+                &nbsp; Products
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <!-- form -->
+            <div class="py-3">
+
+              <ng-container *ngIf="!categoryId">
+                You need to save the category before you can add products for this category page.
+              </ng-container>
+
+              <ng-container *ngIf="categoryId">
+                <!-- show table -->
+                <table mat-table [dataSource]="selectedProductsDataSource" #selectedProductTableSort="matSort" matSort class="w-full">
+                  <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+                    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="featured">
+                    <th mat-header-cell *matHeaderCellDef> Featured </th>
+                    <td mat-cell *matCellDef="let element">
+                      <mat-icon class="icon-size-5 mr-1 cursor-pointer mat-primary" [svgIcon]="'heroicons_solid:check'">
+                      </mat-icon>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="order">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Display Order </th>
+                    <td mat-cell *matCellDef="let element"> {{element.order}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef> Actions </th>
+                    <td mat-cell *matCellDef="let element">
+                      <mat-icon svgIcon="heroicons_outline:trash" (click)="deleteSelectedProduct(element.id)">
+                      </mat-icon>
+                    </td>
+                  </ng-container>
+
+                  <tr class="h-14" mat-header-row *matHeaderRowDef="selectedProductsDisplayedColumns"></tr>
+                  <tr class="h-15" mat-row *matRowDef="let row; columns: selectedProductsDisplayedColumns;">
+                  </tr>
+                </table>
+                <mat-paginator #selectedProductPaginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+                </mat-paginator>
+
+
+                <button class="ml-2 sm:ml-4 mb-3 lg:mb-0 min-w-50 sm:min-w-0" mat-flat-button [color]="'primary'"
+                  (click)="openProductTable(addProduct)">
+                  <span>Add Products</span>
+                </button>
+
+              </ng-container>
+
+            </div>
+          </mat-expansion-panel>
+        </ng-container>
+      </mat-accordion>
+
+    </div>
+  </div>
+
+</div>
+
+
+<ng-template #addProduct>
+
+  <div class="font-bold text-4xl tracking-tight pb-4">
+    Add a new Product
+  </div>
+
+  <!-- filter section -->
+  <div class="pb-4">
+    <mat-accordion>
+      <mat-expansion-panel class="border">
+        <mat-expansion-panel-header [collapsedHeight]="'50px'" [expandedHeight]="'50px'">
+          <mat-panel-title class="text-xl flex items-center">
+            <mat-icon class="icon-size-5 mr-2" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>Search
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="pt-3">
+          <div class="flex flex-col sm:flex-row">
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Product name</mat-label>
+              <input matInput>
+            </mat-form-field>
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Product type</mat-label>
+              <mat-select>
+                <mat-option [value]="'value1'">Value 1</mat-option>
+                <mat-option [value]="'value2'">Value 2</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="flex flex-col sm:flex-row">
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Category</mat-label>
+              <mat-select>
+                <mat-option [value]="'value1'">Value 1</mat-option>
+                <mat-option [value]="'value2'">Value 2</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Brand</mat-label>
+              <mat-select>
+                <mat-option [value]="'value1'">Value 1</mat-option>
+                <mat-option [value]="'value2'">Value 2</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="flex flex-col sm:flex-row">
+            <mat-form-field class="w-full mx-2">
+              <mat-label>Vendor</mat-label>
+              <mat-select>
+                <mat-option [value]="'value1'">Value 1</mat-option>
+                <mat-option [value]="'value2'">Value 2</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="flex items-center justify-end m-2">
+            <button class="ml-4" mat-flat-button type="button" [color]="'primary'" (click)="clearSearchFilter()">Clear
+            </button>
+          </div>
+        </div>
+
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+
+  <table mat-table [dataSource]="productsDataSource" #productTableSort="matSort" matSort class="w-full">
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="masterToggle($event)" [checked]="isAllSelected">
+        </mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <mat-checkbox (change)="toggleSelect($event,element)" [checked]="element.isSelected">
+        </mat-checkbox>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Product name </th>
+      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+    </ng-container>
+    <ng-container matColumnDef="publish">
+      <th mat-header-cell *matHeaderCellDef> Published </th>
+      <td mat-cell *matCellDef="let element">
+        <mat-icon class="icon-size-5 mr-1 cursor-pointer mat-primary" [svgIcon]="'heroicons_solid:check'">
+        </mat-icon>
+      </td>
+    </ng-container>
+    <tr class="h-14" mat-header-row *matHeaderRowDef="productsDisplayedColumns"></tr>
+    <tr class="h-15" mat-row *matRowDef="let row; columns: productsDisplayedColumns;">
+    </tr>
+  </table>
+  <mat-paginator #prodctPaginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+  </mat-paginator>
+
+  <div class="flex justify-end">
+    <button mat-flat-button [color]="'primary'" (click)="saveProducts()">
+      <mat-icon svgIcon="heroicons_outline:document"></mat-icon>
+      <span class="ml-2 mr-1">Save</span>
+    </button>
+  </div>
+</ng-template>

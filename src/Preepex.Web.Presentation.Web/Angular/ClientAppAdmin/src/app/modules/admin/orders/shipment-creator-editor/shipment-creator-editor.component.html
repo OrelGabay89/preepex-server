@@ -1,0 +1,211 @@
+<div class="flex flex-col flex-auto min-w-0 overflow-auto bg-card dark:bg-transparent">
+
+  <!-- Header -->
+  <div class="relative flex flex-col lg:flex-row flex-0 lg:items-center lg:justify-between py-8 px-6 md:px-8 border-b">
+    <!-- Loader -->
+    <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+      <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+    </div>
+    <!-- Title -->
+    <div class="text-4xl font-extrabold tracking-tight flex items-baseline mr-1">
+      <mat-icon class="cursor-pointer mr-2" svgIcon="heroicons_outline:chevron-left" (click)="back()"></mat-icon>
+      <ng-container *ngIf="isEdit else createTitle">
+        <div class="flex flex-col">
+          View shipment details - {{orderId}}
+        </div>
+      </ng-container>
+      <ng-template #createTitle> Add a new shipment to order #{{orderId}}</ng-template>
+    </div>
+    <!-- Actions -->
+    <div class="flex flex-wrap justify-center shrink-0 items-start sm:items-center mt-6 lg:mt-0 lg:ml-4">
+      <!-- Action buttons -->
+      <ng-container *ngIf="isEdit else createActionButtons">
+
+        <button class="ml-2 sm:ml-4 mb-3 lg:mb-0 min-w-50 sm:min-w-0" mat-flat-button [color]="'primary'">
+          <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
+          <span class="ml-2 mr-1">Print packaging slip</span>
+        </button>
+
+        <button class="ml-2 sm:ml-4 mb-3 lg:mb-0 min-w-50 sm:min-w-0" mat-flat-button [color]="'warn'"
+          (click)="deleteShipment()">
+          <mat-icon svgIcon="heroicons_outline:trash"></mat-icon>
+          <span class="ml-2 mr-1">Delete</span>
+        </button>
+
+      </ng-container>
+
+      <ng-template #createActionButtons>
+        <button class="ml-2 sm:ml-4 mb-3 lg:mb-0 min-w-50 sm:min-w-0" mat-flat-button [color]="'primary'"
+          (click)="saveAndRedirect()">
+          <mat-icon svgIcon="heroicons_outline:document"></mat-icon>
+          <span class="ml-2 mr-1">Save</span>
+        </button>
+
+        <button class="ml-2 sm:ml-4 mb-3 lg:mb-0 min-w-50 sm:min-w-0" mat-flat-button [color]="'primary'"
+          (click)="save()">
+          <mat-icon svgIcon="heroicons_outline:document"></mat-icon>
+          <span class="ml-2 mr-1">Save and Continue Edit</span>
+        </button>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Shipment Details -->
+  <div class="bg-card shadow rounded-2xl my-8 p-6 md:p-8 mx-6 md:mx-8">
+    <ng-container *ngIf="isEdit">
+      <div class="grid grid-cols-4 gap-4 pt-2 pb-4">
+        <div class="text-right font-semibold ">Order #</div>
+        <div class="col-span-3 flex-wrap">{{orderId}} - View</div>
+      </div>
+    </ng-container>
+
+    <div class="grid grid-cols-4 gap-4">
+      <div class="text-right font-semibold py-2">Tracking number:</div>
+      <div class="col-span-3 flex-wrap flex items-baseline">
+        <mat-form-field class="w-2/3">
+          <input matInput>
+        </mat-form-field>
+        <button class="ml-4 mb-4" mat-flat-button [color]="'primary'" *ngIf="isEdit">Set tracking number
+        </button>
+      </div>
+    </div>
+    <div class="grid grid-cols-4 gap-4">
+      <div class="text-right font-semibold py-2">Admin comment:</div>
+      <div class="col-span-3 flex-wrap flex items-baseline">
+        <mat-form-field class="w-2/3">
+          <input matInput>
+        </mat-form-field>
+        <button class="ml-4 mb-4" mat-flat-button [color]="'primary'" *ngIf="isEdit">Set admin comment
+        </button>
+      </div>
+    </div>
+    <ng-container *ngIf="isEdit">
+      <div class="grid grid-cols-4 gap-4 py-2">
+        <div class="text-right font-semibold ">Total weight:</div>
+        <div class="col-span-3 flex-wrap">4.00 [kg(s)]</div>
+      </div>
+      <div class="grid grid-cols-4 gap-4 py-2">
+        <div class="text-right font-semibold flex pt-4 justify-end">Date ready for pickup:</div>
+        <div class="col-span-3 flex-wrap flex items-baseline pt-2">
+          <ng-container *ngIf="!isEditPickupDate else pickupDateTemplate">
+            <span>1/12/2022 4:32:09 PM</span>
+            <button class="ml-6" mat-flat-button [color]="'primary'"
+              (click)="isEditPickupDate = !isEditPickupDate">Edit</button>
+          </ng-container>
+          <ng-template #pickupDateTemplate>
+            <mat-form-field class="w-2/3">
+              <input matInput [matDatepicker]="pickupDatePicker" name="pickupDate">
+              <mat-datepicker-toggle matSuffix [for]="pickupDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #pickupDatePicker></mat-datepicker>
+              <mat-hint>Date and time should be entered in Coordinated Universal Time (UTC)</mat-hint>
+            </mat-form-field>
+            <div class="flex">
+              <button class="ml-6" mat-flat-button [color]="'primary'"
+                (click)="isEditPickupDate = !isEditPickupDate">Save</button>
+              <button class="ml-2 bg-gray-500 text-white" mat-flat-button
+                (click)="isEditPickupDate = !isEditPickupDate">Cancel</button>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+      <div class="grid grid-cols-4 gap-4 py-2">
+        <div class="text-right font-semibold flex pt-4 justify-end">Date delivered:</div>
+        <div class="col-span-3 flex-wrap flex items-baseline pt-2">
+          <ng-container *ngIf="!isEditDeliveryDate else deliveryDateTemplate">
+            <span>4/11/2022 6:35:02 PM</span>
+            <button class="ml-6" mat-flat-button [color]="'primary'"
+              (click)="isEditDeliveryDate = !isEditDeliveryDate">Edit</button>
+          </ng-container>
+          <ng-template #deliveryDateTemplate>
+            <mat-form-field class="w-2/3">
+              <input matInput [matDatepicker]="deliverDatePicker" name="deliveryDate">
+              <mat-datepicker-toggle matSuffix [for]="deliverDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #deliverDatePicker></mat-datepicker>
+              <mat-hint>Date and time should be entered in Coordinated Universal Time (UTC)</mat-hint>
+            </mat-form-field>
+            <div class="flex">
+              <button class="ml-6" mat-flat-button [color]="'primary'"
+                (click)="isEditDeliveryDate = !isEditDeliveryDate">Save</button>
+              <button class="ml-2 bg-gray-500 text-white" mat-flat-button
+                (click)="isEditDeliveryDate = !isEditDeliveryDate">Cancel</button>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="!isEdit">
+      <div class="grid grid-cols-4 gap-4 py-0">
+        <div class="text-right font-semibold pt-3">Shipped:</div>
+        <div class="col-span-3 flex-wrap pt-1">
+          <mat-checkbox class="flex items-center h-10 min-h-10 mb-2" [color]="'primary'" [(ngModel)]="shipment.shipped">
+          </mat-checkbox>
+        </div>
+      </div>
+      <ng-container *ngIf="shipment.shipped">
+        <div class="grid grid-cols-4 gap-4 py-0">
+          <div class="text-right font-semibold pt-3">Delivered:</div>
+          <div class="col-span-3 flex-wrap pt-1">
+            <mat-checkbox class="flex items-center h-10 min-h-10 mb-2" [color]="'primary'"
+              [(ngModel)]="shipment.delivered">
+            </mat-checkbox>
+          </div>
+        </div>
+
+      </ng-container>
+    </ng-container>
+  </div>
+
+  <!-- Products Table -->
+  <div class="bg-card shadow rounded-2xl mb-8 p-6 md:p-8 mx-6 md:mx-8">
+    <div class="text-lg font-medium tracking-tight leading-6 truncate"> Products shipped {{isEdit}}
+    </div>
+    <div class="overflow-x-auto my-4 sm:mt-6">
+      <table mat-table [dataSource]="shipmentsDataSource" matSort class="w-full">
+        <ng-container matColumnDef="product">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Product </th>
+          <td mat-cell *matCellDef="let element"> {{element.product}} </td>
+        </ng-container>
+        <ng-container matColumnDef="sku">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> SKU </th>
+          <td mat-cell *matCellDef="let element"> {{element.sku}} </td>
+        </ng-container>
+        <ng-container matColumnDef="warehouse">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Warehouse </th>
+          <td mat-cell *matCellDef="let element"> {{element.warehouse}} </td>
+        </ng-container>
+        <ng-container matColumnDef="weight">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Item weight </th>
+          <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
+        </ng-container>
+        <ng-container matColumnDef="dimensions">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Item dimensions </th>
+          <td mat-cell *matCellDef="let element"> {{element.dimensions}} </td>
+        </ng-container>
+        <ng-container matColumnDef="qtyOrdered">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Qty ordered </th>
+          <td mat-cell *matCellDef="let element"> {{element.qtyOrdered}} </td>
+        </ng-container>
+        <ng-container matColumnDef="qtyShipped">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Qty shipped </th>
+          <td mat-cell *matCellDef="let element"> {{element.qtyShipped}} </td>
+        </ng-container>
+        <ng-container matColumnDef="qtyToShip">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Qty to ship </th>
+          <td mat-cell *matCellDef="let element">
+            <mat-form-field class="w-22 mt-2">
+              <input type="number" matInput [value]="element.qtyToShip">
+            </mat-form-field>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="qtyReadyToPickup">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Qty ready for pickup </th>
+          <td mat-cell *matCellDef="let element"> {{element.qtyReadyToPickup}} </td>
+        </ng-container>
+
+        <tr class="h-14" mat-header-row *matHeaderRowDef="shipmentsDisplayedColumns"></tr>
+        <tr class="h-15" mat-row *matRowDef="let row; columns: shipmentsDisplayedColumns;">
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+/* ----------------------------------------------------------------------------------------------------- */
+/*  @ Import/write your custom styles here.
+/*  @ Styles from this file will override 'vendors.scss' and Fuse's base styles.
+/* ----------------------------------------------------------------------------------------------------- */
+
+.status-bg {
+    background-color: #00a65a;
+    color: #fff;
+    padding: 0.2em 0.7em 0.3em;
+    border-radius: 15px;
+
+    &.blue {
+        background-color: #00c0ef;
+    }
+    &.yellow {
+        background-color: #f39c12;
+    }
+    &.red {
+        background-color: #dc3545;
+    }
+}
+
+table {
+    td.mat-cell {
+        padding-right: 8px;
+    }
+}
+
+.opacity-0 {
+  opacity: 0;
+}
+
+angular-editor {
+    .angular-editor {
+        margin-bottom: 20px;
+        margin-top: 6px;
+
+        .angular-editor-toolbar {
+            border-radius: 6px 6px 0 0;
+            --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            border-bottom: 0;
+        }
+
+        .angular-editor-wrapper {
+            .angular-editor-textarea {
+                min-height: 100px;
+                margin-top: 0;
+                border: 1px solid rgb(203 213 225 / 1);
+                border-radius: 0 0 6px 6px;
+                --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+                box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow); 
+            }
+        }
+    }
+
+}
+
+

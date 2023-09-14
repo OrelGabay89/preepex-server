@@ -1,0 +1,33 @@
+version: '3.4'
+
+services:
+  preepex.web.host:
+    image: ${DOCKER_REGISTRY-}preepexwebhost
+    build:
+      context: .
+      dockerfile: src/Preepex.Web.Host/Dockerfile
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: secret
+      POSTGRES_USER: appuser
+    ports: 
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  redis-data:

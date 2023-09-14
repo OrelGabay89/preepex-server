@@ -1,0 +1,210 @@
+[
+  {
+    "Id": 1,
+    "Name": "Computers",
+    "CategoryTemplateId": 1,
+    "ParentCategoryId": 0,
+    "PictureId": 1,
+    "PageSize": 6,
+    "ShowOnHomepage": true,
+    "IncludeInTopMenu": true,
+    "SubjectToAcl": true,
+    "LimitedToStores": true,
+    "Published": true,
+    "Deleted": false,
+    "DisplayOrder": 1
+
+  },
+  {
+    "Id": 2,
+    "Name": "Desktops",
+    "CategoryTemplateId": 1,
+    "ParentCategoryId": 1,
+    "PictureId": 1,
+    "PageSize": 6,
+    "ShowOnHomepage": true,
+    "IncludeInTopMenu": true,
+    "SubjectToAcl": true,
+    "LimitedToStores": true,
+    "Published": true,
+    "Deleted": false,
+    "DisplayOrder": 1
+
+  },
+  {
+    "Id": 3,
+    "Name": "Notebooks",
+    "CategoryTemplateId": 1,
+    "ParentCategoryId": 1,
+    "PictureId": 1,
+    "PageSize": 6,
+    "ShowOnHomepage": true,
+    "IncludeInTopMenu": true,
+    "SubjectToAcl": true,
+    "LimitedToStores": true,
+    "Published": true,
+    "Deleted": false,
+    "DisplayOrder": 2
+
+  },
+  {
+    "Id": 4,
+    "Name": "Electronics",
+    "CategoryTemplateId": 1,
+    "ParentCategoryId": 0,
+    "PictureId": 1,
+    "PageSize": 6,
+    "ShowOnHomepage": true,
+    "IncludeInTopMenu": true,
+    "SubjectToAcl": true,
+    "LimitedToStores": true,
+    "Published": true,
+    "Deleted": false,
+    "DisplayOrder": 2
+
+  },
+  {
+    "Id": 5,
+    "Name": "Camera & photo",
+    "CategoryTemplateId": 1,
+    "ParentCategoryId": 4,
+    "PictureId": 1,
+    "PageSize": 6,
+    "ShowOnHomepage": true,
+    "IncludeInTopMenu": true,
+    "SubjectToAcl": true,
+    "LimitedToStores": true,
+    "Published": true,
+    "Deleted": false,
+    "DisplayOrder": 1
+
+  },
+  {
+    "Id": 6,
+    "Name": "Cell phones",
+    "CategoryTemplateId": 1,
+    "ParentCategoryId": 4,
+    "PictureId": 1,
+    "PageSize": 6,
+    "ShowOnHomepage": true,
+    "IncludeInTopMenu": true,
+    "SubjectToAcl": true,
+    "LimitedToStores": true,
+    "Published": true,
+    "Deleted": false,
+    "DisplayOrder": 2
+
+  },
+  {
+    "Id": 7,
+    "Name": "Apparel",
+    "CategoryTemplateId": 1,
+    "ParentCategoryId": 0,
+    "PictureId": 1,
+    "PageSize": 6,
+    "ShowOnHomepage": true,
+    "IncludeInTopMenu": true,
+    "SubjectToAcl": true,
+    "LimitedToStores": true,
+    "Published": true,
+    "Deleted": false,
+    "DisplayOrder": 3
+
+  },
+  {
+    "Id": 8,
+    "Name": "Shoes",
+    "CategoryTemplateId": 1,
+    "ParentCategoryId": 7,
+    "PictureId": 1,
+    "PageSize": 6,
+    "ShowOnHomepage": true,
+    "IncludeInTopMenu": true,
+    "SubjectToAcl": true,
+    "LimitedToStores": true,
+    "Published": true,
+    "Deleted": false,
+    "DisplayOrder": 1
+
+  },
+  {
+    "Id": 9,
+    "Name": "Clothing",
+    "CategoryTemplateId": 1,
+    "ParentCategoryId": 7,
+    "PictureId": 1,
+    "PageSize": 6,
+    "ShowOnHomepage": true,
+    "IncludeInTopMenu": true,
+    "SubjectToAcl": true,
+    "LimitedToStores": true,
+    "Published": true,
+    "Deleted": false,
+    "DisplayOrder": 2
+
+  },
+  {
+    "Id": 10,
+    "Name": "Accessories",
+    "CategoryTemplateId": 1,
+    "ParentCategoryId": 7,
+    "PictureId": 1,
+    "PageSize": 6,
+    "ShowOnHomepage": true,
+    "IncludeInTopMenu": true,
+    "SubjectToAcl": true,
+    "LimitedToStores": true,
+    "Published": true,
+    "Deleted": false,
+    "DisplayOrder": 3
+
+  },
+  {
+    "Id": 11,
+    "Name": "Books",
+    "CategoryTemplateId": 1,
+    "ParentCategoryId": 0,
+    "PictureId": 1,
+    "PageSize": 6,
+    "ShowOnHomepage": true,
+    "IncludeInTopMenu": true,
+    "SubjectToAcl": true,
+    "LimitedToStores": true,
+    "Published": true,
+    "Deleted": false,
+    "DisplayOrder": 4
+
+  },
+  {
+    "Id": 12,
+    "Name": "Jewelry",
+    "CategoryTemplateId": 1,
+    "ParentCategoryId": 0,
+    "PictureId": 1,
+    "PageSize": 6,
+    "ShowOnHomepage": true,
+    "IncludeInTopMenu": true,
+    "SubjectToAcl": true,
+    "LimitedToStores": true,
+    "Published": true,
+    "Deleted": false,
+    "DisplayOrder": 5
+
+  },
+  {
+    "Id": 13,
+    "Name": "Gift Cards",
+    "CategoryTemplateId": 1,
+    "ParentCategoryId": 0,
+    "PictureId": 1,
+    "PageSize": 6,
+    "ShowOnHomepage": true,
+    "IncludeInTopMenu": true,
+    "SubjectToAcl": true,
+    "LimitedToStores": true,
+    "Published": true,
+    "Deleted": false,
+    "DisplayOrder": 6
+
+  }
+]

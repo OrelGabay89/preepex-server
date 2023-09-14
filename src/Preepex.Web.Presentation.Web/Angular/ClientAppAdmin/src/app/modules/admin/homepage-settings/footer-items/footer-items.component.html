@@ -1,0 +1,30 @@
+<div class="w-full max-w-3xl">
+
+  <!-- Form -->
+  <form [formGroup]="footerItemsForm">
+
+    <div class="grid grid-cols-1 gap-4 w-full mt-4">
+      <!-- Footer links -->
+      <div class="flex items-center" *ngFor="let link of footerItems">
+        <mat-slide-toggle class="mr-4" [color]="'primary'" [formControlName]="link.id" #footerLink>
+        </mat-slide-toggle>
+        <div class="flex-auto leading-6 cursor-pointer" (click)="footerLink.toggle()">
+          Display "{{link.label}}"
+        </div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="my-10 border-t"></div>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end">
+      <button mat-stroked-button type="button">
+        Cancel
+      </button>
+      <button class="ml-4" mat-flat-button type="button" [color]="'primary'">Save
+      </button>
+    </div>
+  </form>
+
+</div>
