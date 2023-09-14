@@ -11,7 +11,7 @@ namespace Preepex.Infrastructure.Services
     {
         private readonly Uri _uri;
         private readonly Encoding _encoding = new UTF8Encoding();
-        const string SLACK_URL = "https://hooks.slack.com/services/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";
+        const string SLACK_URL = "https://hooks.slack.com/services/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";
 
         public SlackClientService()
         {

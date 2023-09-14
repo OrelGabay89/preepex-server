@@ -14,25 +14,15 @@ namespace Preepex.Web.Presentation.Web
         {
             var host = CreateHostBuilder(args).Build();
 
-          
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+                var env = services.GetRequiredService<IHostEnvironment>();  // Add this line
+
                 try
                 {
-                    //var context = services.GetRequiredService<ApplicationDbContext>();
-                    //await context.Database.MigrateAsync();
-                    //await StoreContextSeed.SeedAsync(context, loggerFactory);
-
-                    //var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-                    //var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
-                    //var identityContext = services.GetRequiredService<AppIdentityDbContext>();
-                    //await identityContext.Database.MigrateAsync();
-                    //await AppIdentityDbContextSeed.SeedUsersAsync(userManager, roleManager);
-
-
-
+                    // Your migration and seeding code goes here...
                 }
                 catch (Exception ex)
                 {
@@ -40,13 +30,14 @@ namespace Preepex.Web.Presentation.Web
                     logger.LogError(ex, "An error occured during migration");
                 }
 
-                var slackClient = services.GetRequiredService<ISlackClientService>();
-                slackClient.PostMessage("Application is running");
+                if (!env.IsDevelopment())  // Check if in development environment
+                {
+                    var slackClient = services.GetRequiredService<ISlackClientService>();
+                    slackClient.PostMessage("Application is running in development mode");
+                }
             }
 
             host.Run();
-
-  
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
