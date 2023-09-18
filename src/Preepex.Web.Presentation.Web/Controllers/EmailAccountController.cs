@@ -1,6 +1,4 @@
-﻿
-
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Preepex.Core.Application.Interfaces.Shared;
 using Preepex.Core.Application.Messages;
@@ -8,25 +6,23 @@ using Preepex.Core.Application.Models;
 using Preepex.Core.Domain.Entities.Messages;
 using System;
 using System.Threading.Tasks;
-using Preepex.Presentation.Framework.Controllers;
-using Preepex.Core.Application.Interfaces;
 using Preepex.Common.Exceptions;
 using Preepex.Core.Application;
+using Preepex.Presentation.Framework.Controllers;
+using Preepex.Core.Application.Interfaces;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
     [AllowAnonymous]
+    [ApiController]
+    [Route("api/[controller]")]
     public class EmailAccountController : BaseApiController
     {
-        #region Fields
 
         private readonly ILocalizationService _localizationService;
         private readonly IEmailAccountService _emailAccountService;
         private readonly IEmailSender _emailSender;
         private readonly IStoreContext _storeContext;
-        #endregion
-
-        #region Ctor
 
         public EmailAccountController(
             IEmailAccountService emailAccountService,
@@ -40,12 +36,9 @@ namespace Preepex.Web.Presentation.Web.Controllers
             _storeContext = storeContext;
         }
 
-        #endregion
-
-        #region Methods
 
         [HttpPost("add-smtp")]
-        public virtual async Task<IActionResult> Create(EmailAccountModel model, bool continueEditing)
+        public async Task<IActionResult> Create(EmailAccountModel model, bool continueEditing)
         {
             if (ModelState.IsValid)
             {
@@ -59,28 +52,22 @@ namespace Preepex.Web.Presentation.Web.Controllers
                     Id = model.Id,
                     Port = model.Port,
                     UseDefaultCredentials = model.UseDefaultCredentials,
-                    Username = model.Username,
+                    Username = model.Username
                 };
 
-                //set password manually
-                emailAccount.Password = model.Password;
                 await _emailAccountService.InsertEmailAccountAsync(emailAccount);
 
-                return continueEditing ? RedirectToAction("Edit", new { id = emailAccount.Id }) : RedirectToAction("List");
+                return Ok(new { success = true, data = emailAccount, message = "Created successfully." });
             }
-
-            //if we got this far, something failed, redisplay form
-            return Content("");
+            return BadRequest(new { success = false, message = "Error in creating the email account." });
         }
 
-
         [HttpPost("edit-smtp")]
-        public virtual async Task<IActionResult> Edit(EmailAccountModel model, bool continueEditing)
+        public async Task<IActionResult> Edit(EmailAccountModel model, bool continueEditing)
         {
-            //try to get an email account with the specified id
             var emailAccount = await _emailAccountService.GetEmailAccountByIdAsync(model.Id);
             if (emailAccount == null)
-                return RedirectToAction("List");
+                return NotFound(new { success = false, message = "Email account not found." });
 
             if (ModelState.IsValid)
             {
@@ -94,98 +81,74 @@ namespace Preepex.Web.Presentation.Web.Controllers
                     Id = model.Id,
                     Port = model.Port,
                     UseDefaultCredentials = model.UseDefaultCredentials,
-                    Username = model.Username,
+                    Username = model.Username
                 };
+
                 await _emailAccountService.UpdateEmailAccountAsync(emailAccount);
 
-                return continueEditing ? RedirectToAction("Edit", new { id = emailAccount.Id }) : RedirectToAction("List");
+                return Ok(new { success = true, data = emailAccount, message = "Updated successfully." });
             }
-
-
-            //if we got this far, something failed, redisplay form
-            return Content("");
-        }
-
-        [HttpPost("changeSmtpPassword")]
-        public virtual async Task<IActionResult> ChangePassword(EmailAccountModel model)
-        {
-           
-            //try to get an email account with the specified id
-            var emailAccount = await _emailAccountService.GetEmailAccountByIdAsync(model.Id);
-            if (emailAccount == null)
-                return RedirectToAction("List");
-
-            //do not validate model
-            emailAccount.Password = model.Password;
-            await _emailAccountService.UpdateEmailAccountAsync(emailAccount);
-
-            return RedirectToAction("Edit", new { id = emailAccount.Id });
-        }
-
-        [HttpPost]
-        [Route("sendtestemail")]
-        public virtual async Task<string> SendTestEmail(EmailAccountModel model)
-        {
-            //if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageEmailAccounts))
-            //    return AccessDeniedView();
-
-            //try to get an email account with the specified id
-            var emailAccount = await _emailAccountService.GetEmailAccountByIdAsync(model.Id);
-            if (emailAccount == null)
-                return "List";
-
-            if (!CommonHelper.IsValidEmail(model.SendTestEmailTo))
-            {
-                //_notificationService.ErrorNotification(await _localizationService.GetResourceAsync("Admin.Common.WrongEmail"));
-                return "Admin.Common.WrongEmail";
-            }
-
-            try
-            {
-                if (string.IsNullOrWhiteSpace(model.SendTestEmailTo))
-                    throw new PreepexException("Enter test email address");
-                var store = await _storeContext.GetCurrentStoreAsync();
-                var subject = store.Name + ". Testing email functionality.";
-                var body = "Email works fine.";
-                await _emailSender.SendEmailAsync(emailAccount, subject, body, emailAccount.Email, emailAccount.DisplayName, model.SendTestEmailTo, null);
-
-                //_notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Admin.Configuration.EmailAccounts.SendTestEmail.Success"));
-                return "Admin.Configuration.EmailAccounts.SendTestEmail.Success";
-            }
-            catch (Exception exc)
-            {
-                //_notificationService.ErrorNotification(exc.Message);
-                return exc.Message;
-            }
-
-            //prepare model
-            //model = await _emailAccountModelFactory.PrepareEmailAccountModelAsync(model, emailAccount, true);
-
-            //if we got this far, something failed, redisplay form
-            return "Send";
+            return BadRequest(new { success = false, message = "Error in editing the email account." });
         }
 
         [HttpPost("delete-smtp")]
         public virtual async Task<IActionResult> Delete(int id)
         {
-            //try to get an email account with the specified id
             var emailAccount = await _emailAccountService.GetEmailAccountByIdAsync(id);
             if (emailAccount == null)
-                return RedirectToAction("List");
+                return NotFound(new { success = false, message = "Email account not found." });
 
             try
             {
                 await _emailAccountService.DeleteEmailAccountAsync(emailAccount);
-                return RedirectToAction("List");
+                return Ok(new { success = true, message = "Email account deleted successfully." });
             }
             catch (Exception exception)
             {
-                //_notificationService.ErrorNotification(exc.Message);                
-                return RedirectToAction("Edit", new { id = emailAccount.Id });
+                return BadRequest(new { success = false, message = exception.Message });
             }
         }
 
-        #endregion
+        [HttpPost("changeSmtpPassword")]
+        public virtual async Task<IActionResult> ChangePassword(EmailAccountModel model)
+        {
+            var emailAccount = await _emailAccountService.GetEmailAccountByIdAsync(model.Id);
+            if (emailAccount == null)
+                return NotFound(new { success = false, message = "Email account not found." });
+
+            emailAccount.Password = model.Password;
+            await _emailAccountService.UpdateEmailAccountAsync(emailAccount);
+
+            return Ok(new { success = true, message = "Password changed successfully." });
+        }
+
+        [HttpPost("sendtestemail")]
+        public virtual async Task<IActionResult> SendTestEmail(EmailAccountModel model)
+        {
+            var emailAccount = await _emailAccountService.GetEmailAccountByIdAsync(model.Id);
+            if (emailAccount == null)
+                return NotFound(new { success = false, message = "Email account not found." });
+
+            if (!CommonHelper.IsValidEmail(model.SendTestEmailTo))
+                return BadRequest(new { success = false, message = "Invalid email address." });
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(model.SendTestEmailTo))
+                    throw new PreepexException("Enter test email address");
+
+                var store = await _storeContext.GetCurrentStoreAsync();
+                var subject = $"{store.Name}. Testing email functionality.";
+                var body = "Email works fine.";
+                await _emailSender.SendEmailAsync(emailAccount, subject, body, emailAccount.Email, emailAccount.DisplayName, model.SendTestEmailTo, null);
+
+                return Ok(new { success = true, message = "Test email sent successfully." });
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(new { success = false, message = exc.Message });
+            }
+        }
         
     }
 }
