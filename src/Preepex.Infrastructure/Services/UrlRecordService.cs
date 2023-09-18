@@ -171,34 +171,23 @@ namespace Preepex.Infrastructure.Services
 
             if (_localizationSettings.LoadAllUrlRecordsOnStartup)
             {
-                return await _staticCacheManager.GetAsync(key, async () =>
-                {
-                    //load all records (we know they are cached)
-                    var source = await GetAllUrlRecordsAsync();
-                    var urlRecords = from ur in source
-                                     where ur.EntityId == entityId &&
-                                           ur.EntityName == entityName &&
-                                           ur.LanguageId == languageId &&
-                                           ur.IsActive
-                                     orderby ur.Id descending
-                                     select ur.Slug;
-
-                    //little hack here. nulls aren't cacheable so set it to ""
-                    var slug = urlRecords.FirstOrDefault() ?? string.Empty;
-
-                    return slug;
-                });
+                await GetAllUrlRecordsAsync();
             }
 
-            var query = from ur in _urlRecordRepository.Table
-                        where ur.EntityId == entityId &&
-                              ur.EntityName == entityName &&
-                              ur.LanguageId == languageId &&
-                              ur.IsActive
-                        orderby ur.Id descending
-                        select ur.Slug;
-
-            var rezSlug = await _staticCacheManager.GetAsync(key, async () => await query.FirstOrDefaultAsync()) ?? string.Empty;
+            var rezSlug = await _staticCacheManager.GetAsync(key, () =>
+            {
+                var query = _urlRecordRepository.Table
+                    .Where(
+                        ur =>
+                            ur.EntityId == entityId &&
+                            ur.EntityName == entityName &&
+                            ur.LanguageId == languageId &&
+                            ur.IsActive
+                    )
+                    .OrderByDescending(ur => ur.Id)
+                    .Select(ur => ur.Slug);
+                return query.FirstOrDefaultAsync();
+            }) ?? string.Empty;
 
             return rezSlug;
         }
@@ -218,26 +207,33 @@ namespace Preepex.Infrastructure.Services
         public virtual async Task<IPagedList<UrlRecord>> GetAllUrlRecordsAsync(
             string slug = "", int? languageId = null, bool? isActive = null, int pageIndex = 0, int pageSize = int.MaxValue)
         {
-            var urlRecords = (await _urlRecordRepository.GetAllAsync(query =>
+
+            var categoryPictureCacheKey =
+                _staticCacheManager.PrepareKeyForDefaultCache(PreepexModelCacheDefaults.UrlRecordModelKey, slug, languageId, isActive, pageIndex, pageSize);
+
+            return await _staticCacheManager.GetAsync(categoryPictureCacheKey, async () =>
             {
-                query = query.OrderBy(ur => ur.Slug);
+                var urlRecords = (await _urlRecordRepository.GetAllAsync(query =>
+                {
+                    query = query.OrderBy(ur => ur.Slug);
 
-                return query;
-            }, cache => default)).AsQueryable();
+                    return query;
+                }, cache => default)).AsQueryable();
 
 
-            if (!string.IsNullOrWhiteSpace(slug))
-                urlRecords = urlRecords.Where(ur => ur.Slug.Contains(slug));
+                if (!string.IsNullOrWhiteSpace(slug))
+                    urlRecords = urlRecords.Where(ur => ur.Slug.Contains(slug));
 
-            if (languageId.HasValue)
-                urlRecords = urlRecords.Where(ur => ur.LanguageId == languageId);
+                if (languageId.HasValue)
+                    urlRecords = urlRecords.Where(ur => ur.LanguageId == languageId);
 
-            if (isActive.HasValue)
-                urlRecords = urlRecords.Where(ur => ur.IsActive == isActive);
+                if (isActive.HasValue)
+                    urlRecords = urlRecords.Where(ur => ur.IsActive == isActive);
 
-            var result = urlRecords.ToList();
+                var result = urlRecords.ToList();
 
-            return new PagedList<UrlRecord>(result, pageIndex, pageSize);
+                return new PagedList<UrlRecord>(result, pageIndex, pageSize);
+            });
         }
 
         public virtual async Task<UrlRecord> GetBySlugAsync(string slug)
@@ -245,33 +241,21 @@ namespace Preepex.Infrastructure.Services
             if (string.IsNullOrEmpty(slug))
                 return null;
 
-            var key = _staticCacheManager.PrepareKeyForDefaultCache(PreepexSeoDefaults.UrlRecordBySlugCacheKey, slug);
 
             if (_localizationSettings.LoadAllUrlRecordsOnStartup)
             {
-                return await _staticCacheManager.GetAsync(key, async () =>
-                {
-                    //load all records (we know they are cached)
-                    var source = await GetAllUrlRecordsAsync();
-                    var urlRecords = from ur in source
-                                     where ur.Slug.Equals(slug, StringComparison.InvariantCultureIgnoreCase)
-                                     //first, try to find an active record
-                                     orderby ur.IsActive descending, ur.Id
-                                     select ur;
-                    var urlRecordForCaching = urlRecords.FirstOrDefault();
-
-                    return urlRecordForCaching;
-                });
+                await GetAllUrlRecordsAsync();
             }
 
-            //gradual loading
-            var query = from ur in _urlRecordRepository.Table
-                        where ur.Slug == slug
-                        //first, try to find an active record
-                        orderby ur.IsActive descending, ur.Id
-                        select ur;
-
-            var urlRecord = await _staticCacheManager.GetAsync(key, async () => await query.FirstOrDefaultAsync());
+            var key = _staticCacheManager.PrepareKeyForDefaultCache(PreepexSeoDefaults.UrlRecordBySlugCacheKey, slug);
+            
+            var urlRecord = await _staticCacheManager.GetAsync(
+                key, 
+                () => _urlRecordRepository.Table
+                        .Where(ur => ur.Slug == slug)
+                        .OrderByDescending(ur => ur.IsActive)
+                        .ThenBy(ur => ur.Id).FirstOrDefaultAsync()
+            );
 
             return urlRecord;
         }

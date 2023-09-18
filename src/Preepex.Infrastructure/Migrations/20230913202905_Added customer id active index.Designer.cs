@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Preepex.Core.Domain.Entities;
 
@@ -10,9 +11,10 @@ using Preepex.Core.Domain.Entities;
 namespace Preepex.Infrastructure.Migrations
 {
     [DbContext(typeof(PreepexContext))]
-    partial class PreepexContextModelSnapshot : ModelSnapshot
+    [Migration("20230913202905_Added customer id active index")]
+    partial class Addedcustomeridactiveindex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5821,8 +5823,6 @@ namespace Preepex.Infrastructure.Migrations
 
                     b.HasIndex(new[] { "Slug" }, "IX_UrlRecord_Slug");
 
-                    b.HasIndex(new[] { "Slug", "IsActive", "Id" }, "IX_UrlRecord_Slug_IsActive_Id");
-
                     b.ToTable("urlrecord", (string)null);
 
                     MySqlEntityTypeBuilderExtensions.HasCharSet(b, "latin1");
@@ -6125,10 +6125,6 @@ namespace Preepex.Infrastructure.Migrations
                     MySqlPropertyBuilderExtensions.HasCharSet(b.Property<string>("Value"), "utf8");
 
                     b.HasKey("Id");
-
-                    b.HasIndex(new[] { "Id" }, "IX_Setting_Id");
-
-                    b.HasIndex(new[] { "Name" }, "IX_Setting_Name");
 
                     b.ToTable("setting", (string)null);
 

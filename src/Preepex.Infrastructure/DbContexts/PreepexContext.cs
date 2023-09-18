@@ -869,6 +869,8 @@ namespace Preepex.Core.Domain.Entities
 
                 entity.HasIndex(e => e.Username, "IX_Customer_Username");
 
+                entity.HasIndex(e => new { e.Id, e.Active }, "IX_Customer_Id_Active");
+
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
                 entity.Property(e => e.AdminComment)
@@ -3924,6 +3926,10 @@ namespace Preepex.Core.Domain.Entities
 
                 entity.HasCharSet("latin1")
                     .UseCollation("latin1_swedish_ci");
+                
+                entity.HasIndex(e => e.Name, "IX_Setting_Name");
+                
+                entity.HasIndex(e => e.Id, "IX_Setting_Id");
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
@@ -4459,6 +4465,8 @@ namespace Preepex.Core.Domain.Entities
                 entity.HasIndex(e => new { e.EntityId, e.EntityName, e.LanguageId, e.IsActive }, "IX_UrlRecord_EntityId_EntityName_LanguageId_IsActive");
                 
                 entity.HasIndex(e => new { e.EntityId, e.EntityName, e.LanguageId, e.IsActive, e.Id }, "IX_UrlRecord_EntityId_EntityName_LanguageId_IsActive_Id");
+                
+                entity.HasIndex(e => new {e.Slug, e.IsActive, e.Id}, "IX_UrlRecord_Slug_IsActive_Id");
 
                 entity.HasIndex(e => e.Slug, "IX_UrlRecord_Slug");
 

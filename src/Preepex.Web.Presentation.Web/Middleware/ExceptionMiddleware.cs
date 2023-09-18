@@ -7,6 +7,7 @@ using System;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Preepex.Core.Application.Interfaces.Shared;
 
 namespace Preepex.Web.Presentation.Web.Middleware
 {
@@ -15,13 +16,13 @@ namespace Preepex.Web.Presentation.Web.Middleware
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionMiddleware> _logger;
         private readonly IHostEnvironment _env;
-        private ISlackClientService _slackClient;
-        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env, ISlackClientService slackClient)
+        private IImportantMessagesLogger _importantMessagesLogger;
+        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env, IImportantMessagesLogger importantMessagesLogger)
         {
             _env = env;
             _logger = logger;
             _next = next;
-            _slackClient = slackClient;
+            _importantMessagesLogger = importantMessagesLogger;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -32,16 +33,12 @@ namespace Preepex.Web.Presentation.Web.Middleware
             }
             catch (Exception ex)
             {
-
-                _slackClient.PostMessage(ex.ToString());
-
+                _importantMessagesLogger.PostMessage("An Exception has occured while the application was running: " + ex);
                 _logger.LogError(ex, ex.Message);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-                var response = _env.IsDevelopment()
-                    ? new ApiException((int)HttpStatusCode.InternalServerError, ex.Message, ex.StackTrace.ToString())
-                    : new ApiException((int)HttpStatusCode.InternalServerError, ex.Message, ex.StackTrace.ToString());
+                var response = new ApiException((int)HttpStatusCode.InternalServerError, ex.Message, ex.StackTrace);
 
                 var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 

@@ -280,6 +280,12 @@
         /// </remarks>
         public static CacheKey WidgetModelKey => new("Preepex.pres.widget-{0}-{1}-{2}-{3}", WidgetPrefixCacheKey);
         public static string WidgetPrefixCacheKey => "Preepex.pres.widget";
+        
+        /// <summary>
+        /// Key for product model
+        /// </summary>
+        public static CacheKey UrlRecordModelKey => new("Preepex.pres.urlrecord-{0}-{1}-{2}-{3}-{4}-{5}", UrlRecordPrefixCacheKey);
+        public static string UrlRecordPrefixCacheKey => "Preepex.pres.urlrecord";
 
     }
 }

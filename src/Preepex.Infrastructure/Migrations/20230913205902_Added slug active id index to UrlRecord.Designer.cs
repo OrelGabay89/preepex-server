@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Preepex.Core.Domain.Entities;
 
@@ -10,9 +11,10 @@ using Preepex.Core.Domain.Entities;
 namespace Preepex.Infrastructure.Migrations
 {
     [DbContext(typeof(PreepexContext))]
-    partial class PreepexContextModelSnapshot : ModelSnapshot
+    [Migration("20230913205902_Added slug active id index to UrlRecord")]
+    partial class AddedslugactiveidindextoUrlRecord
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -6125,10 +6127,6 @@ namespace Preepex.Infrastructure.Migrations
                     MySqlPropertyBuilderExtensions.HasCharSet(b.Property<string>("Value"), "utf8");
 
                     b.HasKey("Id");
-
-                    b.HasIndex(new[] { "Id" }, "IX_Setting_Id");
-
-                    b.HasIndex(new[] { "Name" }, "IX_Setting_Name");
 
                     b.ToTable("setting", (string)null);
 

@@ -24,6 +24,15 @@ namespace Preepex.Infrastructure.Services.Stores
         /// {0} : entity ID
         /// {1} : entity name
         /// </remarks>
+        public static CacheKey StoreMappingNameStoreIdCacheKey => new("Preepex.storemapping.name.storeid.{0}-{1}");
+
+        /// <summary>
+        /// Gets a key for caching
+        /// </summary>
+        /// <remarks>
+        /// {0} : entity ID
+        /// {1} : entity name
+        /// </remarks>
         public static CacheKey StoreMappingsCacheKey => new("Preepex.storemapping.{0}-{1}");
 
         /// <summary>

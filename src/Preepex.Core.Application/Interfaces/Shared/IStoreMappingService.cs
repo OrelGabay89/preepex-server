@@ -58,6 +58,14 @@ namespace Preepex.Core.Application.Interfaces.Shared
         /// The task result contains the store identifiers
         /// </returns>
         Task<int[]> GetStoresIdsWithAccessAsync<TEntity>(TEntity entity) where TEntity : BaseEntity<int>, IStoreMappingSupported;
+        
+        /// <summary>
+        /// Find store identifiers with granted access (mapped to the entity)
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <returns></returns>
+        Task<bool> HasStoreAccessAsync<TEntity>(TEntity entity, int storeId) where TEntity : BaseEntity<int>, IStoreMappingSupported;
 
         /// <summary>
         /// Authorize whether entity could be accessed in the current store (mapped to this store)

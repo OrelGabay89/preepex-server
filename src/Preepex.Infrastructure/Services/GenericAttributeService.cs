@@ -93,19 +93,27 @@ namespace Nop.Services.Common
         /// </summary>
         /// <param name="entityId">Entity identifier</param>
         /// <param name="keyGroup">Key group</param>
+        /// <param name="storeId">Load a value specific for a certain store; pass null to load a value shared for all stores</param>
         /// <returns>
         /// A task that represents the asynchronous operation
         /// The task result contains the get attributes
         /// </returns>
-        public virtual async Task<IList<GenericAttribute>> GetAttributesForEntityAsync(int entityId, string keyGroup)
+        public virtual async Task<IList<GenericAttribute>> GetAttributesForEntityAsync(int entityId, string keyGroup, int? storeId = null)
         {
-            var key = _staticCacheManager.PrepareKeyForShortTermCache(PreepexCommonDefaults.GenericAttributeCacheKey, entityId, keyGroup);
+            var key = _staticCacheManager.PrepareKeyForShortTermCache(PreepexCommonDefaults.GenericAttributeCacheKey, entityId, keyGroup, storeId);
             
-            var query = from ga in _genericAttributeRepository.Table
-                where ga.EntityId == entityId &&
-                      ga.KeyGroup == keyGroup
-                select ga;
-            var attributes = await _staticCacheManager.GetAsync(key, async () => await query.ToListAsync());
+            var attributes = await _staticCacheManager.GetAsync(key, () =>
+            {
+                var query = _genericAttributeRepository.Table
+                    .Where(ga => ga.EntityId == entityId && ga.KeyGroup == keyGroup);
+
+                if (storeId != null)
+                {
+                    query = query.Where(ga => ga.StoreId == storeId);
+                }
+                
+                return query.ToListAsync();
+            });
 
             return attributes;
         }

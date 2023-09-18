@@ -1,4 +1,5 @@
-﻿using Preepex.Common;
+﻿using System;
+using Preepex.Common;
 using Preepex.Core.Application.Configuration;
 using Preepex.Core.Domain.Entities.Common;
 using System.Collections.Generic;

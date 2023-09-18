@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Preepex.Core.Application.Interfaces;
 using Preepex.Core.Application.Caching;
 
@@ -13,12 +14,16 @@ namespace Preepex.Infrastructure.Services.Customers
     {
 
         private readonly IGenericRepository<Customer> _customerRepository;
+        private readonly IGenericRepository<Customerrole> _customerRoleRepository;
         private readonly IStaticCacheManager _staticCacheManager;
-        public CustomerService(IGenericRepository<Customer> customerRepository, IGenericRepository<Customerrole> customerRoleRepository,
-                        IStaticCacheManager staticCacheManager)
-        {
+        public CustomerService(
+            IGenericRepository<Customer> customerRepository,
+            IGenericRepository<Customerrole> customerRoleRepository,
+            IStaticCacheManager staticCacheManager
+        ) {
             _customerRepository = customerRepository;
             _staticCacheManager = staticCacheManager;
+            _customerRoleRepository = customerRoleRepository;
 
         }
 
@@ -60,14 +65,21 @@ namespace Preepex.Infrastructure.Services.Customers
             if (customer == null)
                 throw new ArgumentNullException(nameof(customer));
 
-
-            var query = _customerRepository.Table.SelectMany(x => x.CustomerRole)
-                .Where(x => x.Id == customer.Id && (x.Active || showHidden))
-                .Select(x => x.Id).ToList();
-
             var key = _staticCacheManager.PrepareKeyForShortTermCache(PreepexCustomerServicesDefaults.CustomerRoleIdsCacheKey, customer, showHidden);
 
-            return await _staticCacheManager.GetAsync(key, () => query.ToArray());
+            return await _staticCacheManager.GetAsync(key, async () =>
+            {
+                var query = _customerRepository.Table.Where(x => x.Id == customer.Id);
+
+                if (showHidden == false)
+                {
+                    query = query.Where(x => x.Active);
+                }
+
+                return await query
+                    .Select(cr => cr.Id)
+                    .ToArrayAsync();
+            });
         }
 
         async Task<IList<Customer>> ICustomerService.GetAllCustomersAsync()

@@ -91,7 +91,7 @@ namespace Preepex.Web.Presentation.Web.Extensions
             services.AddScoped<ITopicService, TopicService>();
             services.AddScoped<IGenericAttributeService, GenericAttributeService>();
 
-            services.AddTransient<ISlackClientService, SlackClientService>();
+            services.AddTransient<IImportantMessagesLogger, NoopImportantMessagesLogger>();
             services.AddScoped<SlugRouteTransformer>();
 
             var appSettings = Singleton<AppSettings>.Instance ?? new AppSettings();

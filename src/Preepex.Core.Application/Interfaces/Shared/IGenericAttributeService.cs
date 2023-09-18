@@ -46,11 +46,12 @@ namespace Preepex.Core.Application.Interfaces.Shared
         /// </summary>
         /// <param name="entityId">Entity identifier</param>
         /// <param name="keyGroup">Key group</param>
+        /// <param name="storeId">Store identifier; pass null if this attribute will be available for all stores</param>
         /// <returns>
         /// A task that represents the asynchronous operation
         /// The task result contains the get attributes
         /// </returns>
-        Task<IList<GenericAttribute>> GetAttributesForEntityAsync(int entityId, string keyGroup);
+        Task<IList<GenericAttribute>> GetAttributesForEntityAsync(int entityId, string keyGroup, int? storeId = null);
 
         /// <summary>
         /// Save attribute value

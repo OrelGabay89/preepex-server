@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Preepex.Infrastructure.Services;
 using System;
 using System.Threading.Tasks;
+using Preepex.Core.Application.Interfaces.Shared;
 
 namespace Preepex.Web.Presentation.Web
 {
@@ -14,15 +15,25 @@ namespace Preepex.Web.Presentation.Web
         {
             var host = CreateHostBuilder(args).Build();
 
+          
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 var loggerFactory = services.GetRequiredService<ILoggerFactory>();
-                var env = services.GetRequiredService<IHostEnvironment>();  // Add this line
-
                 try
                 {
-                    // Your migration and seeding code goes here...
+                    //var context = services.GetRequiredService<ApplicationDbContext>();
+                    //await context.Database.MigrateAsync();
+                    //await StoreContextSeed.SeedAsync(context, loggerFactory);
+
+                    //var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                    //var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
+                    //var identityContext = services.GetRequiredService<AppIdentityDbContext>();
+                    //await identityContext.Database.MigrateAsync();
+                    //await AppIdentityDbContextSeed.SeedUsersAsync(userManager, roleManager);
+
+
+
                 }
                 catch (Exception ex)
                 {
@@ -30,14 +41,13 @@ namespace Preepex.Web.Presentation.Web
                     logger.LogError(ex, "An error occured during migration");
                 }
 
-                if (!env.IsDevelopment())  // Check if in development environment
-                {
-                    var slackClient = services.GetRequiredService<ISlackClientService>();
-                    slackClient.PostMessage("Application is running in development mode");
-                }
+                var importantMessagesLogger = services.GetRequiredService<IImportantMessagesLogger>();
+                importantMessagesLogger.PostMessage("Application is running");
             }
 
             host.Run();
+
+  
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

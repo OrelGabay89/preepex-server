@@ -37,11 +37,19 @@ namespace Preepex.Infrastructure.Services.Stores
             if (storeId == 0 || !await IsEntityMappingExistsAsync<TEntity>())
                 return query;
 
-            // Run this query first and bring the data into memory
-            var storeMappings = await _storeMappingRepository.Table
-                .Where(sm => sm.EntityName == typeof(TEntity).Name && sm.StoreId == storeId)
-                .Select(sm => sm.EntityId)
-                .ToListAsync();
+            var key = _staticCacheManager.PrepareKeyForShortTermCache(
+                PreepexStoreDefaults.StoreMappingNameStoreIdCacheKey,
+                typeof(TEntity).Name,
+                storeId
+            );
+
+            var storeMappings = await _staticCacheManager.GetAsync(
+                key,
+                () => _storeMappingRepository.Table
+                    .Where(sm => sm.EntityName == typeof(TEntity).Name && sm.StoreId == storeId)
+                    .Select(sm => sm.EntityId)
+                    .ToListAsync()
+            );
 
             // Then run the second query, again filtered by storeMappings
             return query.Where(entity => !entity.LimitedToStores || storeMappings.Contains(entity.Id));
@@ -98,6 +106,15 @@ namespace Preepex.Infrastructure.Services.Stores
             return await _staticCacheManager.GetAsync(key, () => query.ToArray());
         }
 
+        public async Task<bool> HasStoreAccessAsync<TEntity>(TEntity entity, int storeId) where TEntity : BaseEntity<int>, IStoreMappingSupported
+        {
+            var mapping = await _storeMappingRepository.Table
+                .Where(sm => sm.EntityId == entity.Id && sm.EntityName == typeof(TEntity).Name && sm.StoreId == storeId)
+                .FirstOrDefaultAsync();
+
+            return mapping != null;
+        }
+
         public Task DeleteStoreMappingAsync(Storemapping storeMapping)
         {
             throw new NotImplementedException();
@@ -127,13 +144,7 @@ namespace Preepex.Infrastructure.Services.Stores
             if (!entity.LimitedToStores)
                 return true;
 
-            foreach (var storeIdWithAccess in await GetStoresIdsWithAccessAsync(entity))
-                if (storeId == storeIdWithAccess)
-                    //yes, we have such permission
-                    return true;
-
-            //no permission found
-            return false;
+            return await HasStoreAccessAsync(entity, storeId);
         }
 
         public Task<IList<Storemapping>> GetStoreMappingsAsync<TEntity>(TEntity entity) where TEntity : BaseEntity<int>, IStoreMappingSupported
