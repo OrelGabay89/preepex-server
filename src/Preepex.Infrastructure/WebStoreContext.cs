@@ -56,7 +56,7 @@ namespace Preepex.Infrastructure
             string host = _httpContextAccessor.HttpContext?.Request.Headers[HeaderNames.Host];
 
 #if DEBUG
-            host = "bambiboo.herokuapp.com";
+            host = "preepex-server-dd086be2caf2.herokuapp.com";
 #endif
 
             var store = await _storeService.GetStoreByHostAsync(host);

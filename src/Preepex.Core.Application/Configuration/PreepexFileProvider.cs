@@ -19,9 +19,6 @@ namespace Preepex.Core.Application.Configuration
         public PreepexFileProvider(IWebHostEnvironment webHostEnvironment)
             : base(File.Exists(webHostEnvironment.ContentRootPath) ? Path.GetDirectoryName(webHostEnvironment.ContentRootPath) : webHostEnvironment.ContentRootPath)
         {
-            WebRootPath = File.Exists(webHostEnvironment.WebRootPath)
-                ? Path.GetDirectoryName(webHostEnvironment.WebRootPath)
-                : webHostEnvironment.WebRootPath;
         }
 
         #region Utilities
@@ -255,9 +252,6 @@ namespace Preepex.Core.Application.Configuration
         {
             var allPaths = new List<string>();
 
-            if (paths.Any() && !paths[0].Contains(WebRootPath, StringComparison.InvariantCulture))
-                allPaths.Add(WebRootPath);
-
             allPaths.AddRange(paths);
 
             return Combine(allPaths.ToArray());
@@ -449,8 +443,8 @@ namespace Preepex.Core.Application.Configuration
 
             if (!IsDirectory(path) && FileExists(path))
                 path = new FileInfo(path).DirectoryName;
-
-            path = path?.Replace(WebRootPath, string.Empty).Replace('\\', '/').Trim('/').TrimStart('~', '/');
+            
+            path = path.Replace('\\', '/').Trim('/').TrimStart('~', '/');
 
             return $"~/{path ?? string.Empty}";
         }
@@ -571,8 +565,6 @@ namespace Preepex.Core.Application.Configuration
         }
 
         #endregion
-
-        protected string WebRootPath { get; }
 
     }
 }
