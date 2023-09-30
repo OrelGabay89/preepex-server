@@ -42,7 +42,7 @@ namespace Preepex.Web.Presentation.Web.Extensions
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");
-                c.RoutePrefix = "api/swagger";
+                c.RoutePrefix = "swagger";
             });
 
             return app;

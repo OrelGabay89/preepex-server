@@ -93,33 +93,37 @@ namespace Preepex.Web.Presentation.Web
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
 
-            // Redirect to Swagger URL when the server starts
-            app.Use(async (context, next) =>
+            if (env.IsDevelopment())
             {
-                if (context.Request.Path == "/")
-                {
-                    context.Response.Redirect("/api/swagger"); // Redirect to the Swagger endpoint
-                    return;
-                }
-
-                await next();
-            });
-
-            if (!env.IsDevelopment())
-            {
+                app.UseSwaggerDocumention();
+                
                 app.UseDeveloperExceptionPage();
-                //app.UseSpaStaticFiles();
+
+                // Redirect to Swagger URL when the server starts
+                app.Use(async (context, next) =>
+                {
+                    if (context.Request.Path == "/")
+                    {
+                        context.Response.Redirect("swagger"); // Redirect to the Swagger endpoint
+                        return;
+                    }
+
+                    await next();
+                });
+            }
+            else
+            {
+                app.UseHttpsRedirection();
             }
 
             app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
-
-            app.UseHttpsRedirection();
-
+            
             app.UseRouting();
 
             app.UseStaticFiles();
+            
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
@@ -127,10 +131,7 @@ namespace Preepex.Web.Presentation.Web
                 ),
                 RequestPath = "/content"
             });
-
-
-            //app.UseMustChangePassword();
-
+            
 
             //// global cors policy
             ///// UseCors must be called before UseResponseCaching
@@ -144,10 +145,6 @@ namespace Preepex.Web.Presentation.Web
                 .AllowCredentials()); // allow credentials
 
             app.UseResponseCaching();
-
-            app.UseSwaggerDocumention();
-
-
 
             app.UseMvc(routes =>
             {
@@ -180,24 +177,10 @@ namespace Preepex.Web.Presentation.Web
                 });
             }
 
-
-
-            //app.UseSpa(spa =>
-            //{
-            //    spa.Options.SourcePath = _clientAppStoreDist;
-            //    spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
-            //    {
-            //        FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), _clientAppStoreDist))
-            //    };
-            //    spa.Options.DefaultPage = "/index.html";
-            //});
-
-
-
             app.UseAuthentication();
+            
             app.UseAuthorization();
-
-
+            
             //generic routes
             var genericPattern = "/{SeName}";
 

@@ -443,8 +443,8 @@ namespace Preepex.Core.Application.Configuration
 
             if (!IsDirectory(path) && FileExists(path))
                 path = new FileInfo(path).DirectoryName;
-            
-            path = path.Replace('\\', '/').Trim('/').TrimStart('~', '/');
+
+            path = path?.Replace(WebRootPath, string.Empty).Replace('\\', '/').Trim('/').TrimStart('~', '/');
 
             return $"~/{path ?? string.Empty}";
         }
@@ -565,6 +565,8 @@ namespace Preepex.Core.Application.Configuration
         }
 
         #endregion
+
+        protected string WebRootPath { get; }
 
     }
 }
