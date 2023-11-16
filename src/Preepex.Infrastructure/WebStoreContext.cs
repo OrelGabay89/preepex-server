@@ -7,6 +7,7 @@ using Preepex.Core.Domain.Entities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Preepex.Infrastructure
 {/// <summary>
@@ -19,7 +20,7 @@ namespace Preepex.Infrastructure
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IStoreRepository _storeRepository;
         private readonly IStoreService _storeService;
-
+        private readonly ILogger<WebStoreContext> _logger;
         private Store _cachedStore;
         private int? _cachedActiveStoreScopeConfiguration;
 
@@ -34,12 +35,16 @@ namespace Preepex.Infrastructure
         /// <param name="storeService">Store service</param>
         public WebStoreContext(IHttpContextAccessor httpContextAccessor,
             IStoreRepository storeRepository,
-            IStoreService storeService)
+            IStoreService storeService,
+            ILogger<WebStoreContext> logger
+
+        )
         {
             //_genericAttributeService = genericAttributeService;
             _httpContextAccessor = httpContextAccessor;
             _storeRepository = storeRepository;
             _storeService = storeService;
+            _logger = logger;
         }
 
 
@@ -54,9 +59,11 @@ namespace Preepex.Infrastructure
                 return _cachedStore;
 
             string host = _httpContextAccessor.HttpContext?.Request.Headers[HeaderNames.Host];
+            string referer = _httpContextAccessor.HttpContext?.Request.Headers[HeaderNames.Referer];
+            _logger.LogDebug($"Searching for host {host} in store and referer {referer}");
 
 #if DEBUG
-            host = "preepex-server-dd086be2caf2.herokuapp.com";
+            host = "jojoashdod-7f8aaf4d7919.herokuapp.com";
 #endif
 
             var store = await _storeService.GetStoreByHostAsync(host);
