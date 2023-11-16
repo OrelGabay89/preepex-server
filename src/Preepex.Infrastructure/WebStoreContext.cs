@@ -8,6 +8,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace Preepex.Infrastructure
 {/// <summary>
@@ -60,7 +61,7 @@ namespace Preepex.Infrastructure
 
             string host = _httpContextAccessor.HttpContext?.Request.Headers[HeaderNames.Host];
             string referer = _httpContextAccessor.HttpContext?.Request.Headers[HeaderNames.Referer];
-            _logger.LogDebug($"Searching for host {host} in store and referer {referer}");
+            Debug.WriteLine($"Searching for host {host} in store and referer {referer}");
 
 #if DEBUG
             host = "jojoashdod-7f8aaf4d7919.herokuapp.com";
