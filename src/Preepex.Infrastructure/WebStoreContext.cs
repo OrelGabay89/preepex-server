@@ -62,16 +62,13 @@ namespace Preepex.Infrastructure
                 return _cachedStore;
             }
 
-            string host = _httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Host];
-            string referer = _httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Referer];
-            string preepexHost = _httpContextAccessor.HttpContext.Request.Headers["Preepex-Host"];
-            Console.WriteLine($"Searching for host [preepexHost:{preepexHost}] in store with host [host:{host}] and referer [referer: {referer}] ");
+            string storeIdentifier = _httpContextAccessor.HttpContext.Request.Headers["Preepex-Store"];
 
 #if DEBUG
-            preepexHost = "jojoashdod-7f8aaf4d7919.herokuapp.com";
+            storeIdentifier = "bambiboo";
 #endif
 
-            var store = await _storeService.GetStoreByHostAsync(preepexHost);
+            var store = await _storeService.GetStoreByHostAsync(storeIdentifier);
 
             if (store != null) {
                 _cachedStore = store;
