@@ -57,7 +57,10 @@ namespace Preepex.Infrastructure
         public virtual async Task<Store> GetCurrentStoreAsync()
         {
             if (_cachedStore != null)
+            {
+                Console.WriteLine($"Using store {_cachedStore.Name}");
                 return _cachedStore;
+            }
 
             string host = _httpContextAccessor.HttpContext?.Request.Headers[HeaderNames.Host];
             string referer = _httpContextAccessor.HttpContext?.Request.Headers[HeaderNames.Referer];
@@ -69,7 +72,12 @@ namespace Preepex.Infrastructure
 
             var store = await _storeService.GetStoreByHostAsync(host);
 
-            _cachedStore = store ?? throw new Exception("No store could be loaded");
+            if (store != null) {
+                _cachedStore = store;
+                Console.WriteLine($"Using store {_cachedStore.Name}");
+            } else {
+                throw new Exception("No store could be loaded");
+            }
 
             return _cachedStore;
         }

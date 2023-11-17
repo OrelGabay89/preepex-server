@@ -173,11 +173,11 @@ namespace Preepex.Infrastructure.Services
             return queryFilter.ToArray();
         }
 
-        public Task<Store> GetStoreByHostAsync(string host)
+        public Task<Store?> GetStoreByHostAsync(string host)
         {
             return _storeRepository.Table
                 .Where(s => s.Hosts.ToLower().Contains(host))
-                .FirstOrDefaultAsync();
+                .FirstAsync();
         }
 
         #endregion

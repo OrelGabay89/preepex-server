@@ -1,4 +1,5 @@
 ﻿using Preepex.Core.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -64,6 +65,6 @@ namespace Preepex.Core.Application.Interfaces.Shared
         /// </returns>
         Task<string[]> GetNotExistingStoresAsync(string[] storeIdsNames);
 
-        Task<Store> GetStoreByHostAsync(string host);
+        Task<Store?> GetStoreByHostAsync(string host);
     }
 }
