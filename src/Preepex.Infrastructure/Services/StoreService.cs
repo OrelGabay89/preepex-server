@@ -175,6 +175,7 @@ namespace Preepex.Infrastructure.Services
 
         public Task<Store?> GetStoreByHostAsync(string host)
         {
+            Console.WriteLine($"##[DEBUG]##: searching for {host} in the store repository");
             return _storeRepository.Table
                 .Where(s => s.Hosts.ToLower().Contains(host))
                 .FirstAsync();
