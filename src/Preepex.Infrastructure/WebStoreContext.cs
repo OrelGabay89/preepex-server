@@ -61,7 +61,7 @@ namespace Preepex.Infrastructure
 
             string host = _httpContextAccessor.HttpContext?.Request.Headers[HeaderNames.Host];
             string referer = _httpContextAccessor.HttpContext?.Request.Headers[HeaderNames.Referer];
-            Debug.WriteLine($"Searching for host {host} in store and referer {referer}");
+            Console.WriteLine($"Searching for host {host} in store and referer {referer}");
 
 #if DEBUG
             host = "jojoashdod-7f8aaf4d7919.herokuapp.com";
