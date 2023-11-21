@@ -116,18 +116,13 @@ namespace Preepex.Web.Presentation.Web
             if (!env.IsDevelopment())
             {
                 app.UseHttpsRedirection();
-
-                // Optional: Add any Production specific configurations here
             }
 
             app.UseMiddleware<ExceptionMiddleware>();
-
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
-            
-            app.UseRouting();
 
-            app.UseStaticFiles();
-            
+            app.UseStaticFiles(); // Use static files before routing
+
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
@@ -135,18 +130,17 @@ namespace Preepex.Web.Presentation.Web
                 ),
                 RequestPath = "/content"
             });
-            
-
-            //// global cors policy
-            ///// UseCors must be called before UseResponseCaching
-
-            //app.UseCors(_defaultCorsPolicyName);
 
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials()); // allow credentials
+
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseResponseCaching();
 
@@ -155,9 +149,9 @@ namespace Preepex.Web.Presentation.Web
                 routes.MapRoute(
                     name: "default",
                     template: "{controller}/{action=Index}/{id?}");
-
             });
 
+            // Configure the SPA for adminapp
             string adminAppPath = Path.Combine(Directory.GetCurrentDirectory(), _clientAppAdminDist);
 
             if (Directory.Exists(adminAppPath))
@@ -180,11 +174,6 @@ namespace Preepex.Web.Presentation.Web
                     });
                 });
             }
-
-            app.UseAuthentication();
-            
-            app.UseAuthorization();
-            
             //generic routes
             var genericPattern = "/{SeName}";
 
