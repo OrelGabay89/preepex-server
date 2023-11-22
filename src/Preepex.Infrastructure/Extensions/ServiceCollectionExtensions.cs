@@ -195,7 +195,7 @@ namespace Preepex.Infrastructure.Extensions
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     options =>
                     {
-                        if (configuration['USE_NON_SECURE_COOKIES'] == "true")
+                        if (configuration["USE_NON_SECURE_COOKIES"] == "true")
                         {
                             options.Cookie.HttpOnly = false;
                             options.Cookie.SecurePolicy = CookieSecurePolicy.None;
