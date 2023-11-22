@@ -32,6 +32,8 @@ namespace Preepex.Web.Presentation.Web
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddInfrastructure(_config);
+
             services.AddControllers(options =>
             {
                 options.CacheProfiles.Add("Default30",
@@ -49,8 +51,6 @@ namespace Preepex.Web.Presentation.Web
 
             ////CACHING
             services.AddResponseCaching();
-
-            services.AddInfrastructure(_config);
 
             services.AddApplicationLayer();
 
@@ -122,6 +122,10 @@ namespace Preepex.Web.Presentation.Web
             
             app.UseRouting();
 
+            app.UseAuthentication();
+            
+            app.UseAuthorization();
+
             app.UseStaticFiles();
             
             app.UseStaticFiles(new StaticFileOptions
@@ -131,7 +135,11 @@ namespace Preepex.Web.Presentation.Web
                 ),
                 RequestPath = "/content"
             });
-            
+
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None
+            });
 
             //// global cors policy
             ///// UseCors must be called before UseResponseCaching
@@ -176,10 +184,6 @@ namespace Preepex.Web.Presentation.Web
                     });
                 });
             }
-
-            app.UseAuthentication();
-            
-            app.UseAuthorization();
             
             //generic routes
             var genericPattern = "/{SeName}";

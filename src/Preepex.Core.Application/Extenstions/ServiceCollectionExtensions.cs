@@ -17,8 +17,8 @@ namespace Preepex.Core.Application.Extenstions
             //    config.AddProfile<MappingProfiles>();
             //});
 
-            services.AddAuthorizationCore();
-            services.AddAuthorizationPolicies();
+            //services.AddAuthorizationCore();
+            //services.AddAuthorizationPolicies();
         }
 
         private static void AddAuthorizationPolicies(this IServiceCollection services)

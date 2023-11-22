@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +14,7 @@ using OrigOrder = Preepex.Core.Domain.Entities.OrderAggregate.OrigOrder;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [Route("api/payments")]
 
     public class PaymentsController : BaseApiController

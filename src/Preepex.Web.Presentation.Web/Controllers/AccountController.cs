@@ -12,6 +12,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Preepex.Presentation.Framework.Controllers;
 using Preepex.Core.Application.Messages;
+using Microsoft.AspNetCore.Http;
+using System;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
@@ -44,7 +50,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
 
         #region methods
 
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpGet]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
@@ -53,7 +59,6 @@ namespace Preepex.Web.Presentation.Web.Controllers
             return new UserDto
             {
                 Email = user.Email,
-                Token = await _tokenService.CreateToken(user),
                 DisplayName = user.DisplayName
             };
         }
@@ -64,7 +69,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
             return await _userManager.FindByEmailAsync(email) != null;
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpGet("get-address")]
         public async Task<ActionResult<AddressDto>> GetUserAddress()
         {
@@ -73,7 +78,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
             return _mapper.Map<Address, AddressDto>(user.Address);
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpPut("update-address")]
         public async Task<ActionResult<AddressDto>> UpdateUserAddress(AddressDto address)
         {
@@ -89,7 +94,6 @@ namespace Preepex.Web.Presentation.Web.Controllers
         }
 
         [HttpPost("login")]
-
         public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
@@ -100,10 +104,11 @@ namespace Preepex.Web.Presentation.Web.Controllers
 
             if (!result.Succeeded) return Unauthorized(new ApiResponse(401));
 
+            await SetAuthenticatedCookie(user);
+
             return new UserDto
             {
                 Email = user.Email,
-                Token = await _tokenService.CreateToken(user),
                 DisplayName = user.DisplayName
             };
         }
@@ -131,10 +136,11 @@ namespace Preepex.Web.Presentation.Web.Controllers
 
             if (!roleAddResult.Succeeded) return BadRequest("Failed to add to role");
 
+            await SetAuthenticatedCookie(user);
+
             return new UserDto
             {
                 DisplayName = user.DisplayName,
-                Token = await _tokenService.CreateToken(user),
                 Email = user.Email
             };
         }
@@ -143,37 +149,39 @@ namespace Preepex.Web.Presentation.Web.Controllers
         public async Task<ActionResult<UserDto>> ExternalLogin(SocialUserDto socialUserDto)
         {
             var user = await _userManager.FindByEmailAsync(socialUserDto.Email);
-            if (user == null)
-            {
-                user = new ApplicationUser
-                {
-                    DisplayName = socialUserDto.Name,
-                    Email = socialUserDto.Email,
-                    UserName = socialUserDto.Email
-                };
 
-                var result = await _userManager.CreateAsync(user, _passwordGeneratorService.GenerateRandomPassword());
-
-                if (result.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(user, "Member");
-                }
-                return new UserDto
-                {
-                    DisplayName = user.DisplayName,
-                    Token = await _tokenService.CreateToken(user),
-                    Email = user.Email
-                };
-            }
-            else
+            if (user != null)
             {
+                await SetAuthenticatedCookie(user);
+
                 return new UserDto
                 {
                     Email = user.Email,
-                    Token = await _tokenService.CreateToken(user),
                     DisplayName = user.DisplayName
                 };
             }
+
+            user = new ApplicationUser
+            {
+                DisplayName = socialUserDto.Name,
+                Email = socialUserDto.Email,
+                UserName = socialUserDto.Email
+            };
+
+            var result = await _userManager.CreateAsync(user, _passwordGeneratorService.GenerateRandomPassword());
+
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "Member");
+            }
+
+            await SetAuthenticatedCookie(user);
+
+            return new UserDto
+            {
+                DisplayName = user.DisplayName,
+                Email = user.Email
+            };
         }
 
         [HttpGet("forgot-password")]
@@ -220,7 +228,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
             }
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpGet("user-account-info")]
         public async Task<UserAccountInformationDto> GetCurrentUserAccountInformation()
         {
@@ -235,7 +243,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
                 AddressDto = _mapper.Map<Address, AddressDto>(user.Address)
             };
         }
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpPut("user-account-info")]
         public async Task<ActionResult<UserAccountInformationDto>> UpdateCurrentAccountInformation([FromBody] UserAccountInformationDto model)
         {
@@ -292,6 +300,26 @@ namespace Preepex.Web.Presentation.Web.Controllers
         }
 
         #endregion
+
+        private async Task SetAuthenticatedCookie(ApplicationUser user)
+        {
+
+            var claims = new List<Claim> 
+            {
+                new Claim(ClaimTypes.Name, user.Email),
+                new Claim("DisplayName", user.DisplayName),
+            };
+
+            var claimsIdentity = new ClaimsIdentity(
+                claims,
+                CookieAuthenticationDefaults.AuthenticationScheme
+            );
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity)
+            );
+        }
 
         //[HttpGet]
         //public ActionResult<IEnumerable<LocalizedString>> GetAllCulturedLocalizedString()

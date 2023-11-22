@@ -9,10 +9,11 @@ using Preepex.Presentation.Framework.Extensions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Preepex.Presentation.Framework.Controllers;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [Route("api/orders")]
 
     public class OrdersController : BaseApiController

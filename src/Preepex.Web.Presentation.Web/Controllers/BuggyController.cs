@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Preepex.Core.Application.Errors;
@@ -15,7 +16,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
         }
 
         [HttpGet("testauth")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize()]
         public ActionResult<string> GetSecretText()
         {
             return "secret stuff";

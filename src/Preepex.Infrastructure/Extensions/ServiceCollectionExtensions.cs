@@ -1,6 +1,8 @@
 ﻿
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -30,8 +32,11 @@ using Preepex.Infrastructure.Services;
 using Preepex.Infrastructure.Services.DbInitializer;
 using Preepex.Infrastructure.Services.Shared;
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Preepex.Infrastructure.Extensions
 {
@@ -39,12 +44,12 @@ namespace Preepex.Infrastructure.Extensions
     {
         public static void AddInfrastructureLayer(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddIdentity(configuration);
             services.AddDatabasePersistence(configuration);
             services.AddAppServices();
 
             services.AddFactories();
             services.AddRepositories();
-            services.AddIdentity(configuration);
             services.AddAutoMapper(typeof(MappingProfiles));
         }
 
@@ -182,6 +187,21 @@ namespace Preepex.Infrastructure.Extensions
 
         public static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration)
         {
+
+            // ===== Jwt Configuration ===== 
+            services
+                .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    options =>
+                    {
+                        options.Cookie.Name = "JwtToken";
+                        options.Cookie.HttpOnly = true;
+                        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                        options.Cookie.SameSite = SameSiteMode.Strict;
+                    });
+
+
             var builder = services.AddIdentityCore<ApplicationUser>();
 
             builder = new IdentityBuilder(builder.UserType, typeof(ApplicationRole), builder.Services);
@@ -190,28 +210,6 @@ namespace Preepex.Infrastructure.Extensions
             builder.AddSignInManager<SignInManager<ApplicationUser>>();
             builder.AddRoleValidator<RoleValidator<ApplicationRole>>();
             builder.AddRoleManager<RoleManager<ApplicationRole>>();
-
-            // ===== Jwt Configuration ===== 
-            services.AddAuthentication(auth =>
-            {
-                auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.SaveToken = true;
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = configuration["Token:Issuer"],
-                    ValidAudience = configuration["Token:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Token:Key"])),
-                };
-            });
-
 
             return services;
         }

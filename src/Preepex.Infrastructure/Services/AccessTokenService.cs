@@ -80,7 +80,6 @@ namespace Preepex.Infrastructure.Services
                 {
                     tokenValidRes.IsValidToken = true;
                     tokenValidRes.Email = jwtToken.Claims.FirstOrDefault(x => x.Type == "email").Value;
-                    tokenValidRes.Token = token;
                     tokenValidRes.DisplayName = jwtToken.Claims.FirstOrDefault(x => x.Type == "given_name").Value;
                 }
 
