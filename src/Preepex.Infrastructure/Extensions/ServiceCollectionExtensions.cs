@@ -195,18 +195,9 @@ namespace Preepex.Infrastructure.Extensions
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     options =>
                     {
-                        if (configuration["USE_NON_SECURE_COOKIES"] == "true")
-                        {
-                            options.Cookie.HttpOnly = false;
-                            options.Cookie.SecurePolicy = CookieSecurePolicy.None;
-                            options.Cookie.SameSite = SameSiteMode.None;
-                        } else
-                        {
-                            options.Cookie.HttpOnly = true;
-                            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                            options.Cookie.SameSite = SameSiteMode.Strict;
-
-                        }
+                        options.Cookie.HttpOnly = true;
+                        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                        options.Cookie.SameSite = SameSiteMode.Strict;
                         options.Cookie.Name = "JwtToken";
                     });
 
