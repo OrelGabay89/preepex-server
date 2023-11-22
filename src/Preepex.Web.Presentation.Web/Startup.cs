@@ -92,32 +92,33 @@ namespace Preepex.Web.Presentation.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Common Swagger configuration for both Development and Production
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             if (env.IsDevelopment())
             {
-                app.UseSwaggerDocumention();
-                
                 app.UseDeveloperExceptionPage();
-
-                // Redirect to Swagger URL when the server starts
-                app.Use(async (context, next) =>
-                {
-                    if (context.Request.Path == "/")
-                    {
-                        context.Response.Redirect("swagger"); // Redirect to the Swagger endpoint
-                        return;
-                    }
-
-                    await next();
-                });
             }
-            else
+
+            // Redirect to Swagger URL when the server starts in both Development and Production
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Path == "/")
+                {
+                    context.Response.Redirect("swagger");
+                    return;
+                }
+
+                await next();
+            });
+
+            if (!env.IsDevelopment())
             {
                 app.UseHttpsRedirection();
             }
 
             app.UseMiddleware<ExceptionMiddleware>();
-
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
             
             app.UseRouting();
@@ -152,6 +153,11 @@ namespace Preepex.Web.Presentation.Web
                 .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials()); // allow credentials
 
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseResponseCaching();
 
             app.UseMvc(routes =>
@@ -159,9 +165,9 @@ namespace Preepex.Web.Presentation.Web
                 routes.MapRoute(
                     name: "default",
                     template: "{controller}/{action=Index}/{id?}");
-
             });
 
+            // Configure the SPA for adminapp
             string adminAppPath = Path.Combine(Directory.GetCurrentDirectory(), _clientAppAdminDist);
 
             if (Directory.Exists(adminAppPath))
@@ -184,7 +190,6 @@ namespace Preepex.Web.Presentation.Web
                     });
                 });
             }
-            
             //generic routes
             var genericPattern = "/{SeName}";
 

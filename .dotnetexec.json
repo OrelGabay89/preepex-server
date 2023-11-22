@@ -1,5 +1,5 @@
 ﻿{
-  "name": "Preeplex.Store",
+  "name": "Preepex.Store",
   "entrypoint":"powershell",
   "commands": {
     "create-migration": ["./scripts/CreateMigration.ps1"],
