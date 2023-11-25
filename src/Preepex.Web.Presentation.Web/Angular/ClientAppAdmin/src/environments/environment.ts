@@ -4,7 +4,7 @@
 
 export const environment = {
     production: false,
-    apiUrl: 'https://preepex-store.herokuapp.com/api/'
+    apiUrl: 'https://bambiboo.herokuapp.com/api/'
 };
 
 /*
