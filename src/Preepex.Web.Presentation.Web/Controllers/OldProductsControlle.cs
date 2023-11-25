@@ -21,6 +21,7 @@ using Preepex.Core.Domain.Entities.ApplicationEntities;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
+    [AllowAnonymous]
     [Route("api/productsv1")]
     public class OldProductsControlle : BaseApiController
     {

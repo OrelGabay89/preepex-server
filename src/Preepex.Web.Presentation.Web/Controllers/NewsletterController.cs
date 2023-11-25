@@ -5,9 +5,11 @@ using System;
 using Preepex.Core.Application.Interfaces;
 using Preepex.Core.Application.Interfaces.Shared;
 using Preepex.Core.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
+    [AllowAnonymous]
     [Route("api/newsletter")]
     [ApiController]
     public class NewsletterController : ControllerBase

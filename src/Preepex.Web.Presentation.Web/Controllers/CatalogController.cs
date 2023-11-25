@@ -13,10 +13,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Preepex.Core.Application.Attributes;
 using Preepex.Core.Application.Dtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
-    //[Route("api/catalog")]
+    [AllowAnonymous]
     [ApiController]
     [Route("api/[controller]")]
     public class CatalogController : BasePublicController

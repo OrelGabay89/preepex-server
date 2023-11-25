@@ -7,6 +7,7 @@ using Preepex.Presentation.Framework.Controllers;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
+    [AllowAnonymous]
     public class BuggyController : BaseApiController
     {
         private readonly ApplicationDbContext _context;

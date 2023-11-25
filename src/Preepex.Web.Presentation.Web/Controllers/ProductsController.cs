@@ -14,9 +14,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Preepex.Common.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
+    [AllowAnonymous]
     [Route("api/products")]
     [AutoValidateAntiforgeryToken]
     public class ProductsController : BaseApiController

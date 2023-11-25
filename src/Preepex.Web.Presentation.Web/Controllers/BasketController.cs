@@ -6,9 +6,11 @@ using Preepex.Presentation.Framework.Controllers;
 using Preepex.Core.Application.Interfaces.Shared;
 using Preepex.Core.Application.Interfaces;
 using Preepex.Core.Domain.Entities.ApplicationEntities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
+    [AllowAnonymous]
     [Route("api/basket")]
     public class BasketController : BaseApiController
     {

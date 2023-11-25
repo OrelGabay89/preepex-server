@@ -9,9 +9,11 @@ using Preepex.Core.Application.Interfaces.Factories;
 using Preepex.Core.Application.Models;
 using Microsoft.AspNetCore.Http;
 using Preepex.Core.Application.Attributes;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
+    [AllowAnonymous]
     [Route("api/categories")]
     //[AutoValidateAntiforgeryToken]
     public class CategoriesController : BaseApiController

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Preepex.Core.Domain.Entities;
 using Preepex.Presentation.Framework.Controllers;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Linq;
 namespace Preepex.Web.Presentation.Web.Controllers
 {
     // Controllers/SubscribersController.cs
+    [AllowAnonymous]
     [ApiController]
     [Route("api/subscribers")]
     public class SubscribersController : BaseApiController

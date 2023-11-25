@@ -21,6 +21,7 @@ using System.Security.Claims;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
+    [AllowAnonymous]
     [Route("api/account")]
     public class AccountController : BaseApiController
     {
