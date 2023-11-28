@@ -25,15 +25,12 @@ namespace Preepex.Web.Presentation.Web.Controllers
     [Route("api/account")]
     public class AccountController : BaseApiController
     {
-        #region declaration
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly IMapper _mapper;
         private readonly IPasswordGeneratorService _passwordGeneratorService;
-        #endregion
 
-        #region ctor
         public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender, IMapper mapper,
             IPasswordGeneratorService passwordGeneratorService)
         {
@@ -43,9 +40,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
             _userManager = userManager;
             _passwordGeneratorService = passwordGeneratorService;
         }
-        #endregion
 
-        #region methods
 
         [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpGet]
@@ -240,6 +235,8 @@ namespace Preepex.Web.Presentation.Web.Controllers
                 AddressDto = _mapper.Map<Address, AddressDto>(user.Address)
             };
         }
+
+        
         [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpPut("user-account-info")]
         public async Task<ActionResult<UserAccountInformationDto>> UpdateCurrentAccountInformation([FromBody] UserAccountInformationDto model)
@@ -295,8 +292,6 @@ namespace Preepex.Web.Presentation.Web.Controllers
                 AddressDto = _mapper.Map<Address, AddressDto>(user.Address)
             };
         }
-
-        #endregion
 
         private async Task SetAuthenticatedCookie(ApplicationUser user)
         {

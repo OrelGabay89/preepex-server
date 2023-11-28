@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 namespace Preepex.Core.Application.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class CachedAttribute : Attribute, IAsyncActionFilter
+    public class RedisCachedAttribute : Attribute, IAsyncActionFilter
     {
         private readonly int _timeToLiveSeconds;
-        public CachedAttribute(int timeToLiveSeconds)
+        public RedisCachedAttribute(int timeToLiveSeconds)
         {
             _timeToLiveSeconds = timeToLiveSeconds;
         }

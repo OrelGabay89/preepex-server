@@ -69,7 +69,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
 
         [HttpGet("new-products")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [Cached(600)]
+        [RedisCached(600)]
         public async Task<ActionResult<IReadOnlyList<ProductDetailsDto>>> GetNewAddedProducts()
         {
             var store = await _storeContext.GetCurrentStoreAsync();
@@ -78,7 +78,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
         }
 
         [HttpGet("special-products")]
-        [Cached(600)]
+        [RedisCached(600)]
         public async Task<ActionResult<IReadOnlyList<ProductDetailsDto>>> GetSpecialProducts()
         {
             var store = await _storeContext.GetCurrentStoreAsync();
@@ -106,7 +106,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
         [HttpGet("related-products/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Cached(600)]
+        [RedisCached(600)]
         public async Task<ActionResult<List<ProductDetailsDto>>> GetRelatedProducts(int id)
         {
             var result = new List<ProductDetailsDto>();
@@ -127,7 +127,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
 
         [HttpGet("top-collection")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [Cached(600)]
+        [RedisCached(600)]
         public async Task<ActionResult<IReadOnlyList<ProductDetailsDto>>> TopCollections()
         {
             var store = await _storeContext.GetCurrentStoreAsync();
@@ -137,7 +137,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
 
         [HttpGet("onsale")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [Cached(600)]
+        [RedisCached(600)]
         public async Task<ActionResult<IReadOnlyList<ProductDetailsDto>>> OnSaleProducts()
         {
             var store = await _storeContext.GetCurrentStoreAsync();
@@ -147,7 +147,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
 
         [HttpGet("best-seller")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [Cached(600)]
+        [RedisCached(600)]
         public async Task<ActionResult<IReadOnlyList<ProductDetailsDto>>> BestSellerProducts()
         {
             var store = await _storeContext.GetCurrentStoreAsync();
@@ -171,7 +171,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
         [HttpGet("featured-products")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         //[ResponseCache(Duration = 10, Location = ResponseCacheLocation.Any, NoStore = false)]
-        [Cached(600)]
+        [RedisCached(600)]
         public async Task<ActionResult<IReadOnlyList<ProductDetailsDto>>> FeaturedProducts()
         {
             var productsId = await _productTagService.GetProductIdsByTagNameAsync("featured");

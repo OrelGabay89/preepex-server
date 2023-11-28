@@ -153,7 +153,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
         }
 
 
-        [Cached(600)]
+        [RedisCached(600)]
         [HttpGet]
         public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts(
                [FromQuery] ProductSpecParams productParams)

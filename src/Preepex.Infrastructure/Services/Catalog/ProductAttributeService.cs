@@ -10,8 +10,6 @@ namespace Preepex.Infrastructure.Services.Catalog
     public class ProductAttributeService : IProductAttributeService
     {
      
-
-        
         private readonly IProductAttributeRepository _productAttributeRepository;
         public ProductAttributeService(IProductAttributeRepository productAttributeRepository)
         { 

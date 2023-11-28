@@ -22,8 +22,6 @@ namespace Preepex.Web.Presentation.Web.Controllers
     [Route("api/[controller]")]
     public class CatalogController : BasePublicController
     {
-        #region Fields
-
         private readonly CatalogSettings _catalogSettings;
         private readonly IProductModelFactory _productModelFactory;
         private readonly ICatalogModelFactory _catalogModelFactory;
@@ -33,9 +31,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
         private readonly IWorkContext _workContext;
         private readonly ILogger<CatalogController> _logger;
 
-        #endregion
 
-        #region Ctor
 
         public CatalogController(
             CatalogSettings catalogSettings,
@@ -58,55 +54,6 @@ namespace Preepex.Web.Presentation.Web.Controllers
             _logger = logger;
         }
 
-        #endregion
-
-        #region Searching
-
-        [HttpGet("{categoryId}")]
-        public virtual async Task<CategoryModel> Category(int categoryId)
-        {
-            var category = await _categoryService.GetCategoryByIdAsync(categoryId);
-
-            //if (!await _categoryService.CheckCategoryAvailabilityAsync(category))
-            //    return InvokeHttp404();
-
-
-            //'Continue shopping' URL
-            //await _genericAttributeService.SaveAttributeAsync(await _workContext.GetCurrentCustomerAsync(),
-            //    PreepexCustomerDefaults.LastContinueShoppingPageAttribute,
-            //    _webHelper.GetThisPageUrl(false),
-            //    store.Id);
-
-            ////display "edit" (manage) link
-            //if (await _permissionService.AuthorizeAsync(StandardPermissionProvider.AccessAdminPanel) && await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageCategories))
-            //    DisplayEditLink(Url.Action("Edit", "Category", new { id = category.Id, area = AreaNames.Admin }));
-
-            //activity log
-            //await _customerActivityService.InsertActivityAsync("PublicStore.ViewCategory",
-            //    string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.ViewCategory"), category.Name), category);
-
-            //model
-            var model = await _catalogModelFactory.PrepareCategoryModelAsync(category);
-
-            return model;
-            ////template
-            //var templateViewPath = await _catalogModelFactory.PrepareCategoryTemplateViewPathAsync(category.CategoryTemplateId);
-            //return View(templateViewPath, model);
-        }
-
-//[HttpPost("category-products/id")]
-
-        //public virtual async Task<CategoryModel> GetCategoryProducts(int categoryId, CatalogProductsCommand command)
-        //{
-        //    var category = await _categoryService.GetCategoryByIdAsync(categoryId);
-
-        //    //if (!await CheckCategoryAvailabilityAsync(category))
-        //    //    return NotFound();
-
-        //    var model = await _catalogModelFactory.PrepareCategoryModelAsync(category, null);
-
-        //    return model;
-        //}
         /// <summary>
         /// Get all the products
         /// </summary>
@@ -125,11 +72,11 @@ namespace Preepex.Web.Presentation.Web.Controllers
             if (string.IsNullOrWhiteSpace(term) || term.Length < _catalogSettings.ProductSearchTermMinimumLength)
                 return BadRequest($"Minimum length should be {_catalogSettings.ProductSearchTermMinimumLength}");
 
-            //products
-            //Getting it through the const instead of CatalogSettings
+
             var productNumber = _catalogSettings.ProductSearchAutoCompleteNumberOfProducts > 0
                 ? _catalogSettings.ProductSearchAutoCompleteNumberOfProducts
                 : 10;
+            
             var store = await _storeContext.GetCurrentStoreAsync();
 
             var products = await _productService.SearchProductsAsync(0,
@@ -144,7 +91,8 @@ namespace Preepex.Web.Presentation.Web.Controllers
 
 
             var models = (await _productModelFactory.PrepareProductOverviewModelsAsync(products, true, true, null))
-                .ToList(); //_mediaSettings.AutoCompleteSearchThumbPictureSize_catalogSettings.ShowProductImagesInSearchAutoComplete
+                .ToList();
+            
             var result = (from p in models
                     select new
                     {
@@ -162,7 +110,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
 
 
         [HttpPost("category-products/{categoryId}")]
-        [Cached(600)]
+        [RedisCached(600)]
         public virtual async Task<IReadOnlyList<ProductDetailsDto>> GetCategoryProducts(int categoryId, [FromBody] CatalogProductsCommand command)
         {
             try
@@ -178,7 +126,5 @@ namespace Preepex.Web.Presentation.Web.Controllers
             }
             
         }
-
-        #endregion
     }
 }

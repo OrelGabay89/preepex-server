@@ -36,7 +36,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
         //[ResponseCache(Duration = 10, Location = ResponseCacheLocation.Any, NoStore = false)]
         [HttpGet("top-menu-categories")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [Cached(600)]
+        [RedisCached(600)]
         public async Task<ActionResult<TopMenuDto>> GetTopMenuCategories()
         {
             var model = await _catalogModelFactory.PrepareTopMenuModelAsync();
@@ -51,7 +51,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
         /// <returns></returns>
         [HttpGet("home-menu-categories")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [Cached(600)]
+        [RedisCached(600)]
         
         //[ResponseCache(CacheProfileName = "Default30")]
         //[ResponseCache(Duration = 10, Location = ResponseCacheLocation.Any, NoStore = false)]
