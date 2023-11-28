@@ -316,19 +316,18 @@ namespace Preepex.Web.Presentation.Web.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme
             );
 
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = true, // Make the cookie persistent
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7) // Set cookie to expire in 7 days
+            };
+
+            
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity)
+                new ClaimsPrincipal(claimsIdentity), authProperties
             );
         }
-
-        //[HttpGet]
-        //public ActionResult<IEnumerable<LocalizedString>> GetAllCulturedLocalizedString()
-        //{
-        //    var localised = _localization.GetAllCulturedLocalizedString();
-
-        //    return Ok(localised);
-        //}
 
 
     }

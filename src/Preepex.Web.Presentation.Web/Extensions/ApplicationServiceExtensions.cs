@@ -66,6 +66,7 @@ namespace Preepex.Web.Presentation.Web.Extensions
             services.AddScoped<IDownloadService, DownloadService>();
             services.AddScoped<IPasswordGeneratorService, PasswordGeneratorIdentityService>();
             services.AddScoped<ILanguageService, LanguageService>();
+
             services.AddScoped<IStoreMappingService, StoreMappingService>();
             services.AddScoped<IStoreService, StoreService>();
             services.AddScoped<INewsLetterSubscriptionService, NewsLetterSubscriptionService>();
@@ -90,6 +91,8 @@ namespace Preepex.Web.Presentation.Web.Extensions
             services.AddScoped<IPriceFormatter, PriceFormatter>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IBasketService, BasketService>();
+            services.AddScoped<ISubscribersService, SubscribersService>();
+
             services.AddScoped<ITopicService, TopicService>();
             services.AddScoped<IGenericAttributeService, GenericAttributeService>();
 
