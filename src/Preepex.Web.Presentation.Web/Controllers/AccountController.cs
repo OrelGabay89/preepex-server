@@ -28,24 +28,20 @@ namespace Preepex.Web.Presentation.Web.Controllers
         #region declaration
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ITokenService _tokenService;
         private readonly IEmailSender _emailSender;
         private readonly IMapper _mapper;
         private readonly IPasswordGeneratorService _passwordGeneratorService;
         #endregion
 
         #region ctor
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-            ITokenService tokenService, IEmailSender emailSender, IMapper mapper,
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender, IMapper mapper,
             IPasswordGeneratorService passwordGeneratorService)
         {
             _mapper = mapper;
-            _tokenService = tokenService;
             _emailSender = emailSender;
             _signInManager = signInManager;
             _userManager = userManager;
             _passwordGeneratorService = passwordGeneratorService;
-            //_localization = localization;
         }
         #endregion
 
