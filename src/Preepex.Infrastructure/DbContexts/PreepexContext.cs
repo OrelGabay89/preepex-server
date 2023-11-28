@@ -4462,6 +4462,10 @@ namespace Preepex.Core.Domain.Entities
                 entity.HasCharSet("latin1")
                     .UseCollation("latin1_swedish_ci");
 
+                // entityId + entityName + LanguageId has to exist only once in the table
+                entity.HasIndex(e => new { e.EntityId, e.EntityName, e.LanguageId }, "IX_UrlRecord_EntityId_EntityName_LanguageId")
+                    .IsUnique();
+
                 entity.HasIndex(e => new { e.EntityId, e.EntityName, e.LanguageId, e.IsActive }, "IX_UrlRecord_EntityId_EntityName_LanguageId_IsActive");
                 
                 entity.HasIndex(e => new { e.EntityId, e.EntityName, e.LanguageId, e.IsActive, e.Id }, "IX_UrlRecord_EntityId_EntityName_LanguageId_IsActive_Id");
