@@ -10,6 +10,7 @@ using Preepex.Core.Application.Models;
 using Microsoft.AspNetCore.Http;
 using Preepex.Core.Application.Attributes;
 using Microsoft.AspNetCore.Authorization;
+using Preepex.Core.Application.Interfaces;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
@@ -20,11 +21,17 @@ namespace Preepex.Web.Presentation.Web.Controllers
     {
         private readonly ICategoryService _categoryService;
         private readonly ICatalogModelFactory _catalogModelFactory;
+        private readonly IStoreContext _storeContext;
 
         private readonly IMapper _mapper;
 
-        public CategoriesController(ICategoryService categoryService, ICatalogModelFactory catalogModelFactory, IMapper mapper)
-        {
+        public CategoriesController(
+            ICategoryService categoryService,
+            ICatalogModelFactory catalogModelFactory,
+            IMapper mapper,
+            IStoreContext storeContext
+        ) {
+            _storeContext = storeContext;
             _categoryService = categoryService;
             _catalogModelFactory = catalogModelFactory;
             _mapper = mapper;   
@@ -51,13 +58,14 @@ namespace Preepex.Web.Presentation.Web.Controllers
         /// <returns></returns>
         [HttpGet("home-menu-categories")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [Cached(600)]
+        //[Cached(600)]
         
         //[ResponseCache(CacheProfileName = "Default30")]
         //[ResponseCache(Duration = 10, Location = ResponseCacheLocation.Any, NoStore = false)]
         public async Task<ActionResult<IReadOnlyList<HomeCategoriesDto>>> GetCategoriesHomeMenu()
         {
-            var categories = await _catalogModelFactory.PrepareHomepageCategoryModelsAsync();
+            var store = await _storeContext.GetCurrentStoreAsync();
+            var categories = await _catalogModelFactory.PrepareHomepageCategoryModelsAsync(store.Id);
             var result = _mapper.Map<IReadOnlyList<CategoryModel>, IReadOnlyList<HomeCategoriesDto>>(categories);
             return Ok(result);
            

@@ -114,19 +114,85 @@ namespace Preepex.Infrastructure.Services
             return await GetSeNameAsync(entity.Id, entityName, languageId ?? (await _workContext.GetWorkingLanguageAsync()).Id, returnDefaultValue, ensureTwoPublishedLanguages);
         }
 
-        /// <summary>
-        /// Get search engine friendly name (slug)
-        /// </summary>
-        /// <param name="entityId">Entity identifier</param>
-        /// <param name="entityName">Entity name</param>
-        /// <param name="languageId">Language identifier; pass null to use the current language</param>
-        /// <param name="returnDefaultValue">A value indicating whether to return default value (if language specified one is not found)</param>
-        /// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
-        /// <returns>
-        /// A task that represents the asynchronous operation
-        /// The task result contains the search engine  name (slug)
-        /// </returns>
-        public virtual async Task<string> GetSeNameAsync(int entityId, string entityName, int? languageId = null,
+        public virtual async Task<Dictionary<Tuple<string, string, int>, string>> GetSeNamesAsync<T>(T[] entities, int? languageId = null, bool returnDefaultValue = true, bool ensureTwoPublishedLanguages = true) where T : BaseEntity<int>, ISlugSupported
+        {
+            var langId = (await _workContext.GetWorkingLanguageAsync()).Id;
+
+            var result = new Dictionary<Tuple<string, string, int>, string>();
+            var entitiesWhichAreNotInCache = new List<T>();
+
+            if (entities == null)
+                throw new ArgumentNullException(nameof(entities));
+
+            if (entities.Length == 0)
+                return result;
+
+            // Check for each entity if it is in the cache, if it is, add it to the Tuple
+            foreach (var entity in entities)
+            {
+                var entityName = entity.GetType().Name;
+                var entityKey = _staticCacheManager.PrepareKeyForDefaultCache(PreepexSeoDefaults.UrlRecordCacheKey, entity.Id, entityName, langId);
+                var slug = _staticCacheManager.GetOrNull<string>(entityKey, () => null);
+
+                if (slug != null)
+                {
+                    // if found in cache, insert it into the Tuple
+                    var tuple = new Tuple<string, string, int>(entity.Id.ToString(), entityName, langId);
+                    result.Add(tuple, slug);
+                } else
+                {
+                    entitiesWhichAreNotInCache.Add(entity);
+                }
+            }
+
+
+            // for all of those who are not in the cache, we will urlRecords the database
+
+            var entityIds = entitiesWhichAreNotInCache.Select(entities => entities.Id).ToArray();
+            var entityNames = entitiesWhichAreNotInCache.Select(entities => entities.GetType().Name).ToArray();
+
+            var urlRecords = await _urlRecordRepository.Table
+                    .Where(
+                        ur =>
+                            entityIds.Contains(ur.EntityId) &&
+                            entityNames.Contains(ur.EntityName) &&
+                            ur.LanguageId == languageId &&
+                            ur.IsActive
+                    )
+                    .OrderByDescending(ur => ur.Id)
+                    .Select(ur => new
+                    {
+                        Slug = ur.Slug,
+                        EntityId= ur.EntityId,
+                        EntityName = ur.EntityName,
+                        LanguageId = ur.LanguageId
+                    })
+                    .ToListAsync();
+
+            foreach (var urlRecord in urlRecords)
+            {
+                // if found in cache, insert it into the Tuple
+                var tuple = new Tuple<string, string, int>(urlRecord.EntityId.ToString(), urlRecord.EntityName, urlRecord.LanguageId);
+                result.Add(tuple, urlRecord.Slug);
+            }
+
+            return result;
+        }
+
+
+    /// <summary>
+    /// Get search engine friendly name (slug)
+    /// </summary>
+    /// <param name="entityId">Entity identifier</param>
+    /// <param name="entityName">Entity name</param>
+    /// <param name="languageId">Language identifier; pass null to use the current language</param>
+    /// <param name="returnDefaultValue">A value indicating whether to return default value (if language specified one is not found)</param>
+    /// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation
+    /// The task result contains the search engine  name (slug)
+    /// </returns>
+    public virtual async Task<string> GetSeNameAsync(int entityId, string entityName, int? languageId = null,
             bool returnDefaultValue = true, bool ensureTwoPublishedLanguages = true)
         {
             languageId ??= (await _workContext.GetWorkingLanguageAsync()).Id;
@@ -171,25 +237,25 @@ namespace Preepex.Infrastructure.Services
 
             if (_localizationSettings.LoadAllUrlRecordsOnStartup)
             {
-                await GetAllUrlRecordsAsync();
-            }
+                    await GetAllUrlRecordsAsync();
+                }
 
-            var rezSlug = await _staticCacheManager.GetAsync(key, () =>
-            {
-                var query = _urlRecordRepository.Table
-                    .Where(
-                        ur =>
-                            ur.EntityId == entityId &&
-                            ur.EntityName == entityName &&
-                            ur.LanguageId == languageId &&
-                            ur.IsActive
-                    )
-                    .OrderByDescending(ur => ur.Id)
-                    .Select(ur => ur.Slug);
-                return query.FirstOrDefaultAsync();
-            }) ?? string.Empty;
+                var rezSlug = await _staticCacheManager.GetAsync(key, () =>
+                {
+                    var query = _urlRecordRepository.Table
+                        .Where(
+                            ur =>
+                                ur.EntityId == entityId &&
+                                ur.EntityName == entityName &&
+                                ur.LanguageId == languageId &&
+                                ur.IsActive
+                        )
+                        .OrderByDescending(ur => ur.Id)
+                        .Select(ur => ur.Slug);
+                    return query.FirstOrDefaultAsync();
+                }) ?? string.Empty;
 
-            return rezSlug;
+                return rezSlug;
         }
 
         /// <summary>

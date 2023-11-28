@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Preepex.Core.Domain.Entities;
 
@@ -10,9 +11,10 @@ using Preepex.Core.Domain.Entities;
 namespace Preepex.Infrastructure.Migrations
 {
     [DbContext(typeof(PreepexContext))]
-    partial class PreepexContextModelSnapshot : ModelSnapshot
+    [Migration("20231127230133_add unique index")]
+    partial class adduniqueindex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

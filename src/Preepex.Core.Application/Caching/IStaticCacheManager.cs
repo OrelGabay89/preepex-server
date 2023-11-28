@@ -42,6 +42,15 @@ namespace Preepex.Core.Application.Caching
         T Get<T>(CacheKey key, Func<T> acquire);
 
         /// <summary>
+        /// Get a cached item. If it's not in the cache yet, then load and cache it
+        /// </summary>
+        /// <typeparam name="T">Type of cached item</typeparam>
+        /// <param name="key">Cache key</param>
+        /// <param name="acquire">Function to load item if it's not in the cache yet</param>
+        /// <returns>The cached value associated with the specified key</returns>
+        T? GetOrNull<T>(CacheKey key, Func<T?> acquire);
+
+        /// <summary>
         /// Remove the value with the specified key from the cache
         /// </summary>
         /// <param name="cacheKey">Cache key</param>

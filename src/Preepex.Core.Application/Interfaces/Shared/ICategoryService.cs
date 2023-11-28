@@ -15,7 +15,7 @@ namespace Preepex.Core.Application.Interfaces.Shared
         /// A task that represents the asynchronous operation
         /// The task result contains the categories
         /// </returns>
-        Task<IList<Category>> GetAllCategoriesDisplayedOnHomepageAsync(bool showHidden = false);
+        Task<IList<Category>> GetAllCategoriesDisplayedOnHomepageAsync(int storeId, bool showHidden = false);
 
         /// <summary>
         /// Gets all categories
