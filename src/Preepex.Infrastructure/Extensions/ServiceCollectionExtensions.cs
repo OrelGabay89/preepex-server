@@ -32,11 +32,8 @@ using Preepex.Infrastructure.Services;
 using Preepex.Infrastructure.Services.DbInitializer;
 using Preepex.Infrastructure.Services.Shared;
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Preepex.Infrastructure.Extensions
 {
@@ -185,10 +182,8 @@ namespace Preepex.Infrastructure.Extensions
         }
 
 
-        public static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration)
+        private static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration)
         {
-
-            // ===== Jwt Configuration ===== 
             services
                 .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(
@@ -199,6 +194,8 @@ namespace Preepex.Infrastructure.Extensions
                         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                         options.Cookie.SameSite = SameSiteMode.Strict;
                         options.Cookie.Name = "JwtToken";
+                        options.ExpireTimeSpan = TimeSpan.FromDays(7); // Set a suitable expiration time
+                        options.SlidingExpiration = true; // Enable sliding expiration
                     });
 
 

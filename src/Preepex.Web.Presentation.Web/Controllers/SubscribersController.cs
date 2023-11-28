@@ -1,38 +1,47 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Preepex.Core.Domain.Entities;
+using Preepex.Infrastructure.Services;
+using System.Threading.Tasks;
+using System.Linq;
+using Preepex.Core.Application.Interfaces;
 using Preepex.Presentation.Framework.Controllers;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
-    // Controllers/SubscribersController.cs
     [AllowAnonymous]
     [ApiController]
     [Route("api/subscribers")]
     public class SubscribersController : BaseApiController
     {
-        private List<Subscriber> subscribers = new List<Subscriber>();
+        private readonly SubscribersService _subscribersService;
+        private readonly IStoreContext _storeContext;
+
+        public SubscribersController(SubscribersService subscribersService, IStoreContext storeContext)
+        {
+            _subscribersService = subscribersService;
+            _storeContext = storeContext;
+        }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Subscriber>> GetSubscribers()
+        public async Task<ActionResult<IEnumerable<Subscriber>>> GetSubscribers()
         {
+            var subscribers = await _subscribersService.GetAllSubscribersAsync();
             return Ok(subscribers);
         }
 
         [HttpPost]
-        public ActionResult<Subscriber> AddSubscriber(Subscriber subscriber)
+        public async Task<ActionResult<Subscriber>> AddSubscriber(Subscriber subscriber)
         {
-            subscriber.Id = subscribers.Count + 1;
-            subscribers.Add(subscriber);
+            await _subscribersService.AddSubscriberAsync(subscriber);
             return CreatedAtAction(nameof(GetSubscriberById), new { id = subscriber.Id }, subscriber);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Subscriber> GetSubscriberById(int id)
+        public async Task<ActionResult<Subscriber>> GetSubscriberById(int id)
         {
-            var subscriber = subscribers.FirstOrDefault(s => s.Id == id);
+            var subscriber = await _subscribersService.GetSubscriberByIdAsync(id);
             if (subscriber == null)
             {
                 return NotFound();
@@ -41,28 +50,31 @@ namespace Preepex.Web.Presentation.Web.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateSubscriber(int id, Subscriber subscriber)
+        public async Task<IActionResult> UpdateSubscriber(int id, Subscriber subscriberUpdate)
         {
-            var existingSubscriber = subscribers.FirstOrDefault(s => s.Id == id);
-            if (existingSubscriber == null)
-            {
-                return NotFound();
-            }
-
-            existingSubscriber.Email = subscriber.Email; // Update other properties as needed
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public IActionResult DeleteSubscriber(int id)
-        {
-            var subscriber = subscribers.FirstOrDefault(s => s.Id == id);
+            var subscriber = await _subscribersService.GetSubscriberByIdAsync(id);
             if (subscriber == null)
             {
                 return NotFound();
             }
 
-            subscribers.Remove(subscriber);
+            // Update properties of subscriber
+            subscriber.Email = subscriberUpdate.Email; // Update other properties as needed
+            await _subscribersService.UpdateSubscriberAsync(subscriber);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteSubscriber(int id)
+        {
+            var subscriber = await _subscribersService.GetSubscriberByIdAsync(id);
+            if (subscriber == null)
+            {
+                return NotFound();
+            }
+
+            await _subscribersService.DeleteSubscriberAsync(subscriber);
             return NoContent();
         }
     }

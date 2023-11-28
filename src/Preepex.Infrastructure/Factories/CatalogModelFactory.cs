@@ -162,10 +162,8 @@ namespace Preepex.Infrastructure.Factories
             var model = new TopMenuModel
             {
                 Categories = cachedCategoriesModel,
-                //Topics = topicModel,
                 NewProductsEnabled = _catalogSettings.NewProductsEnabled,
-                //BlogEnabled = _blogSettings.Enabled,
-                //ForumEnabled = _forumSettings.ForumsEnabled,
+       
                 DisplayHomepageMenuItem = _displayDefaultMenuItemSettings.DisplayHomepageMenuItem,
                 DisplayNewProductsMenuItem = _displayDefaultMenuItemSettings.DisplayNewProductsMenuItem,
                 DisplayProductSearchMenuItem = _displayDefaultMenuItemSettings.DisplayProductSearchMenuItem,
@@ -198,60 +196,13 @@ namespace Preepex.Infrastructure.Factories
             return await _staticCacheManager.GetAsync(cacheKey, async () => await PrepareCategorySimpleModelsAsync(0));
         }
 
-        /// <summary>
-        /// Prepare category (simple) models
-        /// </summary>
-        /// <param name="rootCategoryId">Root category identifier</param>
-        /// <param name="loadSubCategories">A value indicating whether subcategories should be loaded</param>
-        /// <returns>
-        /// A task that represents the asynchronous operation
-        /// The task result contains the list of category (simple) models
-        /// </returns>
-        /// 
-        //public virtual async Task<List<CategorySimpleModel>> PrepareCategorySimpleModelsAsync(int rootCategoryId, bool loadSubCategories = true)
-        //{
-        //    var store = await _storeContext.GetCurrentStoreAsync();
-        //    var categories = await _categoryService.GetAllCategoriesAsync(storeId: store.Id);
 
-        //    if (categories == null || !categories.Any())
-        //    {
-        //        return new List<CategorySimpleModel>();
-        //    }
-
-        //    var result = await categories.Select(async category =>
-        //    {
-        //        var categoryModel = new CategorySimpleModel
-        //        {
-        //            Id = category.Id,
-        //            Name = await _localizationService.GetLocalizedAsync(category, x => x.Name),
-        //            SeName = await _urlRecordService.GetSeNameAsync(category),
-        //            IncludeInTopMenu = category.IncludeInTopMenu
-        //        };
-
-        //        if (loadSubCategories)
-        //        {
-        //            var subCategories = await PrepareCategorySimpleModelsAsync(category.Id);
-        //            categoryModel.SubCategories.AddRange(subCategories);
-        //        }
-
-        //        categoryModel.HaveSubCategories = categoryModel.SubCategories.Count > 0 &&
-        //            categoryModel.SubCategories.Any(x => x.IncludeInTopMenu);
-
-        //        return categoryModel;
-        //    }).ToListAsync();
-
-        //    return result;
-        //}
 
         public virtual async Task<List<CategorySimpleModel>> PrepareCategorySimpleModelsAsync(int rootCategoryId, bool loadSubCategories = true)
         {
             var result = new List<CategorySimpleModel>();
 
-            //little hack for performance optimization
-            //we know that this method is used to load top and left menu for categories.
-            //it'll load all categories anyway.
-            //so there's no need to invoke "GetAllCategoriesByParentCategoryId" multiple times (extra SQL commands) to load childs
-            //so we load all categories at once (we know they are cached)
+
             var store = await _storeContext.GetCurrentStoreAsync();
             var allCategories = await _categoryService.GetAllCategoriesAsync(storeId: store.Id);
             var categories = allCategories.Where(c => c.ParentCategoryId == rootCategoryId).OrderBy(c => c.DisplayOrder).ToList();
@@ -265,25 +216,6 @@ namespace Preepex.Infrastructure.Factories
                     SeName = await _urlRecordService.GetSeNameAsync(category),
                     IncludeInTopMenu = category.IncludeInTopMenu
                 };
-
-                //number of products in each category
-                //if (_catalogSettings.ShowCategoryProductNumber)
-                //{
-                //    var categoryIds = new List<int> { category.Id };
-                //    //include subcategories
-                //    if (_catalogSettings.ShowCategoryProductNumberIncludingSubcategories)
-                //        categoryIds.AddRange(
-                //            await _categoryService.GetChildCategoryIdsAsync(category.Id, store.Id));
-
-                //    categoryModel.NumberOfProducts =
-                //        await _productService.GetNumberOfProductsInCategoryAsync(categoryIds, store.Id);
-                //}
-
-                //if (loadSubCategories)
-                //{
-                //    var subCategories = await PrepareCategorySimpleModelsAsync(category.Id);
-                //    categoryModel.SubCategories.AddRange(subCategories);
-                //}
 
                 categoryModel.HaveSubCategories = categoryModel.SubCategories.Count > 0 &
                     categoryModel.SubCategories.Any(x => x.IncludeInTopMenu);
@@ -321,7 +253,6 @@ namespace Preepex.Infrastructure.Factories
                 MetaDescription = await _localizationService.GetLocalizedAsync(category, x => x.MetaDescription),
                 MetaTitle = await _localizationService.GetLocalizedAsync(category, x => x.MetaTitle),
                 SeName = await _urlRecordService.GetSeNameAsync(category),
-                //CatalogProductsModel = await PrepareCategoryProductsModelAsync(category, command)
             };
 
             //category breadcrumb
@@ -381,14 +312,6 @@ namespace Preepex.Infrastructure.Factories
 
                     return subCatModel;
                 }).ToListAsync();
-
-            //featured products
-            //if (!_catalogSettings.IgnoreFeaturedProducts)
-            //{
-            //    var featuredProducts = await _productService.GetCategoryFeaturedProductsAsync(category.Id, currentStore.Id);
-            //    if (featuredProducts != null)
-            //        model.FeaturedProducts = (await _productModelFactory.PrepareProductOverviewModelsAsync(featuredProducts)).ToList();
-            //}
 
             return model;
         }

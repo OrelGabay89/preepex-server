@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Preepex.Core.Domain.Entities.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Preepex.Core.Domain.Entities
 {
-    public class Subscriber
+    public class Subscriber : BaseEntity<int>
     {
         public int Id { get; set; }
         public string Email { get; set; }
