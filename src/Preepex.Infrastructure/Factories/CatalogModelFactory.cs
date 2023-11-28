@@ -15,6 +15,7 @@ using Preepex.Core.Domain.Entities.Media;
 using Preepex.Infrastructure.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -80,7 +81,7 @@ namespace Preepex.Infrastructure.Factories
         /// A task that represents the asynchronous operation
         /// The task result contains the list of homepage category models
         /// </returns>
-        public virtual async Task<List<CategoryModel>> PrepareHomepageCategoryModelsAsync()
+        public virtual async Task<List<CategoryModel>> PrepareHomepageCategoryModelsAsync(int storeId)
         {
             var language = await _workContext.GetWorkingLanguageAsync();
             var customer = await _workContext.GetCurrentCustomerAsync();
@@ -89,21 +90,40 @@ namespace Preepex.Infrastructure.Factories
             var pictureSize = _mediaSettings.CategoryThumbPictureSize;
             var categoriesCacheKey = _staticCacheManager.PrepareKeyForDefaultCache(PreepexModelCacheDefaults.CategoryHomepageKey,
                 store, customerRoleIds, pictureSize, language, _webHelper.IsCurrentConnectionSecured());
-
             var model = await _staticCacheManager.GetAsync(categoriesCacheKey, async () =>
             {
-                var homepageCategories = await _categoryService.GetAllCategoriesDisplayedOnHomepageAsync();
+                var homepageCategories = await _categoryService.GetAllCategoriesDisplayedOnHomepageAsync(storeId);
+                var categorySlugs = await _urlRecordService.GetSeNamesAsync(homepageCategories.ToArray());
+
                 return await homepageCategories.SelectAwait(async category =>
                 {
+
+                    var categorySlug = "";
+
+                    var defaultKey = default(KeyValuePair<Tuple<string, string, int>, string>);
+
+                    var categorySlugFound = categorySlugs.FirstOrDefault(x => x.Key.Item1 == category.Id.ToString() && x.Key.Item2 == "Category");
+
+                    if (!categorySlugFound.Equals(defaultKey))
+                    {
+                        categorySlug = categorySlugFound.Value;
+                    }
+
+                    var name = await _localizationService.GetLocalizedAsync(category, x => x.Name);
+                    var description = await _localizationService.GetLocalizedAsync(category, x => x.Description);
+                    var metaKeywords = await _localizationService.GetLocalizedAsync(category, x => x.MetaKeywords);
+                    var metaDescription = await _localizationService.GetLocalizedAsync(category, x => x.MetaDescription);
+                    var metaTitle = await _localizationService.GetLocalizedAsync(category, x => x.MetaTitle);
+
                     var catModel = new CategoryModel
                     {
                         Id = category.Id,
-                        Name = await _localizationService.GetLocalizedAsync(category, x => x.Name),
-                        Description = await _localizationService.GetLocalizedAsync(category, x => x.Description),
-                        MetaKeywords = await _localizationService.GetLocalizedAsync(category, x => x.MetaKeywords),
-                        MetaDescription = await _localizationService.GetLocalizedAsync(category, x => x.MetaDescription),
-                        MetaTitle = await _localizationService.GetLocalizedAsync(category, x => x.MetaTitle),
-                        SeName = await _urlRecordService.GetSeNameAsync(category),
+                        Name = name,
+                        Description = description,
+                        MetaKeywords = metaKeywords,
+                        MetaDescription = metaDescription,
+                        MetaTitle = metaTitle,
+                        SeName = categorySlug,
                     };
 
                     //prepare picture model
@@ -156,7 +176,7 @@ namespace Preepex.Infrastructure.Factories
             //    {
             //        Id = t.Id,
             //        Name = await _localizationService.GetLocalizedAsync(t, x => x.Title),
-            //        SeName = await _urlRecordService.GetSeNameAsync(t)
+            //        seName = await _urlRecordService.GetSeNameAsync(t)
             //    }).ToListAsync();
 
             var model = new TopMenuModel
@@ -207,13 +227,25 @@ namespace Preepex.Infrastructure.Factories
             var allCategories = await _categoryService.GetAllCategoriesAsync(storeId: store.Id);
             var categories = allCategories.Where(c => c.ParentCategoryId == rootCategoryId).OrderBy(c => c.DisplayOrder).ToList();
 
+            var categorySlugs = await _urlRecordService.GetSeNamesAsync(categories.ToArray());
+
             foreach (var category in categories)
             {
+                var categorySlug = "";
+
+                var defaultKey = default(KeyValuePair<Tuple<string, string, int>, string>);
+                var categorySlugFound = categorySlugs.FirstOrDefault(x => x.Key.Item1 == category.Id.ToString() && x.Key.Item2 == "Category");
+
+                if (!categorySlugFound.Equals(defaultKey))
+                {
+                    categorySlug = categorySlugFound.Value;
+                }
+
                 var categoryModel = new CategorySimpleModel
                 {
                     Id = category.Id,
                     Name = await _localizationService.GetLocalizedAsync(category, x => x.Name),
-                    SeName = await _urlRecordService.GetSeNameAsync(category),
+                    SeName = categorySlug,
                     IncludeInTopMenu = category.IncludeInTopMenu
                 };
 

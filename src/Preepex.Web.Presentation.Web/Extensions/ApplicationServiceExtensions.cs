@@ -26,6 +26,8 @@ using Preepex.Infrastructure.Services.Stores;
 using Preepex.Infrastructure.Services.Tax;
 using Preepex.Infrastructure.Services.Topics;
 using Preepex.Presentation.Framework.Routing;
+using System.Diagnostics;
+using System;
 
 namespace Preepex.Web.Presentation.Web.Extensions
 {

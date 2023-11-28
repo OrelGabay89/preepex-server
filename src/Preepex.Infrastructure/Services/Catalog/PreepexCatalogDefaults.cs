@@ -96,6 +96,15 @@ namespace Preepex.Infrastructure.Services.Catalog
         public static CacheKey CategoriesHomepageWithoutHiddenCacheKey => new("Preepex.category.homepage.withouthidden-{0}-{1}", CategoriesHomepagePrefix);
 
         /// <summary>
+        /// Gets a key for caching
+        /// </summary>
+        /// <remarks>
+        /// {0} : current store ID
+        /// {1} : roles of the current user
+        /// </remarks>
+        public static CacheKey StoreCategories => new("Preepex.category.store-{0}");
+
+        /// <summary>
         /// Gets a key pattern to clear cache
         /// </summary>
         public static string CategoriesHomepagePrefix => "Preepex.category.homepage.";

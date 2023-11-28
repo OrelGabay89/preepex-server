@@ -3,6 +3,8 @@ using Preepex.Core.Domain.Entities.Common;
 using Preepex.Core.Domain.Interfaces;
 using System.Threading.Tasks;
 using Preepex.Common.Paging;
+using System.Collections.Generic;
+using System;
 
 
 namespace Preepex.Core.Application.Interfaces.Shared
@@ -15,6 +17,6 @@ namespace Preepex.Core.Application.Interfaces.Shared
         Task<string> GetSeNameAsync(int entityId, string entityName, int? languageId = null, bool returnDefaultValue = true, bool ensureTwoPublishedLanguages = true);
         Task<string> GetSeNameAsync(string name, bool convertNonWesternChars, bool allowUnicodeCharsInUrls);
         Task<string> GetSeNameAsync<T>(T entity, int? languageId = null, bool returnDefaultValue = true, bool ensureTwoPublishedLanguages = true) where T : BaseEntity<int>, ISlugSupported;
-    }
+        Task<Dictionary<Tuple<string, string, int>, string>> GetSeNamesAsync<T>(T[] entity, int? languageId = null, bool returnDefaultValue = true, bool ensureTwoPublishedLanguages = true) where T : BaseEntity<int>, ISlugSupported;    }
 
 }

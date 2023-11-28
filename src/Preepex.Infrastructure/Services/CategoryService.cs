@@ -12,6 +12,9 @@ using Preepex.Infrastructure.Extensions;
 using Preepex.Infrastructure.Services.Catalog;
 using Preepex.Core.Application.Caching;
 using Preepex.Core.Application.Models;
+using System.Diagnostics;
+using Preepex.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace Preepex.Infrastructure.Services
 {
@@ -97,34 +100,34 @@ namespace Preepex.Infrastructure.Services
         /// A task that represents the asynchronous operation
         /// The task result contains the categories
         /// </returns>
-        public virtual async Task<IList<Category>> GetAllCategoriesDisplayedOnHomepageAsync(bool showHidden = false)
+        public virtual async Task<IList<Category>> GetAllCategoriesDisplayedOnHomepageAsync(int storeId, bool showHidden = false)
         {
-            var categories = await _categoryRepository.GetAllAsync(query =>
+
+            var storeCategoriesCacheKey = _staticCacheManager.PrepareKeyForDefaultCache(
+                PreepexCatalogDefaults.StoreCategories,
+                storeId
+            );
+
+            return await _staticCacheManager.GetAsync(storeCategoriesCacheKey, async () =>
             {
-                var results = from c in query
-                              orderby c.DisplayOrder, c.Id
-                              where c.Published &&
-                                    !c.Deleted &&
-                                    c.ShowOnHomepage
-                              select c;
-                return results;
 
-            }, cache => cache.PrepareKeyForDefaultCache(PreepexCatalogDefaults.CategoriesHomepageCacheKey));
-
-            if (showHidden)
-                return categories;
-
-            var cacheKey = _staticCacheManager.PrepareKeyForDefaultCache(PreepexCatalogDefaults.CategoriesHomepageWithoutHiddenCacheKey,
-                await _storeContext.GetCurrentStoreAsync(), await _customerService.GetCustomerRoleIdsAsync(await _workContext.GetCurrentCustomerAsync()));
-
-            var result = await _staticCacheManager.GetAsync(cacheKey, async () =>
-            {
-                return await categories
-                    .WhereAwait(async c => await _aclService.AuthorizeAsync(c) && await _storeMappingService.AuthorizeAsync(c))
+                var storeMappingCategories = await _storeMappingRepository.Table
+                    .Where(x => x.StoreId == storeId)
+                    .Where(x => x.EntityName == nameof(Category))
+                    .Select(x => x.EntityId)
                     .ToListAsync();
-            });
 
-            return result;
+                var categories = await _categoryRepository.Table
+                    .Where(c => storeMappingCategories.Contains(c.Id))
+                    .Where(c => c.ShowOnHomepage)
+                    .Where(c => c.Published)
+                    .Where(c => !c.Deleted)
+                    .OrderBy(c => c.DisplayOrder)
+                    .ThenBy(c => c.Id)
+                    .ToListAsync();
+
+                return categories;
+            });
         }
 
 

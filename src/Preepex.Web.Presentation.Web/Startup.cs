@@ -71,7 +71,7 @@ namespace Preepex.Web.Presentation.Web
             services.AddSingleton<IConnectionMultiplexer>(c =>
             {
                 // Try to get the connection string from the environment variable first
-                string connectionString = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING");
+                string connectionString = Environment.GetEnvironmentVariable("REDISCLOUD_URL");
 
                 // If the environment variable is not set, fall back to the configuration file
                 if (string.IsNullOrEmpty(connectionString))

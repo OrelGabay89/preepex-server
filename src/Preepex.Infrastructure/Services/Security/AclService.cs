@@ -265,13 +265,6 @@ namespace Preepex.Infrastructure.Services.Security
             if (!entity.SubjectToAcl)
                 return true;
 
-            //foreach (var role1 in await _customerService.GetCustomerRolesAsync(customer))
-            //    foreach (var role2Id in await GetCustomerRoleIdsWithAccessAsync(entity))
-            //        if (role1.Id == role2Id)
-            //            //yes, we have such permission
-            //            return true;
-
-            //no permission found
             return false;
         }
 

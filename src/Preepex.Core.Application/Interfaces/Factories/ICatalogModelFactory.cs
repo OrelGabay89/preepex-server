@@ -26,7 +26,7 @@ namespace Preepex.Core.Application.Interfaces.Factories
         /// A task that represents the asynchronous operation
         /// The task result contains the list of homepage category models
         /// </returns>
-        Task<List<CategoryModel>> PrepareHomepageCategoryModelsAsync();
+        Task<List<CategoryModel>> PrepareHomepageCategoryModelsAsync(int storeId);
 
 
         /// <summary>
