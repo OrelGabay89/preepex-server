@@ -16,13 +16,13 @@ namespace Preepex.Web.Presentation.Web.Middleware
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionMiddleware> _logger;
         private readonly IHostEnvironment _env;
-        private IImportantMessagesLogger _importantMessagesLogger;
-        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env, IImportantMessagesLogger importantMessagesLogger)
+        //private IImportantMessagesLogger _importantMessagesLogger;
+        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env)
         {
             _env = env;
             _logger = logger;
             _next = next;
-            _importantMessagesLogger = importantMessagesLogger;
+            //_importantMessagesLogger = importantMessagesLogger;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -33,7 +33,7 @@ namespace Preepex.Web.Presentation.Web.Middleware
             }
             catch (Exception ex)
             {
-                _importantMessagesLogger.PostMessage("An Exception has occured while the application was running: " + ex);
+                //_importantMessagesLogger.PostMessage("An Exception has occured while the application was running: " + ex);
                 _logger.LogError(ex, ex.Message);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
