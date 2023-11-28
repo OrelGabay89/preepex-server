@@ -20,9 +20,6 @@ namespace Preepex.Web.Presentation.Web
             {
                 var services = scope.ServiceProvider;
                 var loggerFactory = services.GetRequiredService<ILoggerFactory>();
-
-                var importantMessagesLogger = services.GetRequiredService<IImportantMessagesLogger>();
-                importantMessagesLogger.PostMessage("Application is running");
             }
 
             host.Run();
