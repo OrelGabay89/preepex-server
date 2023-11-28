@@ -11,6 +11,7 @@ using Preepex.Presentation.Framework.Routing;
 using Preepex.Web.Presentation.Web.Extensions;
 using Preepex.Web.Presentation.Web.Middleware;
 using StackExchange.Redis;
+using System;
 using System.IO;
 
 namespace Preepex.Web.Presentation.Web
@@ -69,7 +70,16 @@ namespace Preepex.Web.Presentation.Web
 
             services.AddSingleton<IConnectionMultiplexer>(c =>
             {
-                var configuration = ConfigurationOptions.Parse(_config.GetConnectionString("Redis"), true);
+                // Try to get the connection string from the environment variable first
+                string connectionString = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING");
+
+                // If the environment variable is not set, fall back to the configuration file
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    connectionString = _config.GetConnectionString("Redis");
+                }
+
+                var configuration = ConfigurationOptions.Parse(connectionString, true);
                 return ConnectionMultiplexer.Connect(configuration);
             });
 
