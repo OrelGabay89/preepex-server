@@ -20,29 +20,6 @@ namespace Preepex.Web.Presentation.Web
             {
                 var services = scope.ServiceProvider;
                 var loggerFactory = services.GetRequiredService<ILoggerFactory>();
-                try
-                {
-                    //var context = services.GetRequiredService<ApplicationDbContext>();
-                    //await context.Database.MigrateAsync();
-                    //await StoreContextSeed.SeedAsync(context, loggerFactory);
-
-                    //var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-                    //var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
-                    //var identityContext = services.GetRequiredService<AppIdentityDbContext>();
-                    //await identityContext.Database.MigrateAsync();
-                    //await AppIdentityDbContextSeed.SeedUsersAsync(userManager, roleManager);
-
-
-
-                }
-                catch (Exception ex)
-                {
-                    var logger = loggerFactory.CreateLogger<Program>();
-                    logger.LogError(ex, "An error occured during migration");
-                }
-
-                var importantMessagesLogger = services.GetRequiredService<IImportantMessagesLogger>();
-                importantMessagesLogger.PostMessage("Application is running");
             }
 
             host.Run();

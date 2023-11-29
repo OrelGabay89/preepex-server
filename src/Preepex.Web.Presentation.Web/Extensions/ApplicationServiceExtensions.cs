@@ -52,7 +52,7 @@ namespace Preepex.Web.Presentation.Web.Extensions
 
             services.AddSingleton<IResponseCacheService, RedisResponseCacheService>();
             
-            services.AddScoped<ITokenService, AccessTokenService>();
+
             services.AddScoped<ILocalizationService, LocalizationService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IPaymentService, PaymentService>();
@@ -67,8 +67,7 @@ namespace Preepex.Web.Presentation.Web.Extensions
 
             services.AddScoped<IStoreMappingService, StoreMappingService>();
             services.AddScoped<IStoreService, StoreService>();
-            services.AddScoped<INewsLetterSubscriptionService, NewsLetterSubscriptionService>();
-            services.AddScoped<IWorkflowMessageService, WorkflowMessageService>();
+
 
             services.AddScoped<IAclService, AclService>();
             services.AddScoped<ILocalizedEntityService, LocalizedEntityService>();
@@ -94,7 +93,6 @@ namespace Preepex.Web.Presentation.Web.Extensions
             services.AddScoped<ITopicService, TopicService>();
             services.AddScoped<IGenericAttributeService, GenericAttributeService>();
 
-            services.AddTransient<IImportantMessagesLogger, NoopImportantMessagesLogger>();
             services.AddScoped<SlugRouteTransformer>();
 
             var appSettings = Singleton<AppSettings>.Instance ?? new AppSettings();
