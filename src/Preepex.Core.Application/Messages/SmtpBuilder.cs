@@ -18,15 +18,24 @@ namespace Preepex.Core.Application.Messages
     /// </summary>
     public class SmtpBuilder : ISmtpBuilder
     {
+        #region Fields
 
         private readonly EmailAccountSettings _emailAccountSettings;
         private readonly IEmailAccountService _emailAccountService;
+
+        #endregion
+
+        #region Ctor
 
         public SmtpBuilder(EmailAccountSettings emailAccountSettings, IEmailAccountService emailAccountService)
         {
             _emailAccountSettings = emailAccountSettings;
             _emailAccountService = emailAccountService;
         }
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// Create a new SMTP client for a specific email account
@@ -90,5 +99,6 @@ namespace Preepex.Core.Application.Messages
 
 
 
+        #endregion
     }
 }

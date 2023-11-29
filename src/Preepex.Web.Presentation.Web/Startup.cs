@@ -11,7 +11,6 @@ using Preepex.Presentation.Framework.Routing;
 using Preepex.Web.Presentation.Web.Extensions;
 using Preepex.Web.Presentation.Web.Middleware;
 using StackExchange.Redis;
-using System;
 using System.IO;
 
 namespace Preepex.Web.Presentation.Web
@@ -44,10 +43,13 @@ namespace Preepex.Web.Presentation.Web
                     });
             });
 
+            //////ROUTING
             services.AddRouting(options => options.LowercaseUrls = true);
 
+            //////LOCALIZATION
             services.AddLocalization(options => options.ResourcesPath = "");
 
+            ////CACHING
             services.AddResponseCaching();
 
             services.AddApplicationLayer();
@@ -70,16 +72,7 @@ namespace Preepex.Web.Presentation.Web
 
             services.AddSingleton<IConnectionMultiplexer>(c =>
             {
-                // Try to get the connection string from the environment variable first
-                string connectionString = Environment.GetEnvironmentVariable("REDISCLOUD_URL");
-
-                // If the environment variable is not set, fall back to the configuration file
-                if (string.IsNullOrEmpty(connectionString))
-                {
-                    connectionString = _config.GetConnectionString("Redis");
-                }
-
-                var configuration = ConfigurationOptions.Parse(connectionString, true);
+                var configuration = ConfigurationOptions.Parse(_config.GetConnectionString("Redis"), true);
                 return ConnectionMultiplexer.Connect(configuration);
             });
 
@@ -88,10 +81,15 @@ namespace Preepex.Web.Presentation.Web
             {
                 configuration.RootPath = _clientAppAdminDist;
             });
+
+
             services.AddSwaggerDocumentation();
             services.AddControllers(options => options.EnableEndpointRouting = false);
+
+
         }
 
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             // Common Swagger configuration for both Development and Production
@@ -146,6 +144,7 @@ namespace Preepex.Web.Presentation.Web
 
             //// global cors policy
             ///// UseCors must be called before UseResponseCaching
+
             //app.UseCors(_defaultCorsPolicyName);
 
             app.UseCors(x => x
@@ -191,8 +190,6 @@ namespace Preepex.Web.Presentation.Web
                     });
                 });
             }
-
-            //TODO:
             //generic routes
             var genericPattern = "/{SeName}";
 
@@ -206,6 +203,41 @@ namespace Preepex.Web.Presentation.Web
                     pattern: genericPattern,
                     defaults: new { controller = "Catalog", action = "Category" });
 
+                //endpointRouteBuilder.MapControllerRoute(name: "GenericUrl",
+                //   pattern: "{genericSeName}",
+                //   defaults: new { controller = "Common", action = "GenericUrl" });
+
+                //endpointRouteBuilder.MapControllerRoute(name: "GenericUrlWithParameter",
+                //    pattern: "{genericSeName}/{genericParameter}",
+                //    defaults: new { controller = "Common", action = "GenericUrl" });
+                
+                //endpointRouteBuilder.MapControllerRoute(name: "Product",
+                //    pattern: genericPattern,
+                //    defaults: new { controller = "Product", action = "ProductDetails" });
+
+                //endpointRouteBuilder.MapControllerRoute(name: "Manufacturer",
+                //    pattern: genericPattern,
+                //    defaults: new { controller = "Catalog", action = "Manufacturer" });
+
+                //endpointRouteBuilder.MapControllerRoute(name: "Vendor",
+                //    pattern: genericPattern,
+                //    defaults: new { controller = "Catalog", action = "Vendor" });
+
+                //endpointRouteBuilder.MapControllerRoute(name: "NewsItem",
+                //    pattern: genericPattern,
+                //    defaults: new { controller = "News", action = "NewsItem" });
+
+                //endpointRouteBuilder.MapControllerRoute(name: "BlogPost",
+                //    pattern: genericPattern,
+                //    defaults: new { controller = "Blog", action = "BlogPost" });
+
+                //endpointRouteBuilder.MapControllerRoute(name: "Topic",
+                //    pattern: genericPattern,
+                //    defaults: new { controller = "Topic", action = "TopicDetails" });
+
+                //endpointRouteBuilder.MapControllerRoute(name: "ProductsByTag",
+                //    pattern: genericPattern,
+                //    defaults: new { controller = "Catalog", action = "ProductsByTag" });
             });
 
         }

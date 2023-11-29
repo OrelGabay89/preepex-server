@@ -16,10 +16,15 @@ namespace Preepex.Core.Application.Messages
     /// </summary>
     public partial class EmailSender : IEmailSender
     {
+        #region Fields
 
         private readonly IDownloadService _downloadService;
         private readonly Interfaces.Configuration.IFileProvider _fileProvider;
         private readonly ISmtpBuilder _smtpBuilder;
+
+        #endregion
+
+        #region Ctor
 
         public EmailSender(IDownloadService downloadService, Interfaces.Configuration.IFileProvider fileProvider, ISmtpBuilder smtpBuilder)
         {
@@ -28,6 +33,9 @@ namespace Preepex.Core.Application.Messages
             _smtpBuilder = smtpBuilder;
         }
 
+        #endregion
+
+        #region Utilities
 
         /// <summary>
         /// Create an file attachment for the specific download object from DB
@@ -96,6 +104,10 @@ namespace Preepex.Core.Application.Messages
                 ContentTransferEncoding = ContentEncoding.Base64
             };
         }
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// Sends an email
@@ -191,5 +203,6 @@ namespace Preepex.Core.Application.Messages
             await smtpClient.DisconnectAsync(true);
         }
 
+        #endregion
     }
 }

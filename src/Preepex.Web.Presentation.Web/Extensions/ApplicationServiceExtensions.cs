@@ -26,8 +26,6 @@ using Preepex.Infrastructure.Services.Stores;
 using Preepex.Infrastructure.Services.Tax;
 using Preepex.Infrastructure.Services.Topics;
 using Preepex.Presentation.Framework.Routing;
-using System.Diagnostics;
-using System;
 
 namespace Preepex.Web.Presentation.Web.Extensions
 {
@@ -41,35 +39,36 @@ namespace Preepex.Web.Presentation.Web.Extensions
               .AddMvc(options =>
               {
                   options.EnableEndpointRouting = false;
+
+                  //options.Filters.Add(typeof(MultiTenancyFilter));
               })
               
               .AddNewtonsoftJson(o =>
               {
+                  //o.SerializerSettings.ContractResolver = new DefaultContractResolver();
                   o.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
               })
               .AddSessionStateTempDataProvider();
 
             services.AddSingleton<IResponseCacheService, RedisResponseCacheService>();
-
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IOrderService, OrderService>();
-            services.AddScoped<IBasketService, BasketService>();
-            services.AddScoped<IPaymentService, PaymentService>();
-
-
-            //Tools
-            services.AddScoped<IPasswordGeneratorService, PasswordGeneratorIdentityService>();
-            services.AddScoped<ISmtpBuilder, SmtpBuilder>();
-
-
+            
+            services.AddScoped<ITokenService, AccessTokenService>();
             services.AddScoped<ILocalizationService, LocalizationService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IEmailAccountService, EmailAccountService>();
+            services.AddScoped<ISmtpBuilder, SmtpBuilder>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IDownloadService, DownloadService>();
+            services.AddScoped<IPasswordGeneratorService, PasswordGeneratorIdentityService>();
             services.AddScoped<ILanguageService, LanguageService>();
 
             services.AddScoped<IStoreMappingService, StoreMappingService>();
             services.AddScoped<IStoreService, StoreService>();
+            services.AddScoped<INewsLetterSubscriptionService, NewsLetterSubscriptionService>();
+            services.AddScoped<IWorkflowMessageService, WorkflowMessageService>();
 
             services.AddScoped<IAclService, AclService>();
             services.AddScoped<ILocalizedEntityService, LocalizedEntityService>();
@@ -82,15 +81,20 @@ namespace Preepex.Web.Presentation.Web.Extensions
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductTagService,ProductTagService>();
             services.AddScoped<IProductAttributeService, ProductAttributeService>();
+            services.AddScoped<IDateRangeService, DateRangeService>();
             services.AddScoped<IPriceCalculationService, PriceCalculationService>();
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<ITaxService, TaxService>();
+            services.AddScoped<IWorkContext, WebWorkContext>();
+            services.AddScoped<IPriceFormatter, PriceFormatter>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IBasketService, BasketService>();
             services.AddScoped<ISubscribersService, SubscribersService>();
 
             services.AddScoped<ITopicService, TopicService>();
             services.AddScoped<IGenericAttributeService, GenericAttributeService>();
 
+            services.AddTransient<IImportantMessagesLogger, NoopImportantMessagesLogger>();
             services.AddScoped<SlugRouteTransformer>();
 
             var appSettings = Singleton<AppSettings>.Instance ?? new AppSettings();
@@ -100,8 +104,6 @@ namespace Preepex.Web.Presentation.Web.Extensions
                 services.AddScoped<IPictureService, PictureService>();
 
 
-
-            // services.AddScoped<IPriceFormatter, PriceFormatter>();
 
             return services;
         }
