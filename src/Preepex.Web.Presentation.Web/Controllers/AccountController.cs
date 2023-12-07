@@ -300,6 +300,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
             {
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Name, user.DisplayName),
+                new Claim("UserId", user.Id)
             };
 
             var claimsIdentity = new ClaimsIdentity(
