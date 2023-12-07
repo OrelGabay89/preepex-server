@@ -1,46 +1,71 @@
-using Preepex.Core.Application.Interfaces;
-using StackExchange.Redis;
-using System;
-using System.Text.Json;
-using System.Threading.Tasks;
-
 namespace Preepex.Infrastructure.Services
 {
+    using StackExchange.Redis;
+    using System;
+    using System.Text.Json;
+    using System.Threading.Tasks;
+    using Preepex.Core.Application.Interfaces; // Assuming this is your namespace
+
     public class RedisResponseCacheService : IResponseCacheService
     {
         private readonly IDatabase _database;
+        private readonly IConnectionMultiplexer _redisConnection;
+
         public RedisResponseCacheService(IConnectionMultiplexer redis)
         {
             _database = redis.GetDatabase();
+            _redisConnection = redis;
         }
 
         public async Task CacheResponseAsync(string cacheKey, object response, TimeSpan timeToLive)
         {
-            if (response == null)
+            if (response == null || !IsRedisConnected())
             {
                 return;
             }
 
-            var options = new JsonSerializerOptions
+            try
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
 
-            var serialisedResponse = JsonSerializer.Serialize(response, options);
-
-            await _database.StringSetAsync(cacheKey, serialisedResponse, timeToLive);
+                var serializedResponse = JsonSerializer.Serialize(response, options);
+                await _database.StringSetAsync(cacheKey, serializedResponse, timeToLive);
+            }
+            catch (Exception ex)
+            {
+                // Handle or log the exception as necessary
+                Console.WriteLine($"Error caching data in Redis: {ex.Message}");
+            }
         }
 
         public async Task<string> GetCachedResponseAsync(string cacheKey)
         {
-            var cachedResponse = await _database.StringGetAsync(cacheKey);
-
-            if (cachedResponse.IsNullOrEmpty)
+            if (!IsRedisConnected())
             {
                 return null;
             }
 
-            return cachedResponse;
+            try
+            {
+                var cachedResponse = await _database.StringGetAsync(cacheKey);
+
+                return cachedResponse.IsNullOrEmpty ? null : cachedResponse.ToString();
+            }
+            catch (Exception ex)
+            {
+                // Handle or log the exception as necessary
+                Console.WriteLine($"Error retrieving data from Redis: {ex.Message}");
+                return null;
+            }
+        }
+
+        private bool IsRedisConnected()
+        {
+            return _redisConnection != null && _redisConnection.IsConnected;
         }
     }
+
 }

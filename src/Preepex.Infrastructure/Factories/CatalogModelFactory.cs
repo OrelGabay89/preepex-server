@@ -90,6 +90,7 @@ namespace Preepex.Infrastructure.Factories
             var pictureSize = _mediaSettings.CategoryThumbPictureSize;
             var categoriesCacheKey = _staticCacheManager.PrepareKeyForDefaultCache(PreepexModelCacheDefaults.CategoryHomepageKey,
                 store, customerRoleIds, pictureSize, language, _webHelper.IsCurrentConnectionSecured());
+            
             var model = await _staticCacheManager.GetAsync(categoriesCacheKey, async () =>
             {
                 var homepageCategories = await _categoryService.GetAllCategoriesDisplayedOnHomepageAsync(storeId);
@@ -130,6 +131,7 @@ namespace Preepex.Infrastructure.Factories
                     var secured = _webHelper.IsCurrentConnectionSecured();
                     var categoryPictureCacheKey = _staticCacheManager.PrepareKeyForDefaultCache(PreepexModelCacheDefaults.CategoryPictureModelKey,
                         category, pictureSize, true, language, secured, store);
+                    
                     catModel.PictureModel = await _staticCacheManager.GetAsync(categoryPictureCacheKey, async () =>
                     {
                         var picture = await _pictureService.GetPictureByIdAsync(category.PictureId);

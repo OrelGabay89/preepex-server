@@ -29,7 +29,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
             _whSecret = config.GetSection("StripeSettings:WhSecret").Value;
         }
 
-        [HttpPost("{basketId}")]
+        [HttpPost("{basketId}")]                                                                          
         public async Task<ActionResult<CustomerBasket>> CreateOrUpdatePaymentIntent(string basketId)
         {
             var basket = await _paymentService.CreateOrUpdatePaymentIntent(basketId);

@@ -287,5 +287,9 @@
         public static CacheKey UrlRecordModelKey => new("Preepex.pres.urlrecord-{0}-{1}-{2}-{3}-{4}-{5}", UrlRecordPrefixCacheKey);
         public static string UrlRecordPrefixCacheKey => "Preepex.pres.urlrecord";
 
+
+        public static CacheKey RequestCacheKey => new CacheKey("Preepex.request.{0}", RequestPrefixCacheKey);
+        public static string RequestPrefixCacheKey => "Preepex.request.prefix";
+
     }
 }
