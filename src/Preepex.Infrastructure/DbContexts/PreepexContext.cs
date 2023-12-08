@@ -593,7 +593,15 @@ namespace Preepex.Core.Domain.Entities
                 
                 entity.HasIndex(e => e.SubjectToAcl, "IX_Category_SubjectToAcl");
 
+                entity.HasIndex(e => new {e.Published, e.Deleted}, "IX_Category_Published_Deleted");
+
+                entity.HasIndex(e => new { e.Id, e.Published, e.Deleted}, "IX_Category_Id_Published_Deleted");
+
+                entity.HasIndex(e => new { e.Id, e.DisplayOrder, e.ParentCategoryId }, "IX_Category_Id_DisplayOrder_ParentCategoryId");
+
                 entity.HasIndex(e => new { e.Published, e.Deleted, e.ShowOnHomepage, e.DisplayOrder, e.Id }, "IX_Category_Published_Deleted_ShowOnHomepage_DisplayOrder_Id");
+
+                entity.HasIndex(e => new {e.Published, e.Deleted, e.LimitedToStores, e.ParentCategoryId, e.DisplayOrder, e.Id }, "IX_Category_Published_Deleted_LimitedToStores_ParentCategoryId_DisplayOrder_Id");
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
