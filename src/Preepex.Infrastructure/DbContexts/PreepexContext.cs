@@ -2808,6 +2808,14 @@ namespace Preepex.Core.Domain.Entities
 
                 entity.HasIndex(e => e.Id, "IX_Products_Id");
 
+                entity.HasIndex(e => e.Deleted, "IX_Products_Deleted");
+
+                entity.HasIndex(e => e.MarkAsNew, "IX_Products_MarkAsNew");
+
+                entity.HasIndex(e => e.LimitedToStores, "IX_Products_LimitedToStores");
+
+                entity.HasIndex(e => e.DisplayOrder, "IX_Products_DisplayOrder");
+
                 entity.HasIndex(e => e.Name, "IX_Products_Name");
 
                 entity.HasIndex(e => e.Sku, "IX_Product_Sku");
@@ -2827,9 +2835,12 @@ namespace Preepex.Core.Domain.Entities
                 entity.HasIndex(e => e.VisibleIndividually, "IX_Product_VisibleIndividually");
 
                 entity.HasIndex(e => e.DisplayOrder, "IX_Products_DisplayOrder");
+                
 
 
                 entity.HasIndex(e => new { e.Id, e.Deleted }, "IX_Product_Delete_Id");
+
+                entity.HasIndex(e => new { e.LimitedToStores, e.Id }, "IX_Products_LimitedToStores_Id");
 
                 entity.HasIndex(e => new { e.Id, e.DisplayOrder }, "IX_Products_Id_DisplayOrder");
 

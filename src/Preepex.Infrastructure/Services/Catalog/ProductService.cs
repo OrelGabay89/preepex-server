@@ -210,8 +210,8 @@ namespace Preepex.Infrastructure.Services.Catalog
         {
             var query = _productRepository.Table
                 .Where(p => p.Published && !p.Deleted && p.MarkAsNew)
-                .OrderBy(p => p.DisplayOrder)
-                .ThenBy(p => p.Id)
+                    .OrderBy(p => p.DisplayOrder)
+                    .ThenBy(p => p.Id)
                 .Take(5);
 
 
