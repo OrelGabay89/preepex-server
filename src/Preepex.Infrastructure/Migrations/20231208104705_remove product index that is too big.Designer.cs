@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Preepex.Core.Domain.Entities;
 
@@ -10,9 +11,10 @@ using Preepex.Core.Domain.Entities;
 namespace Preepex.Infrastructure.Migrations
 {
     [DbContext(typeof(PreepexContext))]
-    partial class PreepexContextModelSnapshot : ModelSnapshot
+    [Migration("20231208104705_remove product index that is too big")]
+    partial class removeproductindexthatistoobig
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2301,6 +2303,8 @@ namespace Preepex.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex(new[] { "LanguageId" }, "IX_DBC6F45E7AB497D690C477A31075255AF97FFBBF");
+
+                    b.HasIndex(new[] { "LocaleKeyGroup", "LanguageId", "LocaleKey", "LocaleValue" }, "IX_LocalizedProperty_LKG_LI_LK_LV");
 
                     b.ToTable("localizedproperty", (string)null);
 

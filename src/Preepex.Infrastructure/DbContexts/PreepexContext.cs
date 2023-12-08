@@ -1875,14 +1875,6 @@ namespace Preepex.Core.Domain.Entities
 
                 entity.HasIndex(e => e.LanguageId, "IX_DBC6F45E7AB497D690C477A31075255AF97FFBBF");
 
-                entity.HasIndex(e => e.LocaleKeyGroup, "IX_LocalizedProperty_LocaleKeyGroup");
-
-                entity.HasIndex(e => e.LanguageId, "IX_LocalizedProperty_LanguageId");
-
-                entity.HasIndex(e => e.LocaleKey, "IX_LocalizedProperty_LocaleKey");
-
-                entity.HasIndex(e => e.LocaleValue, "IX_LocalizedProperty_LocaleValue");
-
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
                 entity.Property(e => e.EntityId).HasColumnType("int(11)");
@@ -2806,21 +2798,17 @@ namespace Preepex.Core.Domain.Entities
                 entity.HasCharSet("latin1")
                     .UseCollation("latin1_swedish_ci");
 
-                entity.HasIndex(e => new { e.Deleted, e.VendorId, e.ProductTypeId, e.ManageInventoryMethodId, e.MinStockQuantity, e.UseMultipleWarehouses }, "IX_GetLowStockProducts");
+                entity.HasIndex(e => e.Id, "IX_Products_Id");
 
-                entity.HasIndex(e => new { e.Deleted, e.Id }, "IX_Product_Delete_Id");
+                entity.HasIndex(e => e.Name, "IX_Products_Name");
 
-                entity.HasIndex(e => new { e.Deleted, e.Id, e.VisibleIndividually }, "IX_Product_Delete_Id_VisibleIndividually");
+                entity.HasIndex(e => e.Sku, "IX_Product_Sku");
 
-                entity.HasIndex(e => new { e.VisibleIndividually, e.Published, e.Deleted }, "IX_Product_Deleted_Published_VisibleIndividually");
-
-                entity.HasIndex(e => new { e.Published, e.Deleted }, "IX_Product_Deleted_and_Published");
+                entity.HasIndex(e => e.ManufacturerPartNumber, "IX_Product_ManufacturerPM");
 
                 entity.HasIndex(e => e.LimitedToStores, "IX_Product_LimitedToStores");
 
                 entity.HasIndex(e => e.ParentGroupedProductId, "IX_Product_ParentGroupedProductId");
-
-                entity.HasIndex(e => new { e.Price, e.AvailableStartDateTimeUtc, e.AvailableEndDateTimeUtc, e.Published, e.Deleted }, "IX_Product_PriceDatesEtc");
 
                 entity.HasIndex(e => e.Published, "IX_Product_Published");
 
@@ -2832,19 +2820,25 @@ namespace Preepex.Core.Domain.Entities
 
                 entity.HasIndex(e => e.DisplayOrder, "IX_Products_DisplayOrder");
 
-                entity.HasIndex(e => e.Id, "IX_Products_Id");
 
-                entity.HasIndex(e => e.Name, "IX_Products_Name");
-
-                entity.HasIndex(e => e.ManufacturerPartNumber, "IX_Product_ManufacturerPM");
-
-                entity.HasIndex(e => e.Sku, "IX_Product_Sku");
+                entity.HasIndex(e => new { e.Id, e.Deleted }, "IX_Product_Delete_Id");
 
                 entity.HasIndex(e => new { e.Id, e.DisplayOrder }, "IX_Products_Id_DisplayOrder");
 
-                entity.HasIndex(e => new { e.Published, e.Deleted, e.MarkAsNew }, "IX_Products_Published_Deleted_MarkAsNew");
+                entity.HasIndex(e => new { e.Deleted, e.Published }, "IX_Product_Deleted_and_Published");
 
-                entity.HasIndex(e => new { e.Published, e.Deleted, e.MarkAsNew, e.LimitedToStores, e.Id }, "IX_Products_Published_Deleted_MarkAsNew_LimitedToStores_Id");
+                entity.HasIndex(e => new { e.Deleted, e.Published, e.MarkAsNew }, "IX_Products_Published_Deleted_MarkAsNew");
+
+                entity.HasIndex(e => new { e.Id, e.Deleted, e.VisibleIndividually }, "IX_Product_Delete_Id_VisibleIndividually");
+
+                entity.HasIndex(e => new { e.Deleted, e.Published, e.VisibleIndividually }, "IX_Product_Deleted_Published_VisibleIndividually");
+
+                entity.HasIndex(e => new { e.Id, e.Deleted, e.Published, e.MarkAsNew, e.LimitedToStores }, "IX_Products_Published_Deleted_MarkAsNew_LimitedToStores_Id");
+
+                entity.HasIndex(e => new { e.Price, e.AvailableStartDateTimeUtc, e.AvailableEndDateTimeUtc, e.Published, e.Deleted }, "IX_Product_PriceDatesEtc");
+
+                entity.HasIndex(e => new { e.Deleted, e.VendorId, e.ProductTypeId, e.ManageInventoryMethodId, e.MinStockQuantity, e.UseMultipleWarehouses }, "IX_GetLowStockProducts");
+
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 

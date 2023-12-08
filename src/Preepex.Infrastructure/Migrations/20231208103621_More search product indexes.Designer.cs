@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Preepex.Core.Domain.Entities;
 
@@ -10,9 +11,10 @@ using Preepex.Core.Domain.Entities;
 namespace Preepex.Infrastructure.Migrations
 {
     [DbContext(typeof(PreepexContext))]
-    partial class PreepexContextModelSnapshot : ModelSnapshot
+    [Migration("20231208103621_More search product indexes")]
+    partial class Moresearchproductindexes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2302,6 +2304,8 @@ namespace Preepex.Infrastructure.Migrations
 
                     b.HasIndex(new[] { "LanguageId" }, "IX_DBC6F45E7AB497D690C477A31075255AF97FFBBF");
 
+                    b.HasIndex(new[] { "LocaleKeyGroup", "LanguageId", "LocaleKey", "LocaleValue" }, "IX_LocalizedProperty_LKG_LI_LK_LV");
+
                     b.ToTable("localizedproperty", (string)null);
 
                     MySqlEntityTypeBuilderExtensions.HasCharSet(b, "latin1");
@@ -4013,6 +4017,8 @@ namespace Preepex.Infrastructure.Migrations
                     b.HasIndex(new[] { "Id", "DisplayOrder" }, "IX_Products_Id_DisplayOrder");
 
                     b.HasIndex(new[] { "Name" }, "IX_Products_Name");
+
+                    b.HasIndex(new[] { "Name", "ManufacturerPartNumber", "Sku" }, "IX_Products_Name_ManufacturerPartNumber_Sku");
 
                     b.HasIndex(new[] { "Deleted", "Published", "MarkAsNew" }, "IX_Products_Published_Deleted_MarkAsNew");
 
