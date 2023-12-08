@@ -4496,13 +4496,17 @@ namespace Preepex.Core.Domain.Entities
                 entity.HasIndex(e => new { e.EntityId, e.EntityName, e.LanguageId }, "IX_UrlRecord_EntityId_EntityName_LanguageId")
                     .IsUnique();
 
+                entity.HasIndex(e => e.Slug, "IX_UrlRecord_Slug");
+
+                entity.HasIndex(e => e.LanguageId, "IX_UrlRecord_LanguageId");
+
+                entity.HasIndex(e => new { e.IsActive, e.Id }, "IX_UrlRecord_IsActive_Id");
+
+                entity.HasIndex(e => new { e.Slug, e.IsActive, e.Id }, "IX_UrlRecord_Slug_IsActive_Id");
+
                 entity.HasIndex(e => new { e.EntityId, e.EntityName, e.LanguageId, e.IsActive }, "IX_UrlRecord_EntityId_EntityName_LanguageId_IsActive");
 
                 entity.HasIndex(e => new { e.EntityId, e.EntityName, e.LanguageId, e.IsActive, e.Id }, "IX_UrlRecord_EntityId_EntityName_LanguageId_IsActive_Id");
-
-                entity.HasIndex(e => e.Slug, "IX_UrlRecord_Slug");
-
-                entity.HasIndex(e => new { e.Slug, e.IsActive, e.Id }, "IX_UrlRecord_Slug_IsActive_Id");
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 

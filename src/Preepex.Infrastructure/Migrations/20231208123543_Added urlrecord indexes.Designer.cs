@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Preepex.Core.Domain.Entities;
 
@@ -10,9 +11,10 @@ using Preepex.Core.Domain.Entities;
 namespace Preepex.Infrastructure.Migrations
 {
     [DbContext(typeof(PreepexContext))]
-    partial class PreepexContextModelSnapshot : ModelSnapshot
+    [Migration("20231208123543_Added urlrecord indexes")]
+    partial class Addedurlrecordindexes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
