@@ -100,7 +100,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
                     select new
                     {
                         label = p.Name,
-                        producturl = $"/{p?.SeName}",
+                        seName = $"/{p?.SeName}",
                         productpictureurl = p?.PictureModel?.ThumbImageUrl,
                         showlinktoresultsearch = showLinkToResultSearch,
                         shortDesc = p?.ShortDescription,
