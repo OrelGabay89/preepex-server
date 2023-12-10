@@ -114,11 +114,11 @@ namespace Preepex.Web.Presentation.Web.Controllers
 
         [HttpPost("category-products/{categoryId}")]
         [RedisCached(600)]
-        public virtual async Task<IReadOnlyList<ProductDetailsDto>> GetCategoryProducts(int categoryId, [FromBody] CatalogProductsCommand command)
+        public virtual async Task<IReadOnlyList<ProductDetailsDto>> GetCategoryProducts(int categoryId, [FromQuery] CatalogProductsFilter filter)
         {
             try
             {
-                var products = await _categoryService.GetProductsByCategory(categoryId, command);
+                var products = await _categoryService.GetProductsByCategory(categoryId, filter);
                 
                 return await _productModelFactory.PrepareProductsModelAsync(products);
             }

@@ -265,12 +265,12 @@ namespace Preepex.Infrastructure.Factories
         /// Prepare category model
         /// </summary>
         /// <param name="category">Category</param>
-        /// <param name="command">Model to get the catalog products</param>
+        /// <param name="filter">Model to get the catalog products</param>
         /// <returns>
         /// A task that represents the asynchronous operation
         /// The task result contains the category model
         /// </returns>
-        public virtual async Task<CategoryModel> PrepareCategoryModelAsync(Category category, CatalogProductsCommand command = null)
+        public virtual async Task<CategoryModel> PrepareCategoryModelAsync(Category category, CatalogProductsFilter filter = null)
         {
             if (category == null)
                 throw new ArgumentNullException(nameof(category));
