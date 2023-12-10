@@ -377,11 +377,11 @@ namespace Preepex.Infrastructure.Services
                 var priceRange = filter.Price.Split('-');
                 if (priceRange.Length == 2)
                 {
-                    if (int.TryParse(priceRange[0], out var minPrice)) {
+                    if (!string.IsNullOrWhiteSpace(priceRange[0]) && int.TryParse(priceRange[0], out var minPrice)) {
                         query = query.Where(p => p.Price >= minPrice);
                     }
                     
-                    if (int.TryParse(priceRange[1], out var maxPrice)) {
+                    if (!string.IsNullOrWhiteSpace(priceRange[1]) && int.TryParse(priceRange[1], out var maxPrice)) {
                         query = query.Where(p => p.Price <= maxPrice);
                     }
                 }
