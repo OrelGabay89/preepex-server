@@ -102,7 +102,8 @@ namespace Preepex.Web.Presentation.Web.Controllers
                         showlinktoresultsearch = showLinkToResultSearch,
                         shortDesc = p?.ShortDescription,
                         sku = p.Sku,
-                        ProductPriceDto = p?.ProductPrice
+                        ProductPriceDto = p?.ProductPrice,
+                        id = p?.ProductId
                     })
                 .ToList();
             return Ok(result);
