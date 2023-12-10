@@ -12,12 +12,12 @@ namespace Preepex.Core.Application.Interfaces.Factories
         /// Prepare category model
         /// </summary>
         /// <param name="category">Category</param>
-        /// <param name="command">Model to get the catalog products</param>
+        /// <param name="filter">Model to get the catalog products</param>
         /// <returns>
         /// A task that represents the asynchronous operation
         /// The task result contains the category model
         /// </returns>
-        Task<CategoryModel> PrepareCategoryModelAsync(Category category, CatalogProductsCommand command = null);
+        Task<CategoryModel> PrepareCategoryModelAsync(Category category, CatalogProductsFilter filter = null);
         
         /// <summary>
         /// Prepare homepage category models

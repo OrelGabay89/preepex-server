@@ -279,7 +279,6 @@ namespace Preepex.Infrastructure.Factories
                 ShowGtin = _catalogSettings.ShowGtin,
                 Gtin = product.Gtin,
                 ManageInventoryMethod = (ManageInventoryMethodEnum)product.ManageInventoryMethodId,
-                //StockAvailability = await _productService.FormatStockMessageAsync(product, string.Empty),
                 HasSampleDownload = product.IsDownload && product.HasSampleDownload,
                 DisplayDiscontinuedMessage = !product.Published &&
                                              _catalogSettings.DisplayDiscontinuedMessageForUnpublishedProducts,
@@ -312,12 +311,6 @@ namespace Preepex.Infrastructure.Factories
                     model.DisplayBackInStockSubscription = !model.InStock && product.AllowBackInStockSubscriptions;
                     break;
 
-                //case ManageInventoryMethod.ManageStockByAttributes:
-                //    model.InStock = (await _productAttributeService
-                //        .GetAllProductAttributeCombinationsAsync(product.Id))
-                //        ?.Any(c => c.StockQuantity > 0 || c.AllowOutOfStockOrders)
-                //        ?? false;
-                //    break;
             }
 
             //shipping info

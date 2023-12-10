@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Preepex.Core.Domain.Entities;
 
@@ -10,9 +11,10 @@ using Preepex.Core.Domain.Entities;
 namespace Preepex.Infrastructure.Migrations
 {
     [DbContext(typeof(PreepexContext))]
-    partial class PreepexContextModelSnapshot : ModelSnapshot
+    [Migration("20231208104705_remove product index that is too big")]
+    partial class removeproductindexthatistoobig
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -695,17 +697,9 @@ namespace Preepex.Infrastructure.Migrations
 
                     b.HasIndex(new[] { "DisplayOrder" }, "IX_Category_DisplayOrder");
 
-                    b.HasIndex(new[] { "Id", "DisplayOrder", "ParentCategoryId" }, "IX_Category_Id_DisplayOrder_ParentCategoryId");
-
-                    b.HasIndex(new[] { "Id", "Published", "Deleted" }, "IX_Category_Id_Published_Deleted");
-
                     b.HasIndex(new[] { "LimitedToStores" }, "IX_Category_LimitedToStores");
 
                     b.HasIndex(new[] { "ParentCategoryId" }, "IX_Category_ParentCategoryId");
-
-                    b.HasIndex(new[] { "Published", "Deleted" }, "IX_Category_Published_Deleted");
-
-                    b.HasIndex(new[] { "Published", "Deleted", "LimitedToStores", "ParentCategoryId", "DisplayOrder", "Id" }, "IX_Category_Published_Deleted_LimitedToStores_ParentCategoryId_DisplayOrder_Id");
 
                     b.HasIndex(new[] { "Published", "Deleted", "ShowOnHomepage", "DisplayOrder", "Id" }, "IX_Category_Published_Deleted_ShowOnHomepage_DisplayOrder_Id");
 
@@ -2309,6 +2303,8 @@ namespace Preepex.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex(new[] { "LanguageId" }, "IX_DBC6F45E7AB497D690C477A31075255AF97FFBBF");
+
+                    b.HasIndex(new[] { "LocaleKeyGroup", "LanguageId", "LocaleKey", "LocaleValue" }, "IX_LocalizedProperty_LKG_LI_LK_LV");
 
                     b.ToTable("localizedproperty", (string)null);
 
@@ -4014,19 +4010,11 @@ namespace Preepex.Infrastructure.Migrations
 
                     b.HasIndex(new[] { "VisibleIndividually" }, "IX_Product_VisibleIndividually");
 
-                    b.HasIndex(new[] { "Deleted" }, "IX_Products_Deleted");
-
                     b.HasIndex(new[] { "DisplayOrder" }, "IX_Products_DisplayOrder");
 
                     b.HasIndex(new[] { "Id" }, "IX_Products_Id");
 
                     b.HasIndex(new[] { "Id", "DisplayOrder" }, "IX_Products_Id_DisplayOrder");
-
-                    b.HasIndex(new[] { "LimitedToStores" }, "IX_Products_LimitedToStores");
-
-                    b.HasIndex(new[] { "LimitedToStores", "Id" }, "IX_Products_LimitedToStores_Id");
-
-                    b.HasIndex(new[] { "MarkAsNew" }, "IX_Products_MarkAsNew");
 
                     b.HasIndex(new[] { "Name" }, "IX_Products_Name");
 
@@ -5850,10 +5838,6 @@ namespace Preepex.Infrastructure.Migrations
                     b.HasIndex(new[] { "EntityId", "EntityName", "LanguageId", "IsActive" }, "IX_UrlRecord_EntityId_EntityName_LanguageId_IsActive");
 
                     b.HasIndex(new[] { "EntityId", "EntityName", "LanguageId", "IsActive", "Id" }, "IX_UrlRecord_EntityId_EntityName_LanguageId_IsActive_Id");
-
-                    b.HasIndex(new[] { "IsActive", "Id" }, "IX_UrlRecord_IsActive_Id");
-
-                    b.HasIndex(new[] { "LanguageId" }, "IX_UrlRecord_LanguageId");
 
                     b.HasIndex(new[] { "Slug" }, "IX_UrlRecord_Slug");
 

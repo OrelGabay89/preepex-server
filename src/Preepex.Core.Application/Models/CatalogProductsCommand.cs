@@ -8,13 +8,14 @@ using System.Xml.Linq;
 
 namespace Preepex.Core.Application.Models
 {
-    public partial record CatalogProductsCommand /*: BasePageableModel*/
+    public partial record CatalogProductsFilter /*: BasePageableModel*/
     {
         #region Properties
 
         /// <summary>
         /// Gets or sets the price ('min-max' format)
         /// </summary>
+        [FromQuery(Name = "price")]
         public string Price { get; set; }
 
         /// <summary>
@@ -32,12 +33,14 @@ namespace Preepex.Core.Application.Models
         /// <summary>
         /// Gets or sets a order by
         /// </summary>
-        public int? OrderBy { get; set; }
+        [FromQuery(Name = "sort")]
+        public string? OrderBy { get; set; }
 
         /// <summary>
-        /// Gets or sets a product sorting
+        /// Gets or sets a value indicating wether the order direction is ascending or descending, false is descending
         /// </summary>
-        public string ViewMode { get; set; }
+        [FromQuery(Name = "asc")]
+        public bool? OrderByAscending { get; set; }
 
         #endregion
     }

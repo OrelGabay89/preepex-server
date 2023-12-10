@@ -1,4 +1,5 @@
 ﻿using LinqToDB;
+using Microsoft.EntityFrameworkCore;
 using Preepex.Common.Extensions;
 using Preepex.Core.Application.Caching;
 using Preepex.Core.Application.Extenstions;
@@ -17,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Product = Preepex.Core.Domain.Entities.Product;
 
 namespace Preepex.Infrastructure.Services.Catalog
 {
@@ -28,6 +30,7 @@ namespace Preepex.Infrastructure.Services.Catalog
         }
 
         private readonly IGenericRepository<Core.Domain.Entities.Product> _productRepository;
+        private readonly IGenericRepository<Storemapping> _storeMappingRepository;
         private readonly IGenericRepository<ProductBrand> _productBrandRepository;
         private readonly IGenericRepository<ProductCategory> _productCategoryRepository;
         private readonly IGenericRepository<ProductTag> _productTagRepository;
@@ -53,15 +56,20 @@ namespace Preepex.Infrastructure.Services.Catalog
         private readonly IStaticCacheManager _staticCacheManager;
 
         public ProductService(
-            IGenericRepository<Core.Domain.Entities.Product> productRepository, 
+            IGenericRepository<Core.Domain.Entities.Product> productRepository,
+            IGenericRepository<Storemapping> storeMappingRepository,
             IGenericRepository<ProductBrand> productBrandRepository,
-            IGenericRepository<Relatedproduct> relatedProductRepository,
-            IGenericRepository<Productreview> productReviewRepository, 
+            IGenericRepository<ProductCategory> productCategoryRepository,
+            IGenericRepository<ProductTag> productTagRepository,
+            IGenericRepository<Productwarehouseinventory> productWarehouseInventoryRepository,
             IGenericRepository<ProductManufacturerMapping> productManufacturerRepository,
+            IGenericRepository<Relatedproduct> relatedProductRepository,
+            IGenericRepository<Productreview> productReviewRepository,
             IGenericRepository<ProductAttributeCombination> productAttributeCombinationRepository,
             IGenericRepository<ProductSpecificationattributeMapping> productSpecificationAttributeRepository,
-            IGenericRepository<Localizedproperty> localizedPropertyRepository,
             IGenericRepository<ProductProducttagMapping> productTagMappingRepository,
+            IGenericRepository<Localizedproperty> localizedPropertyRepository,
+
             ILanguageService languageService, 
             IStoreMappingService storeMappingService,
             IAclService aclService,
@@ -72,21 +80,27 @@ namespace Preepex.Infrastructure.Services.Catalog
             )
         {
             _productRepository = productRepository;
+            _storeMappingRepository = storeMappingRepository;
             _productBrandRepository = productBrandRepository;
-            _productReviewRepository = productReviewRepository;
-            _relatedProductRepository = relatedProductRepository;
+            _productCategoryRepository = productCategoryRepository;
+            _productTagRepository = productTagRepository;
+            _productWarehouseInventoryRepository = productWarehouseInventoryRepository;
             _productManufacturerRepository = productManufacturerRepository;
-            _productTagMappingRepository = productTagMappingRepository;
+            _relatedProductRepository = relatedProductRepository;
+            _productReviewRepository = productReviewRepository;
             _productAttributeCombinationRepository = productAttributeCombinationRepository;
             _productSpecificationAttributeRepository = productSpecificationAttributeRepository;
+            _productTagMappingRepository = productTagMappingRepository;
+            _localizedPropertyRepository = localizedPropertyRepository;
+
             _languageService = languageService;
             _storeMappingService = storeMappingService;
-            _localizedPropertyRepository = localizedPropertyRepository;
             _localizationService = localizationService;
             _staticCacheManager = staticCacheManager;
             _workContext = workContext;
             _catalogSettings = catalogSettings;
             _aclService = aclService;
+            _productWarehouseInventoryRepository = productWarehouseInventoryRepository;
         }
         /// <summary>
         /// Gets product
@@ -196,8 +210,8 @@ namespace Preepex.Infrastructure.Services.Catalog
         {
             var query = _productRepository.Table
                 .Where(p => p.Published && !p.Deleted && p.MarkAsNew)
-                .OrderBy(p => p.DisplayOrder)
-                .ThenBy(p => p.Id)
+                    .OrderBy(p => p.DisplayOrder)
+                    .ThenBy(p => p.Id)
                 .Take(5);
 
 
@@ -257,210 +271,119 @@ namespace Preepex.Infrastructure.Services.Catalog
            bool? overridePublished = null)
         {
             //some databases don't support int.MaxValue
-            if (pageSize == int.MaxValue)
-                pageSize = int.MaxValue - 1;
+            pageSize = pageSize > 500 ? 500 : pageSize;
 
-            var productsQuery = _productRepository.Table;
-
-            if (!showHidden)
-                productsQuery = productsQuery.Where(p => p.Published);
-            else if (overridePublished.HasValue)
-                productsQuery = productsQuery.Where(p => p.Published == overridePublished.Value);
-
-            //apply store mapping constraints
-            productsQuery = await _storeMappingService.ApplyStoreMapping(productsQuery, storeId);
-
-            //apply ACL constraints
-            if (!showHidden)
-            {
-                var customer = await _workContext.GetCurrentCustomerAsync();
-                productsQuery = await _aclService.ApplyAcl(productsQuery, customer);
-            }
+            // we should start from the storeMapping, get all the products that are mapped to the store, then filter them by the rest of the parameters
+            // in order to filter by the rest of the parameters, we need to join the storeMapping with the products table
+            var productsQuery = _storeMappingRepository.Table
+                .Join(
+                    _productRepository.Table,
+                    sm => sm.EntityId,
+                    p => p.Id,
+                    (sm, p) => p
+                )
+                .AsQueryable();
 
             productsQuery = productsQuery
-                .Where(p =>
-                    !p.Deleted &&
-                    (!visibleIndividuallyOnly || p.VisibleIndividually) &&
-                    (vendorId == 0 || p.VendorId == vendorId) &&
-                    (
-                        warehouseId == 0 ||
-                        (
-                            !p.UseMultipleWarehouses ? p.WarehouseId == warehouseId :
-                                _productWarehouseInventoryRepository.Table.Any(pwi => pwi.WarehouseId == warehouseId && pwi.ProductId == p.Id)
-                        )
-                    ) &&
-                    (productType == null || p.ProductTypeId == (int)productType) &&
-                    (
-                        showHidden ||
-                        (
-                            DateTime.UtcNow >= (p.AvailableStartDateTimeUtc ?? DateTime.MinValue) &&
-                            DateTime.UtcNow <= (p.AvailableEndDateTimeUtc ?? DateTime.MaxValue)
-                        )
-                    ) &&
-                    (priceMin == null || p.Price >= priceMin) &&
-                    (priceMax == null || p.Price <= priceMax)
-                );
+                .Where(p => !p.Deleted);
 
-            if (!string.IsNullOrEmpty(keywords))
+            productsQuery = await productsQuery.FilterByWarehouseId(_productWarehouseInventoryRepository, warehouseId);
+
+
+            if (!showHidden && overridePublished.HasValue)
             {
-                var langs = await _languageService.GetAllLanguagesAsync(showHidden: true);
+                productsQuery = productsQuery.Where(p => p.Published == overridePublished.GetValueOrDefault(p.Published));
 
-                //Set a flag which will to points need to search in localized properties. If showHidden doesn't set to true should be at least two published languages.
-                var searchLocalizedValue = languageId > 0 && langs.Count >= 2 && (showHidden || langs.Count(l => l.Published) >= 2);
-
-                IQueryable<int> productsByKeywords;
-
-                productsByKeywords =
-                        from p in _productRepository.Table
-                        where p.Name.Contains(keywords) ||
-                            (searchDescriptions &&
-                                (p.ShortDescription.Contains(keywords) || p.FullDescription.Contains(keywords))) ||
-                            (searchManufacturerPartNumber && p.ManufacturerPartNumber == keywords) ||
-                            (searchSku && p.Sku == keywords)
-                        select p.Id;
-
-                //search by SKU for ProductAttributeCombination
-                if (searchSku)
-                {
-                    productsByKeywords = productsByKeywords.Union(
-                        from pac in _productAttributeCombinationRepository.Table
-                        where pac.Sku == keywords
-                        select pac.ProductId);
-                }
-
-                if (searchProductTags)
-                {
-                    productsByKeywords = productsByKeywords.Union(
-                        from pptm in _productTagMappingRepository.Table
-                        join pt in _productTagRepository.Table on pptm.ProductTagId equals pt.Id
-                        where pt.Name == keywords
-                        select pptm.ProductId
-                    );
-
-                    if (searchLocalizedValue)
-                    {
-                        productsByKeywords = productsByKeywords.Union(
-                        from pptm in _productTagMappingRepository.Table
-                        join lp in _localizedPropertyRepository.Table on pptm.ProductTagId equals lp.EntityId
-                        where lp.LocaleKeyGroup == nameof(ProductTag) &&
-                              lp.LocaleKey == nameof(ProductTag.Name) &&
-                              lp.LocaleValue.Contains(keywords)
-                        select lp.EntityId);
-                    }
-                }
-
-                if (searchLocalizedValue)
-                {
-                    productsByKeywords = productsByKeywords.Union(
-                                from lp in _localizedPropertyRepository.Table
-                                let checkName = lp.LocaleKey == nameof(Core.Domain.Entities.Product.Name) &&
-                                                lp.LocaleValue.Contains(keywords)
-                                let checkShortDesc = searchDescriptions &&
-                                                lp.LocaleKey == nameof(Core.Domain.Entities.Product.ShortDescription) &&
-                                                lp.LocaleValue.Contains(keywords)
-                                let checkProductTags = searchProductTags &&
-                                                lp.LocaleKeyGroup == nameof(ProductTag) &&
-                                                lp.LocaleKey == nameof(ProductTag.Name) &&
-                                                lp.LocaleValue.Contains(keywords)
-                                where
-                                    lp.LocaleKeyGroup == nameof(Core.Domain.Entities.Product) && lp.LanguageId == languageId && (checkName || checkShortDesc) ||
-                                    checkProductTags
-
-                                select lp.EntityId);
-                }
-
-                productsQuery =
-                    from p in productsQuery
-                    join pbk in productsByKeywords on p.Id equals pbk
-                    select p;
+                //available dates
+                productsQuery = productsQuery
+                    .Where(p => p.AvailableStartDateTimeUtc.HasValue == false || DateTime.UtcNow >= p.AvailableStartDateTimeUtc)
+                    .Where(p => p.AvailableEndDateTimeUtc.HasValue == false || DateTime.UtcNow <= p.AvailableEndDateTimeUtc);
             }
 
-            if (categoryIds is not null)
+            if (visibleIndividuallyOnly)
             {
-                if (categoryIds.Contains(0))
-                    categoryIds.Remove(0);
-
-                if (categoryIds.Any())
-                {
-                    var productCategoryQuery =
-                        from pc in _productCategoryRepository.Table
-                        where (!excludeFeaturedProducts || !pc.IsFeaturedProduct) &&
-                            categoryIds.Contains(pc.CategoryId)
-                        group pc by pc.ProductId into pc
-                        select new
-                        {
-                            ProductId = pc.Key,
-                            DisplayOrder = pc.First().DisplayOrder
-                        };
-
-                    productsQuery =
-                        from p in productsQuery
-                        join pc in productCategoryQuery on p.Id equals pc.ProductId
-                        orderby pc.DisplayOrder, p.Name
-                        select p;
-                }
+                productsQuery = productsQuery.Where(p => p.VisibleIndividually);
             }
 
-            if (manufacturerIds is not null)
+            if (vendorId != 0)
             {
-                if (manufacturerIds.Contains(0))
-                    manufacturerIds.Remove(0);
-
-                if (manufacturerIds.Any())
-                {
-                    var productManufacturerQuery =
-                        from pm in _productManufacturerRepository.Table
-                        where (!excludeFeaturedProducts || !pm.IsFeaturedProduct) &&
-                            manufacturerIds.Contains(pm.ManufacturerId)
-                        group pm by pm.ProductId into pm
-                        select new
-                        {
-                            ProductId = pm.Key,
-                            DisplayOrder = pm.First().DisplayOrder
-                        };
-
-                    productsQuery =
-                        from p in productsQuery
-                        join pm in productManufacturerQuery on p.Id equals pm.ProductId
-                        orderby pm.DisplayOrder, p.Name
-                        select p;
-                }
+                productsQuery = productsQuery.Where(p => p.VendorId == vendorId);
             }
 
-            if (productTagId > 0)
+            if (productType != null)
             {
-                productsQuery =
-                    from p in productsQuery
-                    join ptm in _productTagMappingRepository.Table on p.Id equals ptm.ProductId
-                    where ptm.ProductTagId == productTagId
-                    select p;
+                productsQuery = productsQuery.Where(p => p.ProductTypeId == (int)productType);
             }
 
-            if (filteredSpecOptions?.Count > 0)
+            if (priceMin != null)
             {
-                var specificationAttributeIds = filteredSpecOptions
-                    .Select(sao => sao.SpecificationAttributeId)
-                    .Distinct();
-
-                foreach (var specificationAttributeId in specificationAttributeIds)
-                {
-                    var optionIdsBySpecificationAttribute = filteredSpecOptions
-                        .Where(o => o.SpecificationAttributeId == specificationAttributeId)
-                        .Select(o => o.Id);
-
-                    var productSpecificationQuery =
-                        from psa in _productSpecificationAttributeRepository.Table
-                        where psa.AllowFiltering && optionIdsBySpecificationAttribute.Contains(psa.SpecificationAttributeOptionId)
-                        select psa;
-
-                    productsQuery =
-                        from p in productsQuery
-                        where productSpecificationQuery.Any(pc => pc.ProductId == p.Id)
-                        select p;
-                }
+                productsQuery = productsQuery.Where(p => p.Price >= priceMin);
             }
 
-            return await productsQuery.OrderBy(_localizedPropertyRepository, await _workContext.GetWorkingLanguageAsync(), orderBy).ToPagedListAsync(pageIndex, pageSize);
+            if (priceMax != null)
+            {
+                productsQuery = productsQuery.Where(p => p.Price <= priceMax);
+            }
+
+            productsQuery = productsQuery.FilterByKeywords(
+                _productRepository,
+                _productAttributeCombinationRepository,
+                _productTagRepository,
+                _productTagMappingRepository,
+                _localizedPropertyRepository,
+                _languageService,
+                keywords,
+                searchDescriptions,
+                searchManufacturerPartNumber,
+                searchSku,
+                searchProductTags,
+                languageId
+            );
+
+            //apply ACL constraints #is this still relevant?
+            //if (!showHidden)
+            //{
+            //    var customer = await _workContext.GetCurrentCustomerAsync();
+            //    productsQuery = await _aclService.ApplyAcl(productsQuery, customer);
+            //}
+
+            productsQuery = productsQuery.FilterByCategoryIds(
+                _productCategoryRepository,
+                categoryIds,
+                excludeFeaturedProducts
+            );
+
+
+            productsQuery = productsQuery.FilterByManufacturerIds(
+                _productManufacturerRepository,
+                manufacturerIds,
+                excludeFeaturedProducts
+            );
+
+
+            productsQuery = productsQuery.FilterByProductTagId(
+                _productTagMappingRepository,
+                productTagId
+            );
+
+            productsQuery = productsQuery.FilterBySpecOptions(
+                _productSpecificationAttributeRepository,
+                filteredSpecOptions
+            );
+
+            productsQuery = orderBy switch
+            {
+                ProductSortingEnum.Position => productsQuery.OrderBy(p => p.DisplayOrder), // Assuming there's a DisplayOrder property
+                ProductSortingEnum.NameAsc => productsQuery.OrderBy(p => p.Name),
+                ProductSortingEnum.NameDesc => productsQuery.OrderByDescending(p => p.Name),
+                ProductSortingEnum.PriceAsc => productsQuery.OrderBy(p => p.Price),
+                ProductSortingEnum.PriceDesc => productsQuery.OrderByDescending(p => p.Price),
+                ProductSortingEnum.CreatedOn => productsQuery.OrderBy(p => p.CreatedOnUtc), // Assuming there's a CreatedOn property
+                _ => productsQuery // Default case if no matching sorting option is found
+            };
+
+            // Convert the query to a paged list
+            return await productsQuery.ToPagedListAsync(pageIndex, pageSize);
         }
 
         /// <summary>
@@ -707,6 +630,223 @@ namespace Preepex.Infrastructure.Services.Catalog
                 featuredProducts = await _productRepository.GetByIdsAsync(featuredProductIds, cache => default, false);
 
             return featuredProducts;
+        }
+    }
+
+    public static class ProductSearchExtensions
+    {
+        public static async Task<IQueryable<Product>> FilterByWarehouseId(
+            this IQueryable<Product> productsQuery,
+            IGenericRepository<Productwarehouseinventory> _productWarehouseInventoryRepository,
+            int warehouseId
+       ) {
+            if (warehouseId != 0)
+            {
+                var warehouseProducts = await _productWarehouseInventoryRepository
+                    .Table
+                        .Where(pwi => pwi.WarehouseId == warehouseId)
+                        .Select(pwi => pwi.ProductId)
+                        .ToListAsync();
+
+                productsQuery = productsQuery.Where(p => p.UseMultipleWarehouses ? warehouseProducts.Contains(p.Id) : p.WarehouseId == warehouseId);
+            }
+
+            return productsQuery;
+        }
+
+
+        public static IQueryable<Product> FilterByKeywords(
+            this IQueryable<Product> productsQuery,
+            IGenericRepository<Product> _productRepository,
+            IGenericRepository<ProductAttributeCombination> _productAttributeCombinationRepository,
+            IGenericRepository<ProductTag> _productTagRepository,
+            IGenericRepository<ProductProducttagMapping> _productTagMappingRepository,
+            IGenericRepository<Localizedproperty> _localizedPropertyRepository,
+            ILanguageService _languageService,
+            string keywords,
+            bool searchDescriptions,
+            bool searchManufacturerPartNumber,
+            bool searchSku,
+            bool searchProductTags,
+            int languageId
+        ) {
+            if (!string.IsNullOrEmpty(keywords))
+            {
+                // Define an initial query for product IDs based on the keywords
+                var keywordFilteredProductIds = _productRepository.Table
+                    .Where(p => p.Name.Contains(keywords) ||
+                                (searchDescriptions && (p.ShortDescription.Contains(keywords) || p.FullDescription.Contains(keywords))) ||
+                                (searchManufacturerPartNumber && p.ManufacturerPartNumber == keywords) ||
+                                (searchSku && p.Sku == keywords))
+                    .Select(p => p.Id);
+
+                // SKU in ProductAttributeCombination
+                if (searchSku)
+                {
+                    var skuFilteredProductIds = _productAttributeCombinationRepository.Table
+                        .Where(pac => pac.Sku == keywords)
+                        .Select(pac => pac.ProductId);
+
+                    keywordFilteredProductIds = keywordFilteredProductIds.Concat(skuFilteredProductIds);
+                }
+
+                // Product tags
+                if (searchProductTags)
+                {
+                    var tagFilteredProductIds = _productTagMappingRepository.Table
+                        .Join(
+                            _productTagRepository.Table,
+                            ptm => ptm.ProductTagId,
+                            pt => pt.Id,
+                            (ptm, pt) => new { ptm.ProductId, pt.Name }
+                        )
+                        .Where(x => x.Name == keywords)
+                        .Select(x => x.ProductId);
+
+                    keywordFilteredProductIds = keywordFilteredProductIds.Concat(tagFilteredProductIds);
+                }
+
+                // Localized properties
+                if (languageId > 0 && _languageService.GetAllLanguagesAsync(showHidden: true).Result.Any())
+                {
+                    var localizedProductIds = _localizedPropertyRepository.Table
+                        .Where(lp => lp.LocaleKeyGroup == nameof(Core.Domain.Entities.Product) &&
+                                     lp.LanguageId == languageId &&
+                                     (lp.LocaleKey == nameof(Core.Domain.Entities.Product.Name) && lp.LocaleValue.Contains(keywords) ||
+                                      (searchDescriptions && lp.LocaleKey == nameof(Core.Domain.Entities.Product.ShortDescription) && lp.LocaleValue.Contains(keywords)) ||
+                                      (searchProductTags && lp.LocaleKeyGroup == nameof(ProductTag) && lp.LocaleKey == nameof(ProductTag.Name) && lp.LocaleValue.Contains(keywords)))
+                        )
+                        .Select(lp => lp.EntityId);
+
+                    keywordFilteredProductIds = keywordFilteredProductIds.Concat(localizedProductIds);
+                }
+
+                // Combine and filter the main query with the collected product IDs
+                productsQuery = productsQuery.Where(p => keywordFilteredProductIds.Contains(p.Id));
+            }
+
+            return productsQuery;
+        }
+
+        public static IQueryable<Product> FilterByCategoryIds(
+            this IQueryable<Product> productsQuery,
+            IGenericRepository<ProductCategory> _productCategoryRepository,
+            IList<int> categoryIds,
+            bool excludeFeaturedProducts
+        ) {
+            IQueryable<Product> newQuery = productsQuery;
+
+            if (categoryIds != null && categoryIds.Any(id => id != 0))
+            {
+                var relevantCategoryIds = categoryIds.Where(id => id != 0).ToList();
+
+                // Build a query to get a list of ProductId and DisplayOrder based on the categoryIds
+                var productCategoryQuery = _productCategoryRepository.Table
+                    .Where(pc => (!excludeFeaturedProducts || !pc.IsFeaturedProduct) && relevantCategoryIds.Contains(pc.CategoryId))
+                    .GroupBy(pc => pc.ProductId)
+                    .Select(g => new { ProductId = g.Key, DisplayOrder = g.Min(pc => pc.DisplayOrder) });
+
+                // Join the productsQuery with the productCategoryQuery
+                newQuery = productsQuery
+                    .Join(productCategoryQuery,
+                          p => p.Id,
+                          pc => pc.ProductId,
+                          (p, pc) => new { Product = p, pc.DisplayOrder })
+                    .OrderBy(x => x.DisplayOrder)
+                    .ThenBy(x => x.Product.Name)
+                    .Select(x => x.Product);
+            }
+
+            return newQuery;
+        }
+
+
+        public static IQueryable<Product> FilterByManufacturerIds(
+            this IQueryable<Product> productsQuery,
+            IGenericRepository<ProductManufacturerMapping> _productManufacturerRepository,
+            IList<int> manufacturerIds,
+            bool excludeFeaturedProducts
+        ) {
+            var temp = productsQuery;
+
+            if (manufacturerIds != null && manufacturerIds.Any(id => id != 0))
+            {
+                // Ensure manufacturerIds doesn't contain 0
+                var relevantManufacturerIds = manufacturerIds.Where(id => id != 0).ToList();
+
+                // Build a query to get a list of ProductId and DisplayOrder based on the manufacturerIds
+                var productManufacturerQuery = _productManufacturerRepository.Table
+                    .Where(pm => (!excludeFeaturedProducts || !pm.IsFeaturedProduct) && relevantManufacturerIds.Contains(pm.ManufacturerId))
+                    .GroupBy(pm => pm.ProductId)
+                    .Select(g => new { ProductId = g.Key, DisplayOrder = g.Min(pm => pm.DisplayOrder) });
+
+                // Join the productsQuery with the productManufacturerQuery
+                temp = productsQuery
+                    .Join(productManufacturerQuery,
+                          p => p.Id,
+                          pm => pm.ProductId,
+                          (p, pm) => new { Product = p, pm.DisplayOrder })
+                    .OrderBy(x => x.DisplayOrder)
+                    .ThenBy(x => x.Product.Name)
+                    .Select(x => x.Product);
+            }
+
+            return temp;
+        }
+
+        public static IQueryable<Product> FilterByProductTagId(
+            this IQueryable<Product> productsQuery,
+            IGenericRepository<ProductProducttagMapping> productTagMappingRepository,
+            int productTagId
+        ) {
+            IQueryable<Product> temp = productsQuery;
+
+            if (productTagId > 0)
+            {
+                // Get the product IDs associated with the specified product tag
+                var productIdsWithTag = productTagMappingRepository.Table
+                    .Where(ptm => ptm.ProductTagId == productTagId)
+                    .Select(ptm => ptm.ProductId);
+
+                // Filter the productsQuery to include only products with the specified tag
+                temp = productsQuery
+                    .Where(p => productIdsWithTag.Contains(p.Id));
+            }
+
+            return temp;
+        }
+
+        public static IQueryable<Product> FilterBySpecOptions(
+            this IQueryable<Product> productsQuery,
+            IGenericRepository<ProductSpecificationattributeMapping> _productSpecificationAttributeRepository,
+            IList<Specificationattributeoption> filteredSpecOptions
+        ) {
+            if (filteredSpecOptions?.Count > 0)
+            {
+                // Get distinct specification attribute IDs from the filtered options
+                var specAttributeIds = filteredSpecOptions.Select(sao => sao.SpecificationAttributeId).Distinct();
+
+                // Build a query to get product IDs for each specification attribute option
+                var productsWithSpecs = _productSpecificationAttributeRepository.Table
+                    .Where(psa => psa.AllowFiltering && specAttributeIds.Contains(psa.SpecificationAttributeOption.SpecificationAttributeId))
+                    .GroupBy(psa => psa.ProductId)
+                    .Select(g => new
+                    {
+                        ProductId = g.Key,
+                        OptionIds = g.Select(psa => psa.SpecificationAttributeOptionId)
+                    });
+
+                // Filter the productsQuery to include only products with the specified specification options
+                productsQuery = productsQuery
+                    .Join(productsWithSpecs,
+                          p => p.Id,
+                          psa => psa.ProductId,
+                          (p, psa) => new { Product = p, psa.OptionIds })
+                    .Where(x => filteredSpecOptions.All(fso => x.OptionIds.Contains(fso.Id)))
+                    .Select(x => x.Product);
+            }
+
+            return productsQuery;
         }
     }
 }

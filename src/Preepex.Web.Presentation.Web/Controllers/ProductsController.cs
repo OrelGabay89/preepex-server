@@ -89,7 +89,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[Cached(600)]
+        [RedisCached(600)]
         public async Task<ActionResult<Pagination<ProductDetailsDto>>> GetProduct(int id)
         {
             var product = await _productService.GetProductByIdAsync(id);

@@ -7,6 +7,7 @@ using System.Linq;
 using Preepex.Core.Application.Interfaces;
 using Preepex.Presentation.Framework.Controllers;
 using System.Collections.Generic;
+using Preepex.Core.Application.Interfaces.Shared;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
@@ -15,10 +16,10 @@ namespace Preepex.Web.Presentation.Web.Controllers
     [Route("api/subscribers")]
     public class SubscribersController : BaseApiController
     {
-        private readonly SubscribersService _subscribersService;
+        private readonly ISubscribersService _subscribersService;
         private readonly IStoreContext _storeContext;
 
-        public SubscribersController(SubscribersService subscribersService, IStoreContext storeContext)
+        public SubscribersController(ISubscribersService subscribersService, IStoreContext storeContext)
         {
             _subscribersService = subscribersService;
             _storeContext = storeContext;

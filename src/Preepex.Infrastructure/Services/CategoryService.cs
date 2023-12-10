@@ -15,6 +15,7 @@ using Preepex.Core.Application.Models;
 using System.Diagnostics;
 using Preepex.Common;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Preepex.Infrastructure.Services
 {
@@ -349,7 +350,7 @@ namespace Preepex.Infrastructure.Services
             return categories;
         }
 
-        public virtual async Task<List<Product>> GetProductsByCategory(int categoryId, CatalogProductsCommand command)
+        public virtual async Task<List<Product>> GetProductsByCategory(int categoryId, CatalogProductsFilter filter)
         {
             var currentStore = await _storeContext.GetCurrentStoreAsync();
 
@@ -359,12 +360,78 @@ namespace Preepex.Infrastructure.Services
                 .Select(sm => sm.EntityId)
                 .ToListAsync();
 
-            return await _productCategoryRepository.Table
+            var query = _productCategoryRepository.Table
                 .Where(pc => pc.CategoryId == categoryId)
                 .Where(pc => availableProductIds.Contains(pc.ProductId))
                 .Join(_productRepository.Table, pc => pc.ProductId, p => p.Id, (pc, p) => p)
-                .Where(p => !p.Deleted)
-                .ToListAsync();
+                .Where(p => !p.Deleted);
+
+
+            if (filter.Equals(default))
+            {
+                return await query.ToListAsync();
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter.Price))
+            {
+                var priceRange = filter.Price.Split('-');
+                if (priceRange.Length == 2)
+                {
+                    if (!string.IsNullOrWhiteSpace(priceRange[0]) && int.TryParse(priceRange[0], out var minPrice)) {
+                        query = query.Where(p => p.Price >= minPrice);
+                    }
+                    
+                    if (!string.IsNullOrWhiteSpace(priceRange[1]) && int.TryParse(priceRange[1], out var maxPrice)) {
+                        query = query.Where(p => p.Price <= maxPrice);
+                    }
+                }
+            }
+
+            if (filter.ManufacturerIds != null && filter.ManufacturerIds.Any())
+            {
+                foreach (var manufacturerId in filter.ManufacturerIds)
+                {
+                    query = query
+                                .Include(p => p.ProductManufacturerMapping)
+                                .Where(p => p.ProductManufacturerMapping.Any(m => m.ManufacturerId == manufacturerId));
+                }
+            }
+
+            if (filter.SpecificationOptionIds != null && filter.SpecificationOptionIds.Any())
+            {
+                query = query
+                    .Where(p => p.ProductSpecificationattributeMapping.Any(psa => filter.SpecificationOptionIds.Contains(psa.SpecificationAttributeOptionId)));
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter.OrderBy))
+            {
+                var orderBy = filter.OrderBy.ToLowerInvariant();
+                var orderByAscending = filter.OrderByAscending ?? true;
+
+                switch (orderBy)
+                {
+                    // case "name":
+                    //     query = orderByAscending ? query.OrderBy(p => p.Name) : query.OrderByDescending(p => p.Name);
+                    //     break;
+                    // case "createdonutc":
+                    //     query = orderByAscending ? query.OrderBy(p => p.CreatedOnUtc) : query.OrderByDescending(p => p.CreatedOnUtc);
+                    //     break;
+                    // case "updatedonutc":
+                    //     query = orderByAscending ? query.OrderBy(p => p.UpdatedOnUtc) : query.OrderByDescending(p => p.UpdatedOnUtc);
+                    //     break;
+                    // case "displayorder":
+                    //     query = orderByAscending ? query.OrderBy(p => p.DisplayOrder) : query.OrderByDescending(p => p.DisplayOrder);
+                    //     break;
+                    // case "id":
+                    //     query = orderByAscending ? query.OrderBy(p => p.Id) : query.OrderByDescending(p => p.Id);
+                    //     break;
+                    default: // only price is supported for now
+                        query = orderByAscending ? query.OrderBy(p => p.Price) : query.OrderByDescending(p => p.Price);
+                        break;
+                }
+            }
+
+            return await query.ToListAsync();
         }
 
     }

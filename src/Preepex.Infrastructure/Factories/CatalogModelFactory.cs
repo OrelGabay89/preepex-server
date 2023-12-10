@@ -90,6 +90,7 @@ namespace Preepex.Infrastructure.Factories
             var pictureSize = _mediaSettings.CategoryThumbPictureSize;
             var categoriesCacheKey = _staticCacheManager.PrepareKeyForDefaultCache(PreepexModelCacheDefaults.CategoryHomepageKey,
                 store, customerRoleIds, pictureSize, language, _webHelper.IsCurrentConnectionSecured());
+            
             var model = await _staticCacheManager.GetAsync(categoriesCacheKey, async () =>
             {
                 var homepageCategories = await _categoryService.GetAllCategoriesDisplayedOnHomepageAsync(storeId);
@@ -130,6 +131,7 @@ namespace Preepex.Infrastructure.Factories
                     var secured = _webHelper.IsCurrentConnectionSecured();
                     var categoryPictureCacheKey = _staticCacheManager.PrepareKeyForDefaultCache(PreepexModelCacheDefaults.CategoryPictureModelKey,
                         category, pictureSize, true, language, secured, store);
+                    
                     catModel.PictureModel = await _staticCacheManager.GetAsync(categoryPictureCacheKey, async () =>
                     {
                         var picture = await _pictureService.GetPictureByIdAsync(category.PictureId);
@@ -263,12 +265,12 @@ namespace Preepex.Infrastructure.Factories
         /// Prepare category model
         /// </summary>
         /// <param name="category">Category</param>
-        /// <param name="command">Model to get the catalog products</param>
+        /// <param name="filter">Model to get the catalog products</param>
         /// <returns>
         /// A task that represents the asynchronous operation
         /// The task result contains the category model
         /// </returns>
-        public virtual async Task<CategoryModel> PrepareCategoryModelAsync(Category category, CatalogProductsCommand command = null)
+        public virtual async Task<CategoryModel> PrepareCategoryModelAsync(Category category, CatalogProductsFilter filter = null)
         {
             if (category == null)
                 throw new ArgumentNullException(nameof(category));

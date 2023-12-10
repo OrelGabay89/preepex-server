@@ -298,8 +298,9 @@ namespace Preepex.Web.Presentation.Web.Controllers
 
             var claims = new List<Claim> 
             {
-                new Claim(ClaimTypes.Name, user.Email),
-                new Claim("DisplayName", user.DisplayName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.DisplayName),
+                new Claim("UserId", user.Id)
             };
 
             var claimsIdentity = new ClaimsIdentity(

@@ -98,6 +98,6 @@ namespace Preepex.Core.Application.Interfaces.Shared
         
         Task<bool> CheckCategoryAvailabilityAsync(Category category);
 
-        Task<List<Product>> GetProductsByCategory(int categoryId, CatalogProductsCommand command);
+        Task<List<Product>> GetProductsByCategory(int categoryId, CatalogProductsFilter filter);
     }
 }

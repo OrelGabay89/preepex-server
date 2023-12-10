@@ -62,6 +62,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
         [HttpGet("search-products")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [RedisCached(600)]
         public async Task<ActionResult<IReadOnlyList<Product>>> SearchProducts(string term)
         {
             if (string.IsNullOrWhiteSpace(term))
@@ -79,12 +80,14 @@ namespace Preepex.Web.Presentation.Web.Controllers
             
             var store = await _storeContext.GetCurrentStoreAsync();
 
-            var products = await _productService.SearchProductsAsync(0,
+            var products = await _productService.SearchProductsAsync(
+                0,
                 storeId: store.Id,
                 keywords: term,
                 languageId: (await _workContext.GetWorkingLanguageAsync()).Id,
                 visibleIndividuallyOnly: true,
-                pageSize: productNumber);
+                pageSize: productNumber
+            );
 
             var showLinkToResultSearch = _catalogSettings.ShowLinkToAllResultInSearchAutoComplete &&
                                          (products.TotalCount > productNumber);
@@ -112,11 +115,11 @@ namespace Preepex.Web.Presentation.Web.Controllers
 
         [HttpPost("category-products/{categoryId}")]
         [RedisCached(600)]
-        public virtual async Task<IReadOnlyList<ProductDetailsDto>> GetCategoryProducts(int categoryId, [FromBody] CatalogProductsCommand command)
+        public virtual async Task<IReadOnlyList<ProductDetailsDto>> GetCategoryProducts(int categoryId, [FromQuery] CatalogProductsFilter filter)
         {
             try
             {
-                var products = await _categoryService.GetProductsByCategory(categoryId, command);
+                var products = await _categoryService.GetProductsByCategory(categoryId, filter);
                 
                 return await _productModelFactory.PrepareProductsModelAsync(products);
             }
