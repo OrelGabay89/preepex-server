@@ -5,11 +5,10 @@ using Preepex.Core.Application.Dtos;
 using Preepex.Core.Application.Errors;
 using Preepex.Core.Application.Interfaces.Repositories.Domain;
 using Preepex.Core.Domain.Entities.OrderAggregate;
-using Preepex.Presentation.Framework.Extensions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Preepex.Presentation.Framework.Controllers;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Preepex.Core.Application.Extensions;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {

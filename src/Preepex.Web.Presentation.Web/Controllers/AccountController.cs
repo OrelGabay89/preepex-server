@@ -10,7 +10,6 @@ using Preepex.Core.Domain.Entities.Identity;
 using Preepex.Infrastructure.Extensions;
 using System.Text;
 using System.Threading.Tasks;
-using Preepex.Presentation.Framework.Controllers;
 using Preepex.Core.Application.Messages;
 using Microsoft.AspNetCore.Http;
 using System;

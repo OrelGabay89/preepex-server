@@ -8,6 +8,7 @@ using Preepex.Core.Application.Interfaces.Repositories.Domain;
 using Preepex.Core.Application.Media;
 using Preepex.Core.Domain.Entities;
 using Preepex.Core.Domain.Entities.Media;
+using Preepex.Infrastructure.DbContexts;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;

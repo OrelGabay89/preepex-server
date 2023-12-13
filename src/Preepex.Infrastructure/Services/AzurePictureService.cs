@@ -13,9 +13,8 @@ using Preepex.Core.Application.Interfaces.Configuration;
 using Preepex.Core.Application.Interfaces.Shared;
 using Preepex.Core.Application.Media;
 using Preepex.Core.Domain.Entities;
-using Preepex.Infrastructure.Services;
 
-namespace Nop.Services.Media
+namespace Preepex.Infrastructure.Services
 {
     /// <summary>
     /// Picture service for Windows Azure
@@ -44,7 +43,7 @@ namespace Nop.Services.Media
         public AzurePictureService(AppSettings appSettings,
             IDownloadService downloadService,
             IHttpContextAccessor httpContextAccessor,
-            Preepex.Core.Application.Interfaces.Configuration.IFileProvider fileProvider,
+            Core.Application.Interfaces.Configuration.IFileProvider fileProvider,
             //IProductAttributeParser productAttributeParser,
             IGenericRepository<Picture> pictureRepository,
             IGenericRepository<Picturebinary> pictureBinaryRepository,

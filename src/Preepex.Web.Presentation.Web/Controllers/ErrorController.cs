@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Preepex.Core.Application.Errors;
-using Preepex.Presentation.Framework.Controllers;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {

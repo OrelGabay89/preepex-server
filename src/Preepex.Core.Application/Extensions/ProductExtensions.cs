@@ -1,9 +1,10 @@
-﻿using Preepex.Core.Application.Interfaces;
+﻿using Preepex.Core.Application.Extensions;
+using Preepex.Core.Application.Interfaces;
 using Preepex.Core.Domain.Entities;
 using Preepex.Core.Domain.Enumerations;
 using System.Linq;
 
-namespace Preepex.Core.Application.Extenstions
+namespace Preepex.Core.Application.Extensions
 {
     public static class ProductExtensions
     {

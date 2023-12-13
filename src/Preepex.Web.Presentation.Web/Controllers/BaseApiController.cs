@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
 
-namespace Preepex.Presentation.Framework.Controllers
+namespace Preepex.Web.Presentation.Web.Controllers
 {
     public abstract class BaseApiController : Controller
     {

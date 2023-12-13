@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Preepex.Core.Application.Errors;
 using Preepex.Core.Application.Interfaces.Shared;
 using Preepex.Core.Domain.Entities.ApplicationEntities;
-using Preepex.Presentation.Framework.Controllers;
 using Stripe;
 using System.IO;
 using System.Threading.Tasks;

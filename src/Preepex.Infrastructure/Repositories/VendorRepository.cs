@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Preepex.Core.Application.Interfaces.Repositories.Domain;
 using Preepex.Core.Domain.Entities;
+using Preepex.Infrastructure.DbContexts;
 using System.Threading.Tasks;
 
 namespace Preepex.Infrastructure.Repositories

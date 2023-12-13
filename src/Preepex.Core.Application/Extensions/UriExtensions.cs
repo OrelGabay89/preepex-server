@@ -3,7 +3,7 @@ using Preepex.Core.Domain.Consts;
 using System;
 using System.Linq;
 
-namespace Preepex.Core.Application.Extenstions
+namespace Preepex.Core.Application.Extensions
 {
     public static class UriExtensions
     {

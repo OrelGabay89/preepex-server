@@ -8,7 +8,6 @@ using System;
 using System.Threading.Tasks;
 using Preepex.Common.Exceptions;
 using Preepex.Core.Application;
-using Preepex.Presentation.Framework.Controllers;
 using Preepex.Core.Application.Interfaces;
 
 namespace Preepex.Web.Presentation.Web.Controllers

@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Preepex.Core.Application.Caching;
 using Preepex.Core.Application.Interfaces;
 using Preepex.Core.Application.Specifications;
-using Preepex.Core.Domain.Entities;
 using Preepex.Core.Domain.Entities.Common;
 using Preepex.Infrastructure.DbContexts;
 using System.Collections.Generic;

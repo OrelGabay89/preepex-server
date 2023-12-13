@@ -9,9 +9,8 @@ using Preepex.Core.Application.Interfaces;
 using Preepex.Core.Application.Interfaces.Shared;
 using Preepex.Core.Domain.Entities;
 using Preepex.Core.Domain.Entities.Common;
-using Preepex.Infrastructure.Services;
 
-namespace Nop.Services.Common
+namespace Preepex.Infrastructure.Services
 {
     /// <summary>
     /// Generic attribute service
@@ -57,7 +56,7 @@ namespace Nop.Services.Common
         {
             await _genericAttributeRepository.DeleteRangeAsync(attributes);
         }
-        
+
         /// <summary>
         /// Inserts an attribute
         /// </summary>
@@ -101,7 +100,7 @@ namespace Nop.Services.Common
         public virtual async Task<IList<GenericAttribute>> GetAttributesForEntityAsync(int entityId, string keyGroup, int? storeId = null)
         {
             var key = _staticCacheManager.PrepareKeyForShortTermCache(PreepexCommonDefaults.GenericAttributeCacheKey, entityId, keyGroup, storeId);
-            
+
             var attributes = await _staticCacheManager.GetAsync(key, () =>
             {
                 var query = _genericAttributeRepository.Table
@@ -111,7 +110,7 @@ namespace Nop.Services.Common
                 {
                     query = query.Where(ga => ga.StoreId == storeId);
                 }
-                
+
                 return query.ToListAsync();
             });
 
@@ -159,7 +158,7 @@ namespace Nop.Services.Common
             }
             else
             {
-                if (string.IsNullOrWhiteSpace(valueStr)) 
+                if (string.IsNullOrWhiteSpace(valueStr))
                     return;
 
                 //insert
