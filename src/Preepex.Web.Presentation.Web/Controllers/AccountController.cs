@@ -41,7 +41,6 @@ namespace Preepex.Web.Presentation.Web.Controllers
         }
 
 
-        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpGet]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
@@ -69,7 +68,6 @@ namespace Preepex.Web.Presentation.Web.Controllers
             return _mapper.Map<Address, AddressDto>(user.Address);
         }
 
-        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpPut("update-address")]
         public async Task<ActionResult<AddressDto>> UpdateUserAddress([FromBody] AddressDto address)
         {
@@ -143,7 +141,6 @@ namespace Preepex.Web.Presentation.Web.Controllers
         
         [HttpPost("external-login")]
         [AllowAnonymous]
-
         public async Task<ActionResult<UserDto>> ExternalLogin(SocialUserDto socialUserDto)
         {
             var user = await _userManager.FindByEmailAsync(socialUserDto.Email);
@@ -246,7 +243,6 @@ namespace Preepex.Web.Presentation.Web.Controllers
         }
 
         
-        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpPut("user-account-info")]
         public async Task<ActionResult<UserAccountInformationDto>> UpdateCurrentAccountInformation([FromBody] UserAccountInformationDto model)
         {
