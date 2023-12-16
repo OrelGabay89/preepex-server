@@ -20,7 +20,7 @@ using System.Security.Claims;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
-    [AllowAnonymous]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [Route("api/account")]
     public class AccountController : BaseApiController
     {
@@ -71,7 +71,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
 
         [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpPut("update-address")]
-        public async Task<ActionResult<AddressDto>> UpdateUserAddress(AddressDto address)
+        public async Task<ActionResult<AddressDto>> UpdateUserAddress([FromBody] AddressDto address)
         {
             var user = await _userManager.FindByUserByClaimsPrincipleWithAddressAsync(HttpContext.User);
 
@@ -85,6 +85,8 @@ namespace Preepex.Web.Presentation.Web.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
+
         public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
@@ -105,6 +107,8 @@ namespace Preepex.Web.Presentation.Web.Controllers
         }
 
         [HttpPost("register")]
+        [AllowAnonymous]
+
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
             if (CheckEmailExistsAsync(registerDto.Email).Result.Value)
@@ -136,7 +140,10 @@ namespace Preepex.Web.Presentation.Web.Controllers
             };
         }
 
+        
         [HttpPost("external-login")]
+        [AllowAnonymous]
+
         public async Task<ActionResult<UserDto>> ExternalLogin(SocialUserDto socialUserDto)
         {
             var user = await _userManager.FindByEmailAsync(socialUserDto.Email);
@@ -176,6 +183,8 @@ namespace Preepex.Web.Presentation.Web.Controllers
         }
 
         [HttpGet("forgot-password")]
+        [AllowAnonymous]
+
         public async Task<ActionResult> ForgotPassword([FromQuery] string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -199,6 +208,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
         }
 
         [HttpPost("reset-password")]
+        [AllowAnonymous]
         public async Task<ActionResult> ResetPassword(ResetPasswordDto model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
