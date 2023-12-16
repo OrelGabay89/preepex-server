@@ -225,8 +225,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
                 return Ok();
             }
         }
-
-        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+        [AllowAnonymous]
         [HttpGet("user-account-info")]
         public async Task<UserAccountInformationDto> GetCurrentUserAccountInformation()
         {
