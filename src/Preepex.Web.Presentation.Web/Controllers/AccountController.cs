@@ -225,7 +225,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
                 return Ok();
             }
         }
-        [AllowAnonymous]
+        
         [HttpGet("user-account-info")]
         public async Task<UserAccountInformationDto> GetCurrentUserAccountInformation()
         {
@@ -235,7 +235,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
             {
                 UserId = user.Id,
                 Email = user.Email,
-                MobileNumber = user.PhoneNumber,
+                PhoneNumber = user.PhoneNumber,
                 DisplayName = user.DisplayName,
                 AddressDto = _mapper.Map<Address, AddressDto>(user.Address)
             };
@@ -272,7 +272,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
                 }
 
                 user.DisplayName = model.DisplayName;
-                user.PhoneNumber = model.MobileNumber;
+                user.PhoneNumber = model.PhoneNumber;
                 model.AddressDto.AppUserId = user.Id;
                 user.Address = _mapper.Map<AddressDto, Address>(model.AddressDto);
 
@@ -282,7 +282,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
                     {
                         UserId = user.Id,
                         Email = user.Email,
-                        MobileNumber = user.PhoneNumber,
+                        PhoneNumber = user.PhoneNumber,
                         DisplayName = user.DisplayName,
                         AddressDto = _mapper.Map<Address, AddressDto>(user.Address)
                     };
@@ -291,7 +291,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
             {
                 UserId = user.Id,
                 Email = user.Email,
-                MobileNumber = user.PhoneNumber,
+                PhoneNumber = user.PhoneNumber,
                 DisplayName = user.DisplayName,
                 AddressDto = _mapper.Map<Address, AddressDto>(user.Address)
             };
