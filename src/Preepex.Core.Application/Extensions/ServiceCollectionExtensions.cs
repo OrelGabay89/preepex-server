@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Preepex.Core.Application.Mappings.Resolvers;
 
-namespace Preepex.Core.Application.Extenstions
+namespace Preepex.Core.Application.Extensions
 {
     public static class ServiceCollectionExtensions
     {

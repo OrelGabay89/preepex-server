@@ -2,12 +2,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Preepex.Core.Application.Errors;
-using Preepex.Infrastructure.Services;
 using System;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Preepex.Core.Application.Interfaces.Shared;
 
 namespace Preepex.Web.Presentation.Web.Middleware
 {
@@ -16,13 +14,12 @@ namespace Preepex.Web.Presentation.Web.Middleware
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionMiddleware> _logger;
         private readonly IHostEnvironment _env;
-        //private IImportantMessagesLogger _importantMessagesLogger;
+
         public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env)
         {
             _env = env;
             _logger = logger;
             _next = next;
-            //_importantMessagesLogger = importantMessagesLogger;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -33,7 +30,6 @@ namespace Preepex.Web.Presentation.Web.Middleware
             }
             catch (Exception ex)
             {
-                //_importantMessagesLogger.PostMessage("An Exception has occured while the application was running: " + ex);
                 _logger.LogError(ex, ex.Message);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
@@ -44,7 +40,17 @@ namespace Preepex.Web.Presentation.Web.Middleware
 
                 var json = JsonSerializer.Serialize(response, options);
 
-                await context.Response.WriteAsync(json);
+                // Check if the application is in debugging mode or a specific flag is set
+                if (_env.IsDevelopment() || Environment.GetEnvironmentVariable("DETAILED_ERROR_LOGGING") == "true")
+                {
+                    await context.Response.WriteAsync(json);
+                }
+                else
+                {
+                    // In production, return a generic error message
+                    var prodError = new { error = "An error occurred. Please try again later." };
+                    await context.Response.WriteAsync(JsonSerializer.Serialize(prodError));
+                }
             }
         }
     }

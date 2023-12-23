@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Preepex.Common.Extensions;
 using Preepex.Core.Application.Caching;
-using Preepex.Core.Application.Extenstions;
 using Preepex.Core.Application.Interfaces;
 using Preepex.Core.Application.Interfaces.Security;
 using Preepex.Core.Application.Interfaces.Shared;

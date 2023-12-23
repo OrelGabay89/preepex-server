@@ -4,11 +4,10 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Text;
-using Preepex.Core.Application.Interfaces.Shared;
 
-namespace Preepex.Infrastructure.Services
+namespace Preepex.Infrastructure.Services.IImportantMessagesLogger
 {
-    public class SlackImportantMessagesLogger : IImportantMessagesLogger
+    public class SlackImportantMessagesLogger 
     {
         private readonly Uri _uri;
         private readonly Encoding _encoding = new UTF8Encoding();
@@ -18,7 +17,7 @@ namespace Preepex.Infrastructure.Services
         {
             _uri = new Uri(SLACK_URL);
         }
-        
+
         //Post a message using simple strings
         public string PostMessage(string text, string channel = null)
         {
@@ -29,7 +28,7 @@ namespace Preepex.Infrastructure.Services
             };
             return PostMessage(payload);
         }
-        
+
         //Post a message using a Payload object
         private string PostMessage(Payload payload)
         {
@@ -43,7 +42,7 @@ namespace Preepex.Infrastructure.Services
             }
         }
     }
-    
+
     //This class serializes into the Json payload required by Slack Incoming WebHooks
     public class Payload
     {

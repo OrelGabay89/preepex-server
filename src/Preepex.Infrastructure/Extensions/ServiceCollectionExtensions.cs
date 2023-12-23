@@ -21,7 +21,6 @@ using Preepex.Core.Application.Interfaces.Factories;
 using Preepex.Core.Application.Interfaces.Repositories.Domain;
 using Preepex.Core.Application.Interfaces.Shared;
 using Preepex.Core.Application.Interfaces.Storage;
-using Preepex.Core.Domain.Entities;
 using Preepex.Core.Domain.Entities.Identity;
 using Preepex.Core.Domain.Entities.Media;
 using Preepex.Infrastructure.DbContexts;

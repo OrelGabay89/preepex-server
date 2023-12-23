@@ -14,7 +14,6 @@ using Preepex.Core.Domain.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Preepex.Presentation.Framework.Controllers;
 using Preepex.Core.Application.Interfaces.Shared.Catalog;
 using Preepex.Core.Application.Interfaces.Factories;
 using Preepex.Core.Domain.Entities.ApplicationEntities;

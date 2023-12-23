@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Security.Claims;
 
-namespace Preepex.Presentation.Framework.Extensions
+namespace Preepex.Core.Application.Extensions
 {
     public static class ClaimsPrincipalExtensions
     {

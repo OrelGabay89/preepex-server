@@ -2,7 +2,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Preepex.Core.Application.Dtos;
 using System.Threading.Tasks;
-using Preepex.Presentation.Framework.Controllers;
 using Preepex.Core.Application.Interfaces.Shared;
 using Preepex.Core.Application.Interfaces;
 using Preepex.Core.Domain.Entities.ApplicationEntities;

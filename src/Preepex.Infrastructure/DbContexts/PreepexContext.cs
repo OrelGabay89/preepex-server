@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Preepex.Core.Domain.Entities;
 using Preepex.Core.Domain.NopEntities;
 
-namespace Preepex.Core.Domain.Entities
+namespace Preepex.Infrastructure.DbContexts
 {
     public partial class PreepexContext : DbContext
     {
@@ -590,18 +591,18 @@ namespace Preepex.Core.Domain.Entities
                 entity.HasIndex(e => e.LimitedToStores, "IX_Category_LimitedToStores");
 
                 entity.HasIndex(e => e.ParentCategoryId, "IX_Category_ParentCategoryId");
-                
+
                 entity.HasIndex(e => e.SubjectToAcl, "IX_Category_SubjectToAcl");
 
-                entity.HasIndex(e => new {e.Published, e.Deleted}, "IX_Category_Published_Deleted");
+                entity.HasIndex(e => new { e.Published, e.Deleted }, "IX_Category_Published_Deleted");
 
-                entity.HasIndex(e => new { e.Id, e.Published, e.Deleted}, "IX_Category_Id_Published_Deleted");
+                entity.HasIndex(e => new { e.Id, e.Published, e.Deleted }, "IX_Category_Id_Published_Deleted");
 
                 entity.HasIndex(e => new { e.Id, e.DisplayOrder, e.ParentCategoryId }, "IX_Category_Id_DisplayOrder_ParentCategoryId");
 
                 entity.HasIndex(e => new { e.Published, e.Deleted, e.ShowOnHomepage, e.DisplayOrder, e.Id }, "IX_Category_Published_Deleted_ShowOnHomepage_DisplayOrder_Id");
 
-                entity.HasIndex(e => new {e.Published, e.Deleted, e.LimitedToStores, e.ParentCategoryId, e.DisplayOrder, e.Id }, "IX_Category_Published_Deleted_LimitedToStores_ParentCategoryId_DisplayOrder_Id");
+                entity.HasIndex(e => new { e.Published, e.Deleted, e.LimitedToStores, e.ParentCategoryId, e.DisplayOrder, e.Id }, "IX_Category_Published_Deleted_LimitedToStores_ParentCategoryId_DisplayOrder_Id");
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
@@ -873,9 +874,9 @@ namespace Preepex.Core.Domain.Entities
                 entity.HasIndex(e => e.SystemName, "IX_Customer_SystemName");
 
                 entity.HasIndex(e => e.Username, "IX_Customer_Username");
-                
+
                 entity.HasIndex(e => new { e.Id, e.Active }, "IX_Customer_Id_Active");
-                
+
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
                 entity.Property(e => e.AdminComment)
@@ -2835,7 +2836,7 @@ namespace Preepex.Core.Domain.Entities
                 entity.HasIndex(e => e.VisibleIndividually, "IX_Product_VisibleIndividually");
 
                 entity.HasIndex(e => e.DisplayOrder, "IX_Products_DisplayOrder");
-                
+
 
 
                 entity.HasIndex(e => new { e.Id, e.Deleted }, "IX_Product_Delete_Id");

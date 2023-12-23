@@ -9,7 +9,6 @@ using Preepex.Core.Application.Interfaces.Factories;
 using Preepex.Core.Application.Interfaces.Shared;
 using Preepex.Core.Application.Interfaces.Shared.Catalog;
 using Preepex.Core.Domain.Entities.ApplicationEntities;
-using Preepex.Presentation.Framework.Controllers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;

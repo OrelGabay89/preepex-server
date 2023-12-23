@@ -1,7 +1,5 @@
 
 using Microsoft.Extensions.DependencyInjection;
-using Nop.Services.Common;
-using Nop.Services.Media;
 using Preepex.Common.Singleton;
 using Preepex.Core.Application.Configuration;
 using Preepex.Core.Application.Interfaces;
@@ -13,6 +11,7 @@ using Preepex.Core.Application.Interfaces.Shared.Customers;
 using Preepex.Core.Application.Interfaces.Shared.Shipping;
 using Preepex.Core.Application.Interfaces.Shared.Tax;
 using Preepex.Core.Application.Messages;
+using Preepex.Core.Application.Routing;
 using Preepex.Infrastructure;
 using Preepex.Infrastructure.DbContexts;
 using Preepex.Infrastructure.Resources.Services;
@@ -25,7 +24,6 @@ using Preepex.Infrastructure.Services.Shipping;
 using Preepex.Infrastructure.Services.Stores;
 using Preepex.Infrastructure.Services.Tax;
 using Preepex.Infrastructure.Services.Topics;
-using Preepex.Presentation.Framework.Routing;
 
 namespace Preepex.Web.Presentation.Web.Extensions
 {

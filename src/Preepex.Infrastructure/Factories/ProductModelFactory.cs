@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Preepex.Common.Paging;
 using Preepex.Core.Application.Caching;
 using Preepex.Core.Application.Dtos;
-using Preepex.Core.Application.Extenstions;
 using Preepex.Core.Application.Interfaces;
 using Preepex.Core.Application.Interfaces.Factories;
 using Preepex.Core.Application.Interfaces.Security;
@@ -25,6 +24,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Preepex.Common.Extensions;
+using Preepex.Core.Application.Extensions;
 
 namespace Preepex.Infrastructure.Factories
 {

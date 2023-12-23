@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Preepex.Core.Application.Dtos;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Preepex.Presentation.Framework.Controllers;
 using Preepex.Core.Application.Interfaces.Shared;
 using Preepex.Core.Application.Interfaces.Factories;
 using Preepex.Core.Application.Models;

@@ -1,7 +1,7 @@
 ﻿using Preepex.Core.Domain.Entities;
 using Preepex.Core.Domain.Enumerations;
 
-namespace Preepex.Core.Application.Extenstions
+namespace Preepex.Core.Application.Extensions
 {
     public static class ProductAttributeExtensions
     {
@@ -10,7 +10,7 @@ namespace Preepex.Core.Application.Extenstions
             if (productAttributeMapping == null)
                 return false;
 
-            if (productAttributeMapping.AttributeControlTypeId ==(int)AttributeControlTypeEnum.TextBox ||
+            if (productAttributeMapping.AttributeControlTypeId == (int)AttributeControlTypeEnum.TextBox ||
                 productAttributeMapping.AttributeControlTypeId == (int)AttributeControlTypeEnum.MultilineTextbox ||
                 productAttributeMapping.AttributeControlTypeId == (int)AttributeControlTypeEnum.Datepicker ||
                 productAttributeMapping.AttributeControlTypeId == (int)AttributeControlTypeEnum.FileUpload)
