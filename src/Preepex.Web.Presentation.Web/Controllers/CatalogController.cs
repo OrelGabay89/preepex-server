@@ -115,13 +115,23 @@ namespace Preepex.Web.Presentation.Web.Controllers
 
         [HttpPost("category-products/{categoryId}")]
         [RedisCached(600)]
-        public virtual async Task<IReadOnlyList<ProductDetailsDto>> GetCategoryProducts(int categoryId, [FromQuery] CatalogProductsFilter filter)
+        public virtual async Task<CatalogProductsResponse> GetCategoryProducts(int categoryId, [FromQuery] CatalogProductsFilter filter)
         {
             try
             {
-                var products = await _categoryService.GetProductsByCategory(categoryId, filter);
+                var (products, minPrice, maxPrice) = await _categoryService.GetProductsByCategory(categoryId, filter);
                 
-                return await _productModelFactory.PrepareProductsModelAsync(products);
+                var mappedProducts = await _productModelFactory.PrepareProductsModelAsync(products);
+
+                return new CatalogProductsResponse
+                {
+                    products = mappedProducts,
+                    filter = new CatalogProductsFilterResponse
+                    {
+                        minPrice = minPrice,
+                        maxPrice = maxPrice
+                    }
+                };
             }
             catch (System.Exception ex)
             {

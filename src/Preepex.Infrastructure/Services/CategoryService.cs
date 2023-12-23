@@ -350,7 +350,7 @@ namespace Preepex.Infrastructure.Services
             return categories;
         }
 
-        public virtual async Task<List<Product>> GetProductsByCategory(int categoryId, CatalogProductsFilter filter)
+        public virtual async Task<(List<Product> products, decimal minPrice, decimal maxPrice)> GetProductsByCategory(int categoryId, CatalogProductsFilter filter)
         {
             var currentStore = await _storeContext.GetCurrentStoreAsync();
 
@@ -365,12 +365,6 @@ namespace Preepex.Infrastructure.Services
                 .Where(pc => availableProductIds.Contains(pc.ProductId))
                 .Join(_productRepository.Table, pc => pc.ProductId, p => p.Id, (pc, p) => p)
                 .Where(p => !p.Deleted);
-
-
-            if (filter.Equals(default))
-            {
-                return await query.ToListAsync();
-            }
 
             if (!string.IsNullOrWhiteSpace(filter.Price))
             {
@@ -403,6 +397,18 @@ namespace Preepex.Infrastructure.Services
                     .Where(p => p.ProductSpecificationattributeMapping.Any(psa => filter.SpecificationOptionIds.Contains(psa.SpecificationAttributeOptionId)));
             }
 
+            decimal maxProductPrice = 10_000;
+            decimal minProductPrice = 0;
+
+            if (await AsyncExtensions.AnyAsync(query))
+            {
+                maxProductPrice = await query.MaxAsync(p => p.Price);
+                minProductPrice = await query.MinAsync(p => p.Price);
+            }
+
+            maxProductPrice = maxProductPrice + 10;
+            minProductPrice = Math.Max(minProductPrice - 10, 0);
+
             if (!string.IsNullOrWhiteSpace(filter.OrderBy))
             {
                 var orderBy = filter.OrderBy.ToLowerInvariant();
@@ -431,7 +437,7 @@ namespace Preepex.Infrastructure.Services
                 }
             }
 
-            return await query.ToListAsync();
+            return (await query.ToListAsync(), minProductPrice, maxProductPrice);
         }
 
     }
