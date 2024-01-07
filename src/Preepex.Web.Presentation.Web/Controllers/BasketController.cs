@@ -39,7 +39,6 @@ namespace Preepex.Web.Presentation.Web.Controllers
             }
             else
             {
-                basket.CurrencyCode = (await _workContext.GetWorkingCurrencyAsync()).CurrencyCode;
                 return Ok(basket);
             }
         }

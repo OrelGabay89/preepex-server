@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Collections.Generic;
 using System.Security.Claims;
+using Ardalis.GuardClauses;
+using System.Text.RegularExpressions;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
@@ -56,7 +58,18 @@ namespace Preepex.Web.Presentation.Web.Controllers
         [HttpGet("email-exists")]
         public async Task<ActionResult<bool>> CheckEmailExistsAsync([FromQuery] string email)
         {
-            return await _userManager.FindByEmailAsync(email) != null;
+            // Define a simple regex pattern for email validation
+            string emailPattern = @"^\S+@\S+\.\S+$";
+
+            // Validate the email format
+            if (!Regex.IsMatch(email, emailPattern))
+            {
+                return BadRequest("Invalid email format.");
+            }
+
+            // If the email format is valid, check if it exists
+            var user = await _userManager.FindByEmailAsync(email);
+            return user != null;
         }
 
         [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
@@ -107,7 +120,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
         [HttpPost("register")]
         [AllowAnonymous]
 
-        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
+        public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto registerDto)
         {
             if (CheckEmailExistsAsync(registerDto.Email).Result.Value)
             {

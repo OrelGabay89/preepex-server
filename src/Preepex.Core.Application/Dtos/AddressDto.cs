@@ -30,8 +30,8 @@ namespace Preepex.Core.Application.Dtos
         public string Zipcode { get; set; }
 
         [Required]
-        [JsonProperty("phone")]
-        public string phone { get; set; }
+        [JsonProperty("phoneNumber")]
+        public string Phone { get; set; }
         
         public int Id { get; set; }
         public string AppUserId { get; set; }
