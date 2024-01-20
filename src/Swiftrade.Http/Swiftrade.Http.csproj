@@ -2,18 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Filters\**" />
-    <EmbeddedResource Remove="Filters\**" />
-    <None Remove="Filters\**" />
+    <PackageReference Include="FluentValidation" Version="9.5.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="NLog" Version="5.2.8" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Preepex.Common\Preepex.Common.csproj" />
     <ProjectReference Include="..\Preepex.Core.Application\Preepex.Core.Application.csproj" />
-    <ProjectReference Include="..\Preepex.Core.Domain\Preepex.Core.Domain.csproj" />
   </ItemGroup>
 
 </Project>
