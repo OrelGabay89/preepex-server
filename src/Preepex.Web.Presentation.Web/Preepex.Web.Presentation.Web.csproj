@@ -45,6 +45,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Swiftrade.SignalR\Swiftrade.SignalR.csproj" />
     <ProjectReference Include="..\Preepex.Core.Application\Preepex.Core.Application.csproj" />
     <ProjectReference Include="..\Preepex.Core.Domain\Preepex.Core.Domain.csproj" />
     <ProjectReference Include="..\Preepex.Infrastructure\Preepex.Infrastructure.csproj" />

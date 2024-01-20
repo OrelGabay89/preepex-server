@@ -6,11 +6,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Preepex.Common.EnvironmentInfo;
+using Preepex.Common.Serializer.System.Text.Json;
 using Preepex.Core.Application.Extensions;
 using Preepex.Core.Application.Routing;
 using Preepex.Web.Presentation.Web.Extensions;
 using Preepex.Web.Presentation.Web.Middleware;
 using StackExchange.Redis;
+using Swiftrade.SignalR;
 using System.IO;
 
 namespace Preepex.Web.Presentation.Web
@@ -45,6 +48,8 @@ namespace Preepex.Web.Presentation.Web
 
             //////ROUTING
             services.AddRouting(options => options.LowercaseUrls = true);
+
+            services.AddResponseCompression(options => options.EnableForHttps = true);
 
             //////LOCALIZATION
             services.AddLocalization(options => options.ResourcesPath = "");
@@ -84,9 +89,23 @@ namespace Preepex.Web.Presentation.Web
 
 
             services.AddSwaggerDocumentation();
-            services.AddControllers(options => options.EnableEndpointRouting = false);
+            services.AddControllers(options =>
+            {
+                options.EnableEndpointRouting = false;
+                options.ReturnHttpNotAcceptable = true;
+           
+            })
+           .AddJsonOptions(options =>
+            {
+                STJson.ApplySerializerSettings(options.JsonSerializerOptions);
+            });
 
-
+            services
+           .AddSignalR()
+           .AddJsonProtocol(options =>
+           {
+               options.PayloadSerializerOptions = STJson.GetSerializerSettings();
+           });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -119,6 +138,10 @@ namespace Preepex.Web.Presentation.Web
             }
 
             app.UseMiddleware<ExceptionMiddleware>();
+            app.UseMiddleware<VersionMiddleware>();
+
+            app.UseWebSockets();
+            
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
             
             app.UseRouting();
@@ -126,6 +149,8 @@ namespace Preepex.Web.Presentation.Web
             app.UseAuthentication();
             
             app.UseAuthorization();
+
+            app.Properties["host.AppName"] = BuildInfo.AppName;
 
             app.UseStaticFiles();
             
@@ -154,9 +179,6 @@ namespace Preepex.Web.Presentation.Web
                 .AllowCredentials()); // allow credentials
 
             app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
 
             app.UseResponseCaching();
 
@@ -195,6 +217,8 @@ namespace Preepex.Web.Presentation.Web
 
             app.UseEndpoints(endpointRouteBuilder =>
             {
+                endpointRouteBuilder.MapHub<MessageHub>("/signalr/messages").RequireAuthorization("SignalR");
+                
                 endpointRouteBuilder.MapControllers();
 
                 endpointRouteBuilder.MapDynamicControllerRoute<SlugRouteTransformer>(genericPattern);
@@ -202,42 +226,6 @@ namespace Preepex.Web.Presentation.Web
                 endpointRouteBuilder.MapControllerRoute(name: "Category",
                     pattern: genericPattern,
                     defaults: new { controller = "Catalog", action = "Category" });
-
-                //endpointRouteBuilder.MapControllerRoute(name: "GenericUrl",
-                //   pattern: "{genericSeName}",
-                //   defaults: new { controller = "Common", action = "GenericUrl" });
-
-                //endpointRouteBuilder.MapControllerRoute(name: "GenericUrlWithParameter",
-                //    pattern: "{genericSeName}/{genericParameter}",
-                //    defaults: new { controller = "Common", action = "GenericUrl" });
-                
-                //endpointRouteBuilder.MapControllerRoute(name: "Product",
-                //    pattern: genericPattern,
-                //    defaults: new { controller = "Product", action = "ProductDetails" });
-
-                //endpointRouteBuilder.MapControllerRoute(name: "Manufacturer",
-                //    pattern: genericPattern,
-                //    defaults: new { controller = "Catalog", action = "Manufacturer" });
-
-                //endpointRouteBuilder.MapControllerRoute(name: "Vendor",
-                //    pattern: genericPattern,
-                //    defaults: new { controller = "Catalog", action = "Vendor" });
-
-                //endpointRouteBuilder.MapControllerRoute(name: "NewsItem",
-                //    pattern: genericPattern,
-                //    defaults: new { controller = "News", action = "NewsItem" });
-
-                //endpointRouteBuilder.MapControllerRoute(name: "BlogPost",
-                //    pattern: genericPattern,
-                //    defaults: new { controller = "Blog", action = "BlogPost" });
-
-                //endpointRouteBuilder.MapControllerRoute(name: "Topic",
-                //    pattern: genericPattern,
-                //    defaults: new { controller = "Topic", action = "TopicDetails" });
-
-                //endpointRouteBuilder.MapControllerRoute(name: "ProductsByTag",
-                //    pattern: genericPattern,
-                //    defaults: new { controller = "Catalog", action = "ProductsByTag" });
             });
 
         }

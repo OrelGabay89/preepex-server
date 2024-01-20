@@ -183,20 +183,33 @@ namespace Preepex.Infrastructure.Extensions
 
         private static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration)
         {
-            services
-                .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    options =>
-                    {
-                        options.Cookie.HttpOnly = true;
-                        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                        options.Cookie.SameSite = SameSiteMode.Strict;
-                        options.Cookie.Name = "JwtToken";
-                        options.ExpireTimeSpan = TimeSpan.FromDays(7); // Set a suitable expiration time
-                        options.SlidingExpiration = true; // Enable sliding expiration
-                    });
+            //services
+            //    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            //    .AddCookie(
+            //        CookieAuthenticationDefaults.AuthenticationScheme,
+            //        options =>
+            //        {
+            //            options.Cookie.HttpOnly = true;
+            //            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            //            options.Cookie.SameSite = SameSiteMode.Strict;
+            //            options.Cookie.Name = "JwtToken";
+            //            options.ExpireTimeSpan = TimeSpan.FromDays(7); // Set a suitable expiration time
+            //            options.SlidingExpiration = true; // Enable sliding expiration
+            //        });
 
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+                {
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.Name = "SwiftradeAuth";
+                    options.AccessDeniedPath = "/login?loginFailed=true";
+                    options.LoginPath = "/login";
+                    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+                    options.SlidingExpiration = true;
+                    options.ReturnUrlParameter = "returnUrl";
+                });
+                
 
             var builder = services.AddIdentityCore<ApplicationUser>();
 

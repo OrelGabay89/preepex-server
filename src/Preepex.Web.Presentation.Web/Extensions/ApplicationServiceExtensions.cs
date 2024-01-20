@@ -38,7 +38,6 @@ namespace Preepex.Web.Presentation.Web.Extensions
               {
                   options.EnableEndpointRouting = false;
 
-                  //options.Filters.Add(typeof(MultiTenancyFilter));
               })
               
               .AddNewtonsoftJson(o =>
@@ -99,7 +98,8 @@ namespace Preepex.Web.Presentation.Web.Extensions
             else
                 services.AddScoped<IPictureService, PictureService>();
 
-
+            services
+             .AddSignalR();
 
             return services;
         }
