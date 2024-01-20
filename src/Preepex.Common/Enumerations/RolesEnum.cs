@@ -1,9 +1,8 @@
-﻿namespace Preepex.Common.Enumerations
+﻿namespace Preepex.Common.Enumerations;
+
+public enum RolesEnum
 {
-    public enum RolesEnum
-    {
-        User = 2,
-        Admin = 4,
-        SuperAdmin = 8
-    }
+    User = 2,
+    Admin = 4,
+    SuperAdmin = 8
 }

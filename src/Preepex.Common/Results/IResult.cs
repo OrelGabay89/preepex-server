@@ -1,17 +1,16 @@
 ﻿using System.Collections.Generic;
 
-namespace Preepex.Common.Results
+namespace Preepex.Common.Results;
+
+public interface IResult
 {
-    public interface IResult
-    {
-        IReadOnlyCollection<IResultError> Errors { get; }
-        string Message { get; }
+    IReadOnlyCollection<IResultError> Errors { get; }
+    string Message { get; }
 
-        bool Succeeded { get; }
-    }
+    bool Succeeded { get; }
+}
 
-    public interface IResult<out T> : IResult
-    {
-        T Data { get; }
-    }
+public interface IResult<out T> : IResult
+{
+    T Data { get; }
 }

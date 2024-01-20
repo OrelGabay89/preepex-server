@@ -1,7 +1,6 @@
-﻿namespace Preepex.Common.Options
+﻿namespace Preepex.Common.Options;
+
+public class FileStorageOptions
 {
-    public class FileStorageOptions
-    {
-        public string BasePath { get; set; }
-    }
+    public string BasePath { get; set; }
 }

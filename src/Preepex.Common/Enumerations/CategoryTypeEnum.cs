@@ -1,10 +1,9 @@
-﻿namespace Preepex.Common.Enumerations
+﻿namespace Preepex.Common.Enumerations;
+
+public enum CategoryTypeEnum
 {
-    public enum CategoryTypeEnum
-    {
-        Sub = 1,
-        Link = 2,
-        ExtLink = 3,
-        ExtTabLink = 4
-    }
+    Sub = 1,
+    Link = 2,
+    ExtLink = 3,
+    ExtTabLink = 4
 }

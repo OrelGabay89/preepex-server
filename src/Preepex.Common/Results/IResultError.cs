@@ -1,8 +1,7 @@
-﻿namespace Preepex.Common.Results
+﻿namespace Preepex.Common.Results;
+
+public interface IResultError
 {
-    public interface IResultError
-    {
-        string Error { get; }
-        string Code { get; }
-    }
+    string Error { get; }
+    string Code { get; }
 }

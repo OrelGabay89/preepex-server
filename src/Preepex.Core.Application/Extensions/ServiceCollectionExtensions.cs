@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Preepex.Core.Application.Mappings.Resolvers;
 
@@ -11,20 +12,24 @@ namespace Preepex.Core.Application.Extensions
             services.AddScoped<PhoneNumberToStringConverter>();
             services.AddScoped<StringToPhoneNumberConverter>();
 
-            //services.AddAutoMapper(config =>
-            //{
-            //    config.ConstructServicesUsing(t => services.BuildServiceProvider().GetRequiredService(t));
-            //    config.AddProfile<MappingProfiles>();
-            //});
-
-            //services.AddAuthorizationCore();
-            //services.AddAuthorizationPolicies();
+            services.AddAuthorizationPolicies();
         }
 
         private static void AddAuthorizationPolicies(this IServiceCollection services)
         {
-            //services.AddSingleton<IAuthorizationPolicyProvider, CustomAuthorizationPolicyProvider>();
-            //services.AddScoped<IAuthorizationHandler, UserOperationAuthorizationHandler>();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("SignalR", policy =>
+                {
+                    policy.AuthenticationSchemes.Add("SignalR");
+                    policy.RequireAuthenticatedUser();
+                });
+
+                // Require auth on everything except those marked [AllowAnonymous]
+                options.FallbackPolicy = new AuthorizationPolicyBuilder("API")
+                .RequireAuthenticatedUser()
+                .Build();
+            });
         }
     }
 }

@@ -1,8 +1,7 @@
-﻿namespace Preepex.Common.Paging
+﻿namespace Preepex.Common.Paging;
+
+public class PaginationRequest
 {
-    public class PaginationRequest
-    {
-        public int PageNo { get; set; } = 1;
-        public int PageSize { get; set; } = 10;
-    }
+    public int PageNo { get; set; } = 1;
+    public int PageSize { get; set; } = 10;
 }
