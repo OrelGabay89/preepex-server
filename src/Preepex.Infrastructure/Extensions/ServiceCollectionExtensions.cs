@@ -190,17 +190,15 @@ namespace Preepex.Infrastructure.Extensions
                     options.Cookie.HttpOnly = true;
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                     options.Cookie.Name = "SwiftradeAuth";
-                    options.AccessDeniedPath = "/login?loginFailed=true";
-                    options.LoginPath = "/login";
                     options.ExpireTimeSpan = TimeSpan.FromDays(7);
                     options.SlidingExpiration = true;
                     options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
-                })
-                .AddApiKey("API", options =>
-                   {
-                       options.HeaderName = "X-Api-Key";
-                       options.QueryName = "apikey";
                 });
+                //.AddApiKey("API", options =>
+                //   {
+                //       options.HeaderName = "X-Api-Key";
+                //       options.QueryName = "apikey";
+                //});
 
 
 
