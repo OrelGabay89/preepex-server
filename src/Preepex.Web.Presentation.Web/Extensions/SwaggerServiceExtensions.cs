@@ -12,7 +12,7 @@ namespace Preepex.Web.Presentation.Web.Extensions
             {
                 options.CustomSchemaIds(type => type.ToString());
 
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Swiftrade API", Version = "v0.1" });
 
                 var securitySchema = new OpenApiSecurityScheme
                 {
