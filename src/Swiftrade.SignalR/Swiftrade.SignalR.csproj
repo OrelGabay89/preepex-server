@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\preepex-server\src\Preepex.Common\Preepex.Common.csproj" />
-    <ProjectReference Include="..\preepex-server\src\Preepex.Core.Application\Preepex.Core.Application.csproj" />
+    <ProjectReference Include="..\Preepex.Common\Preepex.Common.csproj" />
+    <ProjectReference Include="..\Preepex.Core.Application\Preepex.Core.Application.csproj" />
   </ItemGroup>
 
 </Project>

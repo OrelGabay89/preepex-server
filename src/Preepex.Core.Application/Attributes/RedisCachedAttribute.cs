@@ -22,6 +22,11 @@ namespace Preepex.Core.Application.Attributes
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
+            #if DEBUG
+            // always resolve the next because we don't want to cache the response during development
+            await next();
+            #endif
+
             var cacheService = context.HttpContext.RequestServices.GetRequiredService<IResponseCacheService>();
             var staticCacheManager = context.HttpContext.RequestServices.GetRequiredService<IStaticCacheManager>();
             var cacheKey = GenerateCacheKeyFromRequest(context.HttpContext.Request);
