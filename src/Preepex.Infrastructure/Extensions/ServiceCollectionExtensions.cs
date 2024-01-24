@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -183,20 +184,6 @@ namespace Preepex.Infrastructure.Extensions
 
         private static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration)
         {
-            //services
-            //    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            //    .AddCookie(
-            //        CookieAuthenticationDefaults.AuthenticationScheme,
-            //        options =>
-            //        {
-            //            options.Cookie.HttpOnly = true;
-            //            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            //            options.Cookie.SameSite = SameSiteMode.Strict;
-            //            options.Cookie.Name = "JwtToken";
-            //            options.ExpireTimeSpan = TimeSpan.FromDays(7); // Set a suitable expiration time
-            //            options.SlidingExpiration = true; // Enable sliding expiration
-            //        });
-
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
                 {
@@ -207,9 +194,15 @@ namespace Preepex.Infrastructure.Extensions
                     options.LoginPath = "/login";
                     options.ExpireTimeSpan = TimeSpan.FromDays(7);
                     options.SlidingExpiration = true;
-                    options.ReturnUrlParameter = "returnUrl";
+                    options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
+                })
+                .AddApiKey("API", options =>
+                   {
+                       options.HeaderName = "X-Api-Key";
+                       options.QueryName = "apikey";
                 });
-                
+
+
 
             var builder = services.AddIdentityCore<ApplicationUser>();
 
@@ -220,7 +213,29 @@ namespace Preepex.Infrastructure.Extensions
             builder.AddRoleValidator<RoleValidator<ApplicationRole>>();
             builder.AddRoleManager<RoleManager<ApplicationRole>>();
 
+            //services.AddAuthorizationPolicies();
+
+            
             return services;
+        }
+
+        private static void AddAuthorizationPolicies(this IServiceCollection services)
+        {
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("SignalR", policy =>
+                {
+                    policy.AuthenticationSchemes.Add("SignalR");
+                    policy.RequireAuthenticatedUser();
+                });
+
+                // Require auth on everything except those marked [AllowAnonymous]
+                options.FallbackPolicy = new AuthorizationPolicyBuilder("API")
+                .RequireAuthenticatedUser()
+                .Build();
+            });
+
+
         }
 
 

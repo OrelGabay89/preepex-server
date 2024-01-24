@@ -18,12 +18,6 @@ namespace Preepex.Web.Presentation.Web.Extensions
             
             //services.AddApplicationCookie();
 
-            //services.AddAutoMapper(config =>
-            //{
-            //    config.AddProfile<AppProfile>();
-            //    config.AddExpressionMapping();
-            //});
-
             //services.AddTransient<IAuthenticatedUserService, AuthenticatedUserService>();
             services.AddStorageOptions(configuration);
 
@@ -31,19 +25,6 @@ namespace Preepex.Web.Presentation.Web.Extensions
 
         }
 
-        private static void AddApplicationCookie(this IServiceCollection services)
-        {
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.AccessDeniedPath = "/Shared/AccessDenied";
-                options.Cookie.Name = "Preepex.AUTH";
-                options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-                options.LoginPath = "/auth/login";
-                options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
-                options.SlidingExpiration = true;
-            });
-        }
         private static void AddStorageOptions(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<FileStorageOptions>(x => configuration.GetSection("Storage").Bind(x));

@@ -12,24 +12,9 @@ namespace Preepex.Core.Application.Extensions
             services.AddScoped<PhoneNumberToStringConverter>();
             services.AddScoped<StringToPhoneNumberConverter>();
 
-            services.AddAuthorizationPolicies();
+
         }
 
-        private static void AddAuthorizationPolicies(this IServiceCollection services)
-        {
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("SignalR", policy =>
-                {
-                    policy.AuthenticationSchemes.Add("SignalR");
-                    policy.RequireAuthenticatedUser();
-                });
-
-                // Require auth on everything except those marked [AllowAnonymous]
-                options.FallbackPolicy = new AuthorizationPolicyBuilder("API")
-                .RequireAuthenticatedUser()
-                .Build();
-            });
-        }
+       
     }
 }

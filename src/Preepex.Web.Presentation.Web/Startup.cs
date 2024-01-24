@@ -37,14 +37,6 @@ namespace Preepex.Web.Presentation.Web
 
             services.AddInfrastructure(_config);
 
-            services.AddControllers(options =>
-            {
-                options.CacheProfiles.Add("Default30",
-                    new CacheProfile()
-                    {
-                        Duration = 30,
-                    });
-            });
 
             //////ROUTING
             services.AddRouting(options => options.LowercaseUrls = true);
@@ -91,6 +83,12 @@ namespace Preepex.Web.Presentation.Web
             services.AddSwaggerDocumentation();
             services.AddControllers(options =>
             {
+                options.CacheProfiles.Add("Default30",
+                 new CacheProfile()
+                 {
+                     Duration = 30,
+                 });
+                
                 options.EnableEndpointRouting = false;
                 options.ReturnHttpNotAcceptable = true;
            
