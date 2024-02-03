@@ -43,7 +43,8 @@ namespace Preepex.Web.Presentation.Web.Controllers
             ICategoryService categoryService,
             IStoreContext storeContext,
             ILogger<CatalogController> logger
-        ) {
+        )
+        {
             _catalogSettings = catalogSettings;
             _productModelFactory = productModelFactory;
             _productService = productService;
@@ -77,7 +78,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
             var productNumber = _catalogSettings.ProductSearchAutoCompleteNumberOfProducts > 0
                 ? _catalogSettings.ProductSearchAutoCompleteNumberOfProducts
                 : 10;
-            
+
             var store = await _storeContext.GetCurrentStoreAsync();
 
             var products = await _productService.SearchProductsAsync(
@@ -95,19 +96,19 @@ namespace Preepex.Web.Presentation.Web.Controllers
 
             var models = (await _productModelFactory.PrepareProductOverviewModelsAsync(products, true, true, null))
                 .ToList();
-            
+
             var result = (from p in models
-                    select new
-                    {
-                        label = p.Name,
-                        seName = $"/{p?.SeName}",
-                        productpictureurl = p?.PictureModel?.ThumbImageUrl,
-                        showlinktoresultsearch = showLinkToResultSearch,
-                        shortDesc = p?.ShortDescription,
-                        sku = p.Sku,
-                        ProductPriceDto = p?.ProductPrice,
-                        id = p?.ProductId
-                    })
+                          select new
+                          {
+                              label = p.Name,
+                              seName = $"/{p?.SeName}",
+                              productpictureurl = p?.PictureModel?.ThumbImageUrl,
+                              showlinktoresultsearch = showLinkToResultSearch,
+                              shortDesc = p?.ShortDescription,
+                              sku = p.Sku,
+                              ProductPriceDto = p?.ProductPrice,
+                              id = p?.ProductId
+                          })
                 .ToList();
             return Ok(result);
         }
@@ -120,7 +121,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
             try
             {
                 var (products, minPrice, maxPrice) = await _categoryService.GetProductsByCategory(categoryId, filter);
-                
+
                 var mappedProducts = await _productModelFactory.PrepareProductsModelAsync(products);
 
                 return new CatalogProductsResponse
@@ -138,7 +139,8 @@ namespace Preepex.Web.Presentation.Web.Controllers
                 _logger.LogError(ex, "Error getting category products");
                 throw;
             }
-            
+
         }
+     
     }
 }

@@ -224,32 +224,42 @@ namespace Preepex.Infrastructure.Factories
         {
             var result = new List<CategorySimpleModel>();
 
-
+            //little hack for performance optimization
+            //we know that this method is used to load top and left menu for categories.
+            //it'll load all categories anyway.
+            //so there's no need to invoke "GetAllCategoriesByParentCategoryId" multiple times (extra SQL commands) to load childs
+            //so we load all categories at once (we know they are cached)
             var store = await _storeContext.GetCurrentStoreAsync();
             var allCategories = await _categoryService.GetAllCategoriesAsync(storeId: store.Id);
             var categories = allCategories.Where(c => c.ParentCategoryId == rootCategoryId).OrderBy(c => c.DisplayOrder).ToList();
-
-            var categorySlugs = await _urlRecordService.GetSeNamesAsync(categories.ToArray());
-
             foreach (var category in categories)
             {
-                var categorySlug = "";
-
-                var defaultKey = default(KeyValuePair<Tuple<string, string, int>, string>);
-                var categorySlugFound = categorySlugs.FirstOrDefault(x => x.Key.Item1 == category.Id.ToString() && x.Key.Item2 == "Category");
-
-                if (!categorySlugFound.Equals(defaultKey))
-                {
-                    categorySlug = categorySlugFound.Value;
-                }
-
                 var categoryModel = new CategorySimpleModel
                 {
                     Id = category.Id,
                     Name = await _localizationService.GetLocalizedAsync(category, x => x.Name),
-                    SeName = categorySlug,
+                    SeName = await _urlRecordService.GetSeNameAsync(category),
                     IncludeInTopMenu = category.IncludeInTopMenu
                 };
+
+                //number of products in each category
+                if (_catalogSettings.ShowCategoryProductNumber)
+                {
+                    var categoryIds = new List<int> { category.Id };
+                    //include subcategories
+                    if (_catalogSettings.ShowCategoryProductNumberIncludingSubcategories)
+                        categoryIds.AddRange(
+                            await _categoryService.GetChildCategoryIdsAsync(category.Id, store.Id));
+
+                    categoryModel.NumberOfProducts =
+                        await _productService.GetNumberOfProductsInCategoryAsync(categoryIds, store.Id);
+                }
+
+                //if (loadSubCategories)
+                //{
+                //    var subCategories = await PrepareCategorySimpleModelsAsync(category.Id);
+                //    categoryModel.SubCategories.AddRange(subCategories);
+                //}
 
                 categoryModel.HaveSubCategories = categoryModel.SubCategories.Count > 0 &
                     categoryModel.SubCategories.Any(x => x.IncludeInTopMenu);

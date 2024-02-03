@@ -69,5 +69,14 @@ namespace Preepex.Web.Presentation.Web.Controllers
             return Ok(result);
            
         }
+
+        [HttpGet("get-category/{id}")]
+        public virtual async Task<IActionResult> GetCategoryById([FromRoute] int id)
+        {
+            var category = await _categoryService.GetCategoryByIdAsync(id);
+
+            return Json(category);
+
+        }
     }
 }

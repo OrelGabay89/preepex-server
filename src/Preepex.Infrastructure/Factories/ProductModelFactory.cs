@@ -334,17 +334,17 @@ namespace Preepex.Infrastructure.Factories
             //store name
             model.CurrentStoreName = await _localizationService.GetLocalizedAsync(store, x => x.Name);
 
-            var vendor = await _vendorService.GetVendorByIdAsync(product.VendorId);
-            if (vendor != null)
-            {
-                model.ShowVendor = true;
-                model.VendorModel = new VendorBriefInfoModel
-                {
-                    Id = vendor.Id,
-                    Name = vendor.Name,
-                    SeName = await _urlRecordService.GetSeNameAsync(vendor),
-                };
-            }
+            //var vendor = await _vendorService.GetVendorByIdAsync(product.VendorId);
+            //if (vendor != null)
+            //{
+            //    model.ShowVendor = true;
+            //    model.VendorModel = new VendorBriefInfoModel
+            //    {
+            //        Id = vendor.Id,
+            //        Name = vendor.Name,
+            //        SeName = await _urlRecordService.GetSeNameAsync(vendor),
+            //    };
+            //}
 
             //pictures
             model.DefaultPictureZoomEnabled = _mediaSettings.DefaultPictureZoomEnabled;
