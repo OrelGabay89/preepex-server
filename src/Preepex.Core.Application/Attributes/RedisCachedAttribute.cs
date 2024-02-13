@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -81,7 +82,10 @@ namespace Preepex.Core.Application.Attributes
         private static string GenerateCacheKeyFromRequest(HttpRequest request)
         {
             var keyBuilder = new StringBuilder();
-            keyBuilder.Append($"{request.Scheme}://{request.Host.Host}{request.Path}");
+
+            string storeIdentifier = request.Headers["Preepex-Store"];
+
+            keyBuilder.Append($"{request.Scheme}://{request.Host.Host}{request.Path}{storeIdentifier}");
             foreach (var (key, value) in request.Query.OrderBy(x => x.Key))
             {
                 keyBuilder.Append($"|{key}-{value}");
