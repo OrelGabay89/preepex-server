@@ -22,21 +22,20 @@ namespace Preepex.Web.Presentation.Web
     {
 
         private const string _defaultCorsPolicyName = "CorsPolicy";
-        //private const string _clientAppStoreDist = "wwwroot";
         private const string _clientAppAdminDist = "wwwroot/adminapp";
+        public IConfiguration Configuration { get; }
+        public IWebHostEnvironment Environment { get; }
 
-
-        private readonly IConfiguration _config;
-        public Startup(IConfiguration config)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            _config = config;
+            Configuration = configuration;
+            Environment = env;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddInfrastructure(_config);
-
+            services.AddInfrastructure(Configuration, Environment); // Adjusted to pass both parameters
 
             //////ROUTING
             services.AddRouting(options => options.LowercaseUrls = true);
@@ -67,11 +66,7 @@ namespace Preepex.Web.Presentation.Web
             //    )
             //);
 
-            services.AddSingleton<IConnectionMultiplexer>(c =>
-            {
-                var configuration = ConfigurationOptions.Parse(_config.GetConnectionString("Redis"), true);
-                return ConnectionMultiplexer.Connect(configuration);
-            });
+       
 
             //In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

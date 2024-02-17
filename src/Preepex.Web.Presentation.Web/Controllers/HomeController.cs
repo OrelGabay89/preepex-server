@@ -11,7 +11,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
     public class HomeController : BaseApiController
     {
 
-        public HomeController(ICatalogModelFactory catalogModelFactory)
+        public HomeController()
         {
         }
 

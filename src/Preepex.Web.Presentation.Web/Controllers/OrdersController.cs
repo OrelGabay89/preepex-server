@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Preepex.Core.Application.Extensions;
+using System.Net.Http;
+using System.Text;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
@@ -48,6 +50,7 @@ namespace Preepex.Web.Presentation.Web.Controllers
 
             return Ok(_mapper.Map<IReadOnlyList<OrigOrder>, IReadOnlyList<OrderToReturnDto>>(orders));
         }
+        
 
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderToReturnDto>> GetOrderByIdForUser(int id)
@@ -68,3 +71,4 @@ namespace Preepex.Web.Presentation.Web.Controllers
         }
     }
 }
+    

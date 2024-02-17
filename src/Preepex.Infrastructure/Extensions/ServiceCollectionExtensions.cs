@@ -1,6 +1,5 @@
 ﻿
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Hosting;
 using Preepex.Core.Application;
 using Preepex.Core.Application.Caching;
 using Preepex.Core.Application.Configuration;
@@ -31,6 +30,7 @@ using Preepex.Infrastructure.Repositories;
 using Preepex.Infrastructure.Services;
 using Preepex.Infrastructure.Services.DbInitializer;
 using Preepex.Infrastructure.Services.Shared;
+using StackExchange.Redis;
 using System;
 using System.Linq;
 
@@ -39,10 +39,11 @@ namespace Preepex.Infrastructure.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddInfrastructureLayer(this IServiceCollection services, IConfiguration configuration)
+        public static void AddInfrastructureLayer(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             services.AddIdentity(configuration);
             services.AddDatabasePersistence(configuration);
+            services.AddRedisConfiguration(configuration, environment);
             services.AddAppServices();
 
             services.AddFactories();
@@ -87,6 +88,29 @@ namespace Preepex.Infrastructure.Extensions
             services.AddScoped<IDbInitializerService, DbInitializerService>();
         }
 
+        public static void AddRedisConfiguration(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+        {
+            string redisConnectionString;
+
+            // Check if the application is running in development mode
+            if (environment.IsDevelopment())
+            {
+                // In development, get the Redis connection string from appsettings.json
+                redisConnectionString = configuration.GetConnectionString("RedisCloudURL");
+            }
+            else
+            {
+                // In production (e.g., on Heroku), get the Redis connection string from an environment variable
+                redisConnectionString = Environment.GetEnvironmentVariable("REDISCLOUD_URL") ?? configuration.GetConnectionString("RedisCloudURL");
+            }
+
+            services.AddSingleton<IConnectionMultiplexer>(c =>
+            {
+                var configOptions = ConfigurationOptions.Parse(redisConnectionString, true);
+                return ConnectionMultiplexer.Connect(configOptions);
+            });
+        }
+
         private static void AddFactories(this IServiceCollection services)
         {
             services.AddScoped<ICatalogModelFactory, CatalogModelFactory>();
@@ -98,7 +122,7 @@ namespace Preepex.Infrastructure.Extensions
             services.AddHttpContextAccessor();
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            
+            services.AddSingleton<Microsoft.AspNetCore.Authentication.ISystemClock, Microsoft.AspNetCore.Authentication.SystemClock>();
             services.AddScoped<ISettingService, SettingService>();
             services.AddScoped<IFileProvider, PreepexFileProvider>();
             services.AddScoped<IWebHelper, WebHelper>();
@@ -184,24 +208,7 @@ namespace Preepex.Infrastructure.Extensions
 
         private static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-                {
-                    options.Cookie.HttpOnly = true;
-                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                    options.Cookie.Name = "SwiftradeAuth";
-                    options.ExpireTimeSpan = TimeSpan.FromDays(7);
-                    options.SlidingExpiration = true;
-                    options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
-                });
-                //.AddApiKey("API", options =>
-                //   {
-                //       options.HeaderName = "X-Api-Key";
-                //       options.QueryName = "apikey";
-                //});
-
-
-
+      
             var builder = services.AddIdentityCore<ApplicationUser>();
 
             builder = new IdentityBuilder(builder.UserType, typeof(ApplicationRole), builder.Services);
@@ -211,9 +218,14 @@ namespace Preepex.Infrastructure.Extensions
             builder.AddRoleValidator<RoleValidator<ApplicationRole>>();
             builder.AddRoleManager<RoleManager<ApplicationRole>>();
 
+            //.AddApiKey("API", options =>
+            //   {
+            //       options.HeaderName = "X-Api-Key";
+            //       options.QueryName = "apikey";
+            //});
             //services.AddAuthorizationPolicies();
 
-            
+
             return services;
         }
 
