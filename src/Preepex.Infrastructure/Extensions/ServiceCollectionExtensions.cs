@@ -101,11 +101,11 @@ namespace Preepex.Infrastructure.Extensions
             }
             else
             {
-                var herokuRedisUrl = Environment.GetEnvironmentVariable("REDISCLOUD_URL");
-                if (!string.IsNullOrEmpty(herokuRedisUrl))
+                var envVaribaleRedisUrl = Environment.GetEnvironmentVariable("REDISCLOUD_URL");
+                if (!string.IsNullOrEmpty(envVaribaleRedisUrl))
                 {
                     // Parse the Heroku Redis URL
-                    var uri = new Uri(herokuRedisUrl);
+                    var uri = new Uri(envVaribaleRedisUrl);
                     var password = uri.UserInfo.Split(':', StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
                     redisConnectionString = $"{uri.Host}:{uri.Port},password={password},abortConnect=False";
                 }
