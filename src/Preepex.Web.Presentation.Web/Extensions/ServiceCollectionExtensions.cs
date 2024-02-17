@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Preepex.Common.Options;
 using Preepex.Infrastructure.Extensions;
 using System;
@@ -17,7 +18,7 @@ namespace Preepex.Web.Presentation.Web.Extensions
         {
             services.AddInfrastructureLayer(configuration, environment);
             services.AddSharedServices();
-            services.AddApplicationCookie();
+            services.AddApplicationCookie(environment);
 
             services.AddStorageOptions(configuration);
 
@@ -25,7 +26,7 @@ namespace Preepex.Web.Presentation.Web.Extensions
 
         }
 
-        private static void AddApplicationCookie(this IServiceCollection services)
+        private static void AddApplicationCookie(this IServiceCollection services, IWebHostEnvironment environment)
         {
             services.ConfigureApplicationCookie(options =>
             {
@@ -35,6 +36,18 @@ namespace Preepex.Web.Presentation.Web.Extensions
                 options.ExpireTimeSpan = TimeSpan.FromDays(7);
                 options.SlidingExpiration = true;
                 options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
+
+
+                // Adjust SameSite setting for development environment
+                if (environment.IsDevelopment())
+                {
+                    options.Cookie.SameSite = SameSiteMode.Lax;
+                }
+                else
+                {
+                    // In production, you might want to use a more restrictive setting
+                    options.Cookie.SameSite = SameSiteMode.Strict;
+                }
             });
         }
 
