@@ -38,16 +38,16 @@ namespace Preepex.Web.Presentation.Web.Extensions
                 options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
 
 
-                // Adjust SameSite setting for development environment
-                if (environment.IsDevelopment())
-                {
-                    options.Cookie.SameSite = SameSiteMode.Lax;
-                }
-                else
-                {
-                    // In production, you might want to use a more restrictive setting
-                    options.Cookie.SameSite = SameSiteMode.Strict;
-                }
+                //// Adjust SameSite setting for development environment
+                //if (environment.IsDevelopment())
+                //{
+                //    options.Cookie.SameSite = SameSiteMode.Lax;
+                //}
+                //else
+                //{
+                //    // In production, you might want to use a more restrictive setting
+                //    options.Cookie.SameSite = SameSiteMode.Strict;
+                //}
             });
         }
 
