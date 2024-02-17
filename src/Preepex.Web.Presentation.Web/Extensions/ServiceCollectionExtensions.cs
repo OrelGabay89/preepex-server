@@ -39,15 +39,15 @@ namespace Preepex.Web.Presentation.Web.Extensions
 
 
                 //// Adjust SameSite setting for development environment
-                //if (environment.IsDevelopment())
-                //{
-                //    options.Cookie.SameSite = SameSiteMode.Lax;
-                //}
-                //else
-                //{
-                //    // In production, you might want to use a more restrictive setting
-                //    options.Cookie.SameSite = SameSiteMode.Strict;
-                //}
+                if (environment.IsDevelopment())
+                {
+                    options.Cookie.SameSite = SameSiteMode.Lax;
+                }
+                else
+                {
+                    // In production, you might want to use a more restrictive setting
+                    options.Cookie.SameSite = SameSiteMode.Strict;
+                }
             });
         }
 

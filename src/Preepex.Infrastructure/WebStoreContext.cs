@@ -64,9 +64,9 @@ namespace Preepex.Infrastructure
 
             string storeIdentifier = _httpContextAccessor.HttpContext.Request.Headers["Preepex-Store"];
 
-#if DEBUG
+            #if DEBUG
             storeIdentifier = "bambiboo";
-#endif
+            #endif
 
             var store = await _storeService.GetStoreByHostAsync(storeIdentifier);
 
