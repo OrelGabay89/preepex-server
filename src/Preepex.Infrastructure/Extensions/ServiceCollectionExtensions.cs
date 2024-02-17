@@ -1,5 +1,6 @@
 ﻿
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -208,8 +209,13 @@ namespace Preepex.Infrastructure.Extensions
 
         private static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration)
         {
-      
-            var builder = services.AddIdentityCore<ApplicationUser>();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddCookie(); 
+
+           var builder = services.AddIdentityCore<ApplicationUser>();
 
             builder = new IdentityBuilder(builder.UserType, typeof(ApplicationRole), builder.Services);
             builder.AddEntityFrameworkStores<AppIdentityDbContext>()
