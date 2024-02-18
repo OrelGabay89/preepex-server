@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Preepex.Core.Application.Errors;
 using Preepex.Infrastructure.DbContexts;
+using Preepex.Presentation.Framework;
 
 namespace Preepex.Web.Presentation.Web.Controllers
 {
@@ -54,6 +55,14 @@ namespace Preepex.Web.Presentation.Web.Controllers
         [HttpGet("badrequest/{id}")]
         public ActionResult GetNotFoundRequest(int id)
         {
+            return Ok();
+        }
+
+        [HttpGet("test")]
+        public ActionResult GetNotFoundRequest([FromForm] DataTablesParameters parameters)
+        {
+            var queryOptions = parameters.ToQueryOptions();
+
             return Ok();
         }
     }

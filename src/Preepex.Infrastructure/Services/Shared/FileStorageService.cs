@@ -2,6 +2,7 @@
 using NetBox.Extensions;
 using Preepex.Common.Options;
 using Preepex.Core.Application.Interfaces.Storage;
+using Preepex.Infrastructure.Options;
 using Storage.Net;
 using Storage.Net.Blobs;
 using System.IO;

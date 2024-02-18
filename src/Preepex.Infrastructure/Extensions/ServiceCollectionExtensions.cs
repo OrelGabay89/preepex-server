@@ -12,8 +12,10 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Preepex.Common.Options;
 using Preepex.Core.Application;
 using Preepex.Core.Application.Caching;
+using Preepex.Core.Application.Communication;
 using Preepex.Core.Application.Configuration;
 using Preepex.Core.Application.Errors;
 using Preepex.Core.Application.Interfaces;
@@ -27,8 +29,10 @@ using Preepex.Core.Domain.Entities.Media;
 using Preepex.Infrastructure.DbContexts;
 using Preepex.Infrastructure.Factories;
 using Preepex.Infrastructure.Mappings;
+using Preepex.Infrastructure.Options;
 using Preepex.Infrastructure.Repositories;
 using Preepex.Infrastructure.Services;
+using Preepex.Infrastructure.Services.Communication;
 using Preepex.Infrastructure.Services.DbInitializer;
 using Preepex.Infrastructure.Services.Shared;
 using StackExchange.Redis;
@@ -50,6 +54,8 @@ namespace Preepex.Infrastructure.Extensions
             services.AddAppServices();
             services.AddSharedServices();
 
+            services.AddCommunicationServices(configuration);
+
             services.AddFactories();
             services.AddAutoMapper(typeof(MappingProfiles));
         }
@@ -57,7 +63,35 @@ namespace Preepex.Infrastructure.Extensions
         {
             //services.AddScoped<IApplicationConfigurationService, ApplicationConfigurationService>();
             services.AddScoped<IPasswordGeneratorService, PasswordGeneratorIdentityService>();
+        }
+
+        private static void AddStorageServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddStorageOptions(configuration);
             services.AddScoped<IFileStorageService, FileStorageService>();
+        }
+
+        private static EmailSenderOptions GetEmailSenderOptions(IConfiguration configuration)
+        {
+            EmailSenderOptions emailSenderOptions = new EmailSenderOptions();
+            configuration.GetSection("EmailSender").Bind(emailSenderOptions);
+
+            return emailSenderOptions;
+        }
+
+        private static void AddCommunicationServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            var emailSenderOptions = GetEmailSenderOptions(configuration);
+            if (emailSenderOptions.UseSendGrid)
+            {
+                services.AddScoped<IEmailService, EmailSendGridService>();
+            }
+            else
+            {
+                services.AddScoped<IEmailService, EmailSMTPService>();
+            }
+
+            services.AddScoped<ISMSService, SMSService>();
         }
         private static void AddRedisConfiguration(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
@@ -260,6 +294,11 @@ namespace Preepex.Infrastructure.Extensions
 
 
             return services;
+        }
+
+        private static void AddStorageOptions(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<FileStorageOptions>(x => configuration.GetSection("Storage").Bind(x));
         }
 
         private static void AddAuthorizationPolicies(this IServiceCollection services)

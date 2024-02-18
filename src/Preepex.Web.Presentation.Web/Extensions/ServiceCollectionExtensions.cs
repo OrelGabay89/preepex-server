@@ -15,16 +15,10 @@ namespace Preepex.Web.Presentation.Web.Extensions
         {
             services.AddInfrastructureLayer(configuration, environment);
 
-            services.AddStorageOptions(configuration);
-
             services.AddValidatorsFromAssemblyContaining<Startup>();
 
         }
-        
-        private static void AddStorageOptions(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.Configure<FileStorageOptions>(x => configuration.GetSection("Storage").Bind(x));
-        }
+
 
     }
 }
