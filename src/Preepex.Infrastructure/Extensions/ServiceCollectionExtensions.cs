@@ -54,7 +54,7 @@ namespace Preepex.Infrastructure.Extensions
             services.AddAppServices();
             services.AddSharedServices();
 
-            services.AddCommunicationServices(configuration);
+            //services.AddCommunicationServices(configuration);
 
             services.AddFactories();
             services.AddAutoMapper(typeof(MappingProfiles));
@@ -259,7 +259,7 @@ namespace Preepex.Infrastructure.Extensions
                 // Common configuration for all environments
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.Name = "SwiftradeAuth";
+                options.Cookie.Name = configuration.GetValue<string>("AppSettings:CookieName");
                 options.ExpireTimeSpan = TimeSpan.FromDays(7);
                 options.SlidingExpiration = true;
                 options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;

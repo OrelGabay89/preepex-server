@@ -40,7 +40,6 @@ namespace Preepex.Infrastructure
 
         )
         {
-            //_genericAttributeService = genericAttributeService;
             _httpContextAccessor = httpContextAccessor;
             _storeRepository = storeRepository;
             _storeService = storeService;
@@ -103,33 +102,6 @@ namespace Preepex.Infrastructure
 
             return _cachedStore;
         }
-
-        /// <summary>
-        /// Gets active store scope configuration
-        /// </summary>
-        /// <returns>A task that represents the asynchronous operation</returns>
-        //public virtual async Task<int> GetActiveStoreScopeConfigurationAsync()
-        //{
-        //    if (_cachedActiveStoreScopeConfiguration.HasValue)
-        //        return _cachedActiveStoreScopeConfiguration.Value;
-
-        //    //ensure that we have 2 (or more) stores
-        //    if ((await _storeService.GetAllStoresAsync()).Count > 1)
-        //    {
-        //        //do not inject IWorkContext via constructor because it'll cause circular references
-        //        var currentCustomer = await EngineContext.Current.Resolve<IWorkContext>().GetCurrentCustomerAsync();
-
-        //        //try to get store identifier from attributes
-        //        var storeId = await _genericAttributeService
-        //            .GetAttributeAsync<int>(currentCustomer, NopCustomerDefaults.AdminAreaStoreScopeConfigurationAttribute);
-
-        //        _cachedActiveStoreScopeConfiguration = (await _storeService.GetStoreByIdAsync(storeId))?.Id ?? 0;
-        //    }
-        //    else
-        //        _cachedActiveStoreScopeConfiguration = 0;
-
-        //    return _cachedActiveStoreScopeConfiguration ?? 0;
-        //}
 
     }
 }
