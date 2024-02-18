@@ -155,10 +155,6 @@ namespace Preepex.Web.Presentation.Web
                 RequestPath = "/content"
             });
 
-            app.UseCookiePolicy(new CookiePolicyOptions
-            {
-                MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None
-            });
 
             //// global cors policy
             ///// UseCors must be called before UseResponseCaching

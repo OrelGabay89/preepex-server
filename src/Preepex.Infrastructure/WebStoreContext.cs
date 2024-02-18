@@ -23,7 +23,6 @@ namespace Preepex.Infrastructure
         private readonly IStoreService _storeService;
         private readonly ILogger<WebStoreContext> _logger;
         private Store _cachedStore;
-        private int? _cachedActiveStoreScopeConfiguration;
 
 
 
@@ -58,11 +57,11 @@ namespace Preepex.Infrastructure
         {
             if (_cachedStore != null)
             {
-                Console.WriteLine($"Using store {_cachedStore.Name}");
+                Console.WriteLine($"Using store {_cachedStore.Name} from cache");
                 return _cachedStore;
             }
 
-            string storeIdentifier = _httpContextAccessor.HttpContext.Request.Headers["Preepex-Store"];
+            string storeIdentifier = _httpContextAccessor.HttpContext.Request.Headers["swiftrade-store"];
 
             #if DEBUG
             storeIdentifier = "bambiboo";
@@ -74,7 +73,7 @@ namespace Preepex.Infrastructure
                 _cachedStore = store;
                 Console.WriteLine($"Using store {_cachedStore.Name}");
             } else {
-                throw new Exception("No store could be loaded");
+                throw new Exception($"Coud't find store name {storeIdentifier}");
             }
 
             return _cachedStore;

@@ -42,54 +42,24 @@ namespace Preepex.Infrastructure.Extensions
     {
         public static void AddInfrastructureLayer(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
-            services.AddIdentity(configuration);
             services.AddDatabasePersistence(configuration);
+            services.AddIdentity(configuration, environment);
+            services.AddRepositories();
+
             services.AddRedisConfiguration(configuration, environment);
             services.AddAppServices();
+            services.AddSharedServices();
 
             services.AddFactories();
-            services.AddRepositories();
             services.AddAutoMapper(typeof(MappingProfiles));
         }
-
         public static void AddSharedServices(this IServiceCollection services)
         {
+            //services.AddScoped<IApplicationConfigurationService, ApplicationConfigurationService>();
             services.AddScoped<IPasswordGeneratorService, PasswordGeneratorIdentityService>();
             services.AddScoped<IFileStorageService, FileStorageService>();
         }
-        private static void AddDatabasePersistence(this IServiceCollection services, IConfiguration configuration)
-        {
-            if (configuration.GetValue<bool>("UseInMemoryDatabase"))
-            {
-                services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseInMemoryDatabase("StoreDb"));
-                services.AddDbContext<AppIdentityDbContext>(options =>
-                    options.UseInMemoryDatabase("AppIdentityDb"));
-                services.AddDbContext<PreepexContext>(options =>
-                  options.UseInMemoryDatabase("PreepexDb"));
-            }
-            else
-            {
-                var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
-
-                // [CanBeNull] Action<MySqlDbContextOptionsBuilder> mySqlOptionsAction = null
-                services.AddDbContext<ApplicationDbContext>(x =>
-                              x.UseMySql(configuration.GetConnectionString("DefaultConnection"), serverVersion,
-                              new Action<MySqlDbContextOptionsBuilder>(Action => Action.EnableRetryOnFailure())));
-
-                services.AddDbContext<AppIdentityDbContext>(x =>
-                {
-                    x.UseMySql(configuration.GetConnectionString("IdentityConnection"), serverVersion, new Action<MySqlDbContextOptionsBuilder>(Action => Action.EnableRetryOnFailure()));
-                });
-                services.AddDbContext<PreepexContext>(x =>
-                {
-                    x.UseMySql(configuration.GetConnectionString("PreepexConnection"), serverVersion, new Action<MySqlDbContextOptionsBuilder>(Action => Action.EnableRetryOnFailure()));
-                });
-            }
-            services.AddScoped<IDbInitializerService, DbInitializerService>();
-        }
-
-        public static void AddRedisConfiguration(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+        private static void AddRedisConfiguration(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             string redisConnectionString;
 
@@ -121,13 +91,42 @@ namespace Preepex.Infrastructure.Extensions
                 return ConnectionMultiplexer.Connect(configOptions);
             });
         }
+        private static void AddDatabasePersistence(this IServiceCollection services, IConfiguration configuration)
+        {
+            if (configuration.GetValue<bool>("AppSettings:UseInMemoryDatabase"))
+            {
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseInMemoryDatabase("StoreDb"));
+                services.AddDbContext<AppIdentityDbContext>(options =>
+                    options.UseInMemoryDatabase("AppIdentityDb"));
+                services.AddDbContext<PreepexContext>(options =>
+                  options.UseInMemoryDatabase("PreepexDb"));
+            }
+            else
+            {
+                var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
 
+                // [CanBeNull] Action<MySqlDbContextOptionsBuilder> mySqlOptionsAction = null
+                services.AddDbContext<ApplicationDbContext>(x =>
+                              x.UseMySql(configuration.GetConnectionString("DefaultConnection"), serverVersion,
+                              new Action<MySqlDbContextOptionsBuilder>(Action => Action.EnableRetryOnFailure())));
+
+                services.AddDbContext<AppIdentityDbContext>(x =>
+                {
+                    x.UseMySql(configuration.GetConnectionString("IdentityConnection"), serverVersion, new Action<MySqlDbContextOptionsBuilder>(Action => Action.EnableRetryOnFailure()));
+                });
+                services.AddDbContext<PreepexContext>(x =>
+                {
+                    x.UseMySql(configuration.GetConnectionString("PreepexConnection"), serverVersion, new Action<MySqlDbContextOptionsBuilder>(Action => Action.EnableRetryOnFailure()));
+                });
+            }
+            services.AddScoped<IDbInitializerService, DbInitializerService>();
+        }
         private static void AddFactories(this IServiceCollection services)
         {
             services.AddScoped<ICatalogModelFactory, CatalogModelFactory>();
             services.AddScoped<IProductModelFactory, ProductModelFactory>();
         }
-
         private static void AddAppServices(this IServiceCollection services)
         {
             services.AddHttpContextAccessor();
@@ -194,7 +193,6 @@ namespace Preepex.Infrastructure.Extensions
                 };
             });
         }
-        
         private static void AddRepositories(this IServiceCollection services)
         {
             services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
@@ -216,16 +214,35 @@ namespace Preepex.Infrastructure.Extensions
             services.AddScoped<IProductManufacturerRepository, ProductManufacturerRepository>();
         }
 
-
-        private static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration)
+        private static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-            .AddCookie(); 
+            .AddCookie(options =>
+            {
+                // Common configuration for all environments
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.Name = "SwiftradeAuth";
+                options.ExpireTimeSpan = TimeSpan.FromDays(7);
+                options.SlidingExpiration = true;
+                options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
 
-           var builder = services.AddIdentityCore<ApplicationUser>();
+                // Environment-specific configuration
+                if (environment.IsDevelopment())
+                {
+                    options.Cookie.SameSite = SameSiteMode.Lax;
+                }
+                else
+                {
+                    // In production, use a more restrictive setting
+                    options.Cookie.SameSite = SameSiteMode.Strict;
+                }
+            });
+
+            var builder = services.AddIdentityCore<ApplicationUser>();
 
             builder = new IdentityBuilder(builder.UserType, typeof(ApplicationRole), builder.Services);
             builder.AddEntityFrameworkStores<AppIdentityDbContext>()

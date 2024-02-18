@@ -83,7 +83,7 @@ namespace Preepex.Core.Application.Attributes
         {
             var keyBuilder = new StringBuilder();
 
-            string storeIdentifier = request.Headers["Preepex-Store"];
+            string storeIdentifier = request.Headers["swiftrade-store"];
 
             keyBuilder.Append($"{request.Scheme}://{request.Host.Host}{request.Path}{storeIdentifier}");
             foreach (var (key, value) in request.Query.OrderBy(x => x.Key))
