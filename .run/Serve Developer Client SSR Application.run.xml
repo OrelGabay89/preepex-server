@@ -1,6 +1,6 @@
 ﻿<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Serve Developer Client SSR Application" type="js.build_tools.npm">
-    <package-json value="$PROJECT_DIR$/src/Preepex.Web.Presentation.Web/Angular/ClientAppStore/package.json" />
+    <package-json value="$PROJECT_DIR$/src/Swiftrade.Web.Presentation.Web/Angular/ClientAppStore/package.json" />
     <command value="run" />
     <scripts>
       <script value="dev:ssr" />

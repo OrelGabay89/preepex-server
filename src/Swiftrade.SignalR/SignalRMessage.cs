@@ -1,4 +1,4 @@
-using Preepex.Core.Application.Events;
+using Swiftrade.Core.Application.Events;
 
 namespace Swiftrade.SignalR
 {

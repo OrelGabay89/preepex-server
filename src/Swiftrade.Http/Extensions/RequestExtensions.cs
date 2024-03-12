@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Preepex.Common.EnvironmentInfo;
+using Swiftrade.Common.EnvironmentInfo;
 using System;
 using System.Collections.Generic;
 using System.Linq;

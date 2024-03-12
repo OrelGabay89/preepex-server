@@ -1,6 +1,6 @@
 ﻿<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Serve Front-Back" type="CompoundRunConfigurationType">
-    <toRun name="Preepex.Web.Presentation.Web" type="LaunchSettings" />
+    <toRun name="Swiftrade.Web.Presentation.Web" type="LaunchSettings" />
     <toRun name="Serve Developer Client SSR Application" type="js.build_tools.npm" />
     <method v="2" />
   </configuration>

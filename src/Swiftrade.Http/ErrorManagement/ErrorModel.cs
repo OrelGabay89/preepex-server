@@ -1,7 +1,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Preepex.Common.Serializer.System.Text.Json;
+using Swiftrade.Common.Serializer.System.Text.Json;
 using Swiftrade.Http.Exceptions;
 
 namespace Swiftrade.Http.ErrorManagement

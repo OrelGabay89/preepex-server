@@ -5,7 +5,7 @@ services:
     image: ${DOCKER_REGISTRY-}preepexwebhost
     build:
       context: .
-      dockerfile: src/Preepex.Web.Host/Dockerfile
+      dockerfile: src/Swiftrade.Web.Host/Dockerfile
   redis:
     image: redis:latest
     ports:

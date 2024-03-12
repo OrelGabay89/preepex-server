@@ -1,8 +1,8 @@
 ﻿<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Preepex.Web.Presentation.Web" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
-    <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/src/Preepex.Web.Presentation.Web/Preepex.Web.Presentation.Web.csproj" />
+  <configuration default="false" name="Swiftrade.Web.Presentation.Web" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
+    <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/src/Swiftrade.Web.Presentation.Web/Swiftrade.Web.Presentation.Web.csproj" />
     <option name="LAUNCH_PROFILE_TFM" value="net6.0" />
-    <option name="LAUNCH_PROFILE_NAME" value="Preepex.Web.Presentation.Web" />
+    <option name="LAUNCH_PROFILE_NAME" value="Swiftrade.Web.Presentation.Web" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
     <option name="USE_MONO" value="0" />
     <option name="RUNTIME_ARGUMENTS" value="" />

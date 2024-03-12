@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Preepex.Common\Preepex.Common.csproj" />
-    <ProjectReference Include="..\Preepex.Core.Application\Preepex.Core.Application.csproj" />
+    <ProjectReference Include="..\Swiftrade.Common\Swiftrade.Common.csproj" />
+    <ProjectReference Include="..\Swiftrade.Core.Application\Swiftrade.Core.Application.csproj" />
   </ItemGroup>
 
 </Project>

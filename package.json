@@ -8,7 +8,7 @@
   "scripts": {
 	"first-build": "npm run command1 && npm run command2",
     "heroku-postbuild": "npm run command1 && npm run command2",
-	"command1":"cd src/Preepex.Web.Presentation.Web/Angular/ClientAppStore && npm run heroku-postbuild",
-	"command2":"cd src/Preepex.Web.Presentation.Web/Angular/ClientAppAdmin && npm run heroku-postbuild"
+	"command1":"cd src/Swiftrade.Web.Presentation.Web/Angular/ClientAppStore && npm run heroku-postbuild",
+	"command2":"cd src/Swiftrade.Web.Presentation.Web/Angular/ClientAppAdmin && npm run heroku-postbuild"
   }
 }

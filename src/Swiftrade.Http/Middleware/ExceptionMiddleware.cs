@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Preepex.Core.Application.Errors;
+using Swiftrade.Core.Application.Errors;
 using System;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Preepex.Web.Presentation.Web.Middleware
+namespace Swiftrade.Web.Presentation.Web.Middleware
 {
     public class ExceptionMiddleware
     {

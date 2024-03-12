@@ -8,7 +8,7 @@
             "name": "C#: Web Debug",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/src/Preepex.Web.Presentation.Web/Preepex.Web.Presentation.Web.csproj"
+            "projectPath": "${workspaceFolder}/src/Swiftrade.Web.Presentation.Web/Swiftrade.Web.Presentation.Web.csproj"
         }
     ]
 }

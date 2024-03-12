@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using Preepex.Common.EnvironmentInfo;
+using Swiftrade.Common.EnvironmentInfo;
 
 namespace Swiftrade.SignalR
 {

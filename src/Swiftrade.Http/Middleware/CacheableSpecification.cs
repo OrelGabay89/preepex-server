@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
-using Preepex.Common.Extensions;
+using Swiftrade.Common.Extensions;
 
 namespace Swiftrade.Http.Middleware
 {

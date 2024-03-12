@@ -1,0 +1,59 @@
+info: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[63]
+      User profile is available. Using 'C:\Users\orelg\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Swiftrade\preepex-server\src\Swiftrade.Web.Presentation.Web
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 GET https://localhost:44328/ - -
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 GET https://localhost:44328/api/swagger - -
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 GET https://localhost:44328/ - - - 302 - - 39.3269ms
+info: Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware[24]
+      No cached response available for this request.
+info: Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware[27]
+      The response could not be cached for this request.
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 GET https://localhost:44328/api/swagger - - - 301 - - 114.8498ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 GET https://localhost:44328/api/swagger/index.html - -
+info: Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware[24]
+      No cached response available for this request.
+info: Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware[27]
+      The response could not be cached for this request.
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 GET https://localhost:44328/api/swagger/index.html - - - 200 - text/html;charset=utf-8 116.6858ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 GET https://localhost:44328/api/swagger/swagger-ui.css - -
+info: Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware[24]
+      No cached response available for this request.
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 GET https://localhost:44328/api/swagger/swagger-ui-bundle.js - -
+info: Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware[24]
+      No cached response available for this request.
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 GET https://localhost:44328/api/swagger/swagger-ui-standalone-preset.js - -
+info: Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware[24]
+      No cached response available for this request.
+info: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[2]
+      Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+info: Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware[27]
+      The response could not be cached for this request.
+info: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[2]
+      Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+info: Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware[27]
+      The response could not be cached for this request.
+info: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[2]
+      Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+info: Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware[27]
+      The response could not be cached for this request.
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 GET https://localhost:44328/api/swagger/swagger-ui-standalone-preset.js - - - 200 337162 application/javascript 61.2589ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 GET https://localhost:44328/api/swagger/swagger-ui.css - - - 200 143632 text/css 87.7599ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 GET https://localhost:44328/api/swagger/swagger-ui-bundle.js - - - 200 1092889 application/javascript 133.8040ms
+info: Microsoft.AspNetCore.Hos

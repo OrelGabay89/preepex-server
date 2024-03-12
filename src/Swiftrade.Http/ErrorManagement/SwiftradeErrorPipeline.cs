@@ -3,7 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using NLog;
-using Preepex.Common.Serializer.System.Text.Json;
+using Swiftrade.Common.Serializer.System.Text.Json;
 using Swiftrade.Http.Exceptions;
 
 namespace Swiftrade.Http.ErrorManagement

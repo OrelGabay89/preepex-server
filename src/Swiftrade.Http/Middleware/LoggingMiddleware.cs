@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using NLog;
 using Swiftrade.Http.Extensions;
-using Preepex.Common.Extensions;
+using Swiftrade.Common.Extensions;
 using Swiftrade.Http.ErrorManagement;
 
 namespace Swiftrade.Http.Middleware

@@ -1,5 +1,5 @@
 ﻿{
-  "name": "Preepex.Store",
+  "name": "Swiftrade.Store",
   "entrypoint":"powershell",
   "commands": {
     "create-migration": ["./scripts/CreateMigration.ps1"],

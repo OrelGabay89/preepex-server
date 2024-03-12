@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Preepex.Common.EnvironmentInfo;
+using Swiftrade.Common.EnvironmentInfo;
 using Swiftrade.Http.Extensions;
 using System.Threading.Tasks;
 
-namespace Preepex.Web.Presentation.Web.Middleware
+namespace Swiftrade.Web.Presentation.Web.Middleware
 {
     public class VersionMiddleware
     {
