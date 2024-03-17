@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Swiftrade.Core.Domain.Entities;
 using Swiftrade.Core.Domain.Entities.ApplicationEntities;
 using Swiftrade.Core.Domain.Entities.Messages;
 using Swiftrade.Core.Domain.Entities.OrderAggregate;
@@ -6,6 +7,7 @@ using Swiftrade.Infrastructure.Extensions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Product = Swiftrade.Core.Domain.Entities.ApplicationEntities.Product;
 
 namespace Swiftrade.Infrastructure.DbContexts
 {
@@ -28,6 +30,7 @@ namespace Swiftrade.Infrastructure.DbContexts
         public DbSet<Photo> Photo { get; set; }
         public DbSet<Customers> Customers { get; set; }
         public DbSet<Tenant> Tenant { get; set; }
+        public DbSet<SiteSettings> SiteSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

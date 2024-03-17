@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swiftrade.Core.Domain", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swiftrade.Infrastructure", "src\Swiftrade.Infrastructure\Swiftrade.Infrastructure.csproj", "{728EE2F4-35F9-41C4-A2F6-3C08C6FF14C2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F14A5EF6-D804-44AB-AEAD-343BCC3FB842}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{F14A5EF6-D804-44AB-AEAD-343BCC3FB842}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swiftrade.Web.Presentation.Web", "src\Swiftrade.Web.Presentation.Web\Swiftrade.Web.Presentation.Web.csproj", "{CD2D61B7-A727-4687-B56F-E63DFEE24193}"
 EndProject
@@ -26,6 +26,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swiftrade.SignalR", "src\Swiftrade.SignalR\Swiftrade.SignalR.csproj", "{1048893F-FD8D-4A2E-9F39-4D1E7FD96D1C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swiftrade.Infrastructure.Resources", "src\Swiftrade.Infrastructure.Resources\Swiftrade.Infrastructure.Resources.csproj", "{7DE92858-15F3-411D-B7E8-0A44014A36ED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B3A17DC6-DEC5-4241-A4FF-27C4B362B9F4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2C82B1FF-7A4A-4AD6-B3CC-620A4D3BE2D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -146,6 +150,8 @@ Global
 		{223D3DB3-5A24-44E9-B18F-8BABD862385B} = {F14A5EF6-D804-44AB-AEAD-343BCC3FB842}
 		{E67813D8-48DC-4F6E-8DFC-05403F3ED444} = {F14A5EF6-D804-44AB-AEAD-343BCC3FB842}
 		{02F8DB7F-B31C-48A0-B2BE-C9E412957D9C} = {F14A5EF6-D804-44AB-AEAD-343BCC3FB842}
+		{8BF7AC90-2244-4069-8098-E45C2A8C2CF3} = {F14A5EF6-D804-44AB-AEAD-343BCC3FB842}
+		{1048893F-FD8D-4A2E-9F39-4D1E7FD96D1C} = {F14A5EF6-D804-44AB-AEAD-343BCC3FB842}
 		{7DE92858-15F3-411D-B7E8-0A44014A36ED} = {E67813D8-48DC-4F6E-8DFC-05403F3ED444}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

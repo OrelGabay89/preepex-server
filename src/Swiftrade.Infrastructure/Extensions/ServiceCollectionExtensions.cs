@@ -50,7 +50,7 @@ namespace Swiftrade.Infrastructure.Extensions
             services.AddIdentity(configuration, environment);
             services.AddRepositories();
 
-            services.AddRedisConfiguration(configuration, environment);
+            services.AddDistributedCache(configuration, environment);
             services.AddAppServices();
             services.AddSharedServices();
 
@@ -93,7 +93,37 @@ namespace Swiftrade.Infrastructure.Extensions
 
             services.AddScoped<ISMSService, SMSService>();
         }
-        private static void AddRedisConfiguration(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+        private static void AddDistributedCache(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+        {
+            var distributedCacheConfig = configuration.GetSection("DistributedCacheConfig").Get<DistributedCacheConfig>();
+
+            if (!distributedCacheConfig.Enabled)
+                return;
+
+            switch (distributedCacheConfig.DistributedCacheType)
+            {
+                case DistributedCacheType.Memory:
+                    services.AddDistributedMemoryCache();
+                    break;
+
+                case DistributedCacheType.SqlServer:
+                    services.AddDistributedSqlServerCache(options =>
+                    {
+                        options.ConnectionString = distributedCacheConfig.ConnectionString;
+                        options.SchemaName = distributedCacheConfig.SchemaName;
+                        options.TableName = distributedCacheConfig.TableName;
+                    });
+                    break;
+
+                case DistributedCacheType.Redis:
+                    UseRedisCache(services, configuration, environment);
+                    break;
+            }
+
+
+        }
+
+        private static void UseRedisCache(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             string redisConnectionString;
 
@@ -125,6 +155,7 @@ namespace Swiftrade.Infrastructure.Extensions
                 return ConnectionMultiplexer.Connect(configOptions);
             });
         }
+
         private static void AddDatabasePersistence(this IServiceCollection services, IConfiguration configuration)
         {
             if (configuration.GetValue<bool>("AppSettings:UseInMemoryDatabase"))
@@ -173,6 +204,7 @@ namespace Swiftrade.Infrastructure.Extensions
 
             services.AddSingleton<ILocker, MemoryCacheManager>();
             services.AddSingleton<IStaticCacheManager, MemoryCacheManager>();
+
             services.AddSingleton<ITypeFinder, TypeFinder>();
             services.AddSingleton<AppSettings>();
 
@@ -202,7 +234,7 @@ namespace Swiftrade.Infrastructure.Extensions
             }
 
             var hostEnvironment = services.BuildServiceProvider().GetRequiredService<IWebHostEnvironment>();
-            
+
             CommonHelper.DefaultFileProvider = new SwiftradeFileProvider(hostEnvironment);
 
 

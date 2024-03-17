@@ -11,22 +11,13 @@ namespace Swiftrade.Infrastructure.Services
 {
     public class StoreService : IStoreService
     {
-        #region Fields
 
         private readonly IStoreRepository _storeRepository;
-
-        #endregion
-
-        #region Ctor
 
         public StoreService(IStoreRepository storeRepository)
         {
             _storeRepository = storeRepository;
         }
-
-        #endregion
-
-        #region Utilities
 
         /// <summary>
         /// Parse comma-separated Hosts
@@ -52,10 +43,6 @@ namespace Swiftrade.Infrastructure.Services
 
             return parsedValues.ToArray();
         }
-
-        #endregion
-
-        #region Methods
 
         /// <summary>
         /// Deletes a store
@@ -181,6 +168,7 @@ namespace Swiftrade.Infrastructure.Services
                 .FirstAsync();
         }
 
-        #endregion
+         
+
     }
 }

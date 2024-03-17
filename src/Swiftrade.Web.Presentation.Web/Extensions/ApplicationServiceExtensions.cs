@@ -1,4 +1,5 @@
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Preepex.Infrastructure.Resources.Services;
 using Swiftrade.Common.Singleton;
@@ -33,6 +34,9 @@ namespace Swiftrade.Web.Presentation.Web.Extensions
 
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
+            // Retrieve IConfiguration instance directly from services
+            var serviceProvider = services.BuildServiceProvider();
+            var configuration = serviceProvider.GetService<IConfiguration>();
 
             services
               .AddMvc(options =>
@@ -90,12 +94,16 @@ namespace Swiftrade.Web.Presentation.Web.Extensions
             services.AddScoped<IGenericAttributeService, GenericAttributeService>();
 
             services.AddScoped<SlugRouteTransformer>();
-
             var appSettings = Singleton<AppSettings>.Instance ?? new AppSettings();
-            if (appSettings.Get<AzureBlobConfig>().Enabled)
+
+            if (configuration.GetValue<bool>("AzureBlobConfig:Enabled"))
+            {
                 services.AddScoped<IPictureService, AzurePictureService>();
+            }
             else
+            {
                 services.AddScoped<IPictureService, PictureService>();
+            }
 
             services
              .AddSignalR();
